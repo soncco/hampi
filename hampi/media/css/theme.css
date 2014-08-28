@@ -1,0 +1,51 @@
+body {
+  padding-top: 50px;
+}
+
+.page-header {
+  background-image: linear-gradient(to bottom, #ffffff 0%, #eeeeee 100%);
+  background-repeat: repeat-x;
+  border: 1px solid #ddd;
+  border-top-left-radius: 15px;
+  padding: 10px 10px 5px 10px;
+}
+
+.page-header.mini {
+  margin: 0;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+}
+
+.page-header.mini h5 {
+  margin: 0;
+}
+
+.icon-new {
+  color: #27ae60;
+}
+
+.icon-list {
+  color: #2980b9;
+}
+
+.line-left {
+  border-left: 1px solid #ddd;
+}
+
+.actions {
+  padding: 20px;
+  border-top: 1px solid #ddd;
+  background: rgba(238, 238, 238, 0.4);
+}
+
+.modal.modal-large .modal-dialog {
+  width: 80%;
+}
+
+.modal.modal-large .modal-body {
+  overflow-y: auto;
+}
+
+.no-line {
+  text-decoration: none !important;
+}

@@ -1,0 +1,1 @@
+[{"pk": 1, "model": "almacen.almacen", "fields": {"nombre": "Abancay"}}, {"pk": 2, "model": "almacen.almacen", "fields": {"nombre": "Andahuaylas"}}, {"pk": 3, "model": "almacen.almacen", "fields": {"nombre": "Cusco"}}]

@@ -1,0 +1,61 @@
+# Compiled source
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+*.resources
+*.pyc
+*.pl
+
+# Packages
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+ehthumbs.db
+Thumbs.db
+*.bak
+*.suo
+
+# special files
+.settings
+.project
+.pydevproject
+*.sqlite3
+
+# Generated files
+front/public/css/style.css
+
+# Uploaded files
+child/media/fotos/*
+
+# Copied from https://github.com/LearnBoost/socket.io/blob/master/.gitignore
+.DS_Store
+lib-cov
+*.seed
+*.log
+*.csv
+*.dat
+*.out
+*.pid
+.cache
+benchmarks/*.png
+node_modules
+*/migrations/*
+
+# Custom
+public/stylesheets/style.css

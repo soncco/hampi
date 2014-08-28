@@ -1,0 +1,74 @@
+{% load mathfilters %}
+<!doctype html>
+<html>
+  <head>
+    {% include 'pdf/styles.html' %}
+  </head>
+  <body>
+    {% include 'pdf/meta.html' %}
+    <div class="main-title">
+      <h2 class="line-up-down line-grey simple-shadow padding">Detalles de la Salida</h2>
+    </div>
+
+    <div class="info">
+      <p>
+        <strong>Fecha:</strong> {{ salida.fecha }} 
+      </p>
+      <p>
+        <strong>Almacén:</strong> {{ salida.almacen }}
+      </p>
+      <p>
+        <strong>Documento:</strong> {{ salida.get_documento_display }}
+        <strong>Número de documento:</strong> {{ salida.numero_documento }}
+        <strong>Fecha del documento:</strong> {{ salida.fecha_documento }}
+      </p>
+      <p>
+        <strong>Quién:</strong> {{ salida.quien }}
+      </p>
+      {% if salida.venta %}
+      <p>
+        <strong>Venta relacionada:</strong>
+        Nro {{salida.venta.pk}}
+      </p>
+      {% endif %}
+      <p class="line-down">
+        <strong>Notas:</strong> {{ salida.notas }}
+      </p>
+    </div>
+
+    <div class="details">
+      <table class="table table-bordered" repeat="1">
+        <thead>
+          <tr>
+            <th class="padding-cell">Código</th>
+            <th class="wide-percent padding-cell">Producto</th>
+            <th class="padding-cell">Cantidad</th>
+            <th class="padding-cell">Unitario</th>
+            <th class="padding-cell">Subtotal</th>
+            <th class="padding-cell">% Descuento</th>
+            <th class="padding-cell">Total</th>
+          </tr>
+        </thead>
+        <tbody class="detalles">
+          {% for detalle in salida.salidadetalle_set.all %}
+          <tr>
+            <td class="padding-cell">{{ detalle.producto.codigo }}</td>
+            <td class="padding-cell">{{ detalle.producto }}</td>
+            <td class="text-right padding-cell">{{ detalle.cantidad }}</td>
+            <td class="text-right padding-cell">{{ detalle.precio_unitario }}</td>
+            <td class="text-right padding-cell">{{ detalle.cantidad|mul:detalle.precio_unitario|floatformat:2 }}</td>
+            <td class="text-right padding-cell">{{ detalle.descuento }}</td>
+            {% with subtotal=detalle.cantidad|mul:detalle.precio_unitario %}
+              {% with descmul=subtotal|mul:detalle.descuento %}
+                {% with descuento=descmul|div:100 %}
+                <td class="text-right padding-cell">{{ subtotal|sub:descuento|floatformat:2 }}</td>
+                {% endwith %}
+              {% endwith %}
+            {% endwith %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>

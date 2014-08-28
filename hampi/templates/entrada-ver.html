@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% load mathfilters %}
+{% block content %}
+<div class="page-header">
+  <h3><i class="fa fa-file icon-new"></i> Detalles de la Entrada
+    <span class="small pull-right">
+      <a class="btn btn-success btn-sm" href="{% url 'entradas' %}"><i class="fa fa-table"></i> Ver todas las entradas</a>
+      <a class="btn btn-success btn-sm" href="{% url 'entrada' %}"><i class="fa fa-book"></i> Registrar una entrada</a>
+      <a class="btn btn-primary btn-sm" href="{% url 'entrada_print' entrada.id %}"><i class="fa fa-print"></i> Imprimir</a>
+    </span>
+  </h3>
+</div>
+<div class="row">
+  <div class="col-md-4">
+    <div class="page-header mini">
+      <h5>Información</h5>
+    </div>
+    <div class="form-group">
+      <label>Almacén:</label>
+      {{ entrada.almacen }}
+    </div>
+    <div class="form-group">
+      <label>Fecha:</label>
+      {{ entrada.fecha }}
+    </div>
+    <div class="form-group">
+      <label>Documento:</label>
+      {{ entrada.get_documento_display }}
+    </div>
+    {% if entrada.documento != 'G' %}
+    <div class="form-group">
+      <label>Proveedor:</label>
+      {{ entrada.proveedor }} ({{ entrada.proveedor.ruc }})
+    </div>
+    {% endif %}
+    <div class="form-group">
+      <label>Número de documento:</label>
+      {{ entrada.numero_documento }}
+    </div>
+    <div class="form-group">
+      <label>Fecha del documento:</label>
+      {{ entrada.fecha_documento }}
+    </div>
+    <div class="form-group">
+      <label>Quien:</label>
+      {{ entrada.quien }}
+    </div>
+    <div class="form-group">
+      <label>Notas:</label>
+      {{ entrada.notas }}
+    </div>
+  </div>
+  <div class="col-md-8 line-left">
+    <div class="page-header mini">
+      <h5>Detalles</h5>
+    </div>
+    <table class="table table-striped able-condensed table-bordered small">
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Producto</th>
+          <th>Cantidad</th>
+          <th>Unitario</th>
+          <th>Subtotal</th>
+          <th>% Descuento</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody class="detalles">
+        {% for detalle in entrada.entradadetalle_set.all %}
+        <tr>
+          <td>{{ detalle.producto.codigo }}</td>
+          <td>{{ detalle.producto }}</td>
+          <td>{{ detalle.cantidad }}</td>
+          <td>{{ detalle.precio_unitario }}</td>
+          <td>{{ detalle.cantidad|mul:detalle.precio_unitario }}</td>
+          <td>{{ detalle.descuento }}</td>
+          {% with subtotal=detalle.cantidad|mul:detalle.precio_unitario %}
+            {% with descmul=subtotal|mul:detalle.descuento %}
+              {% with descuento=descmul|div:100 %}
+              <td class="text-right">{{ subtotal|sub:descuento|floatformat:2 }}</td>
+              {% endwith %}
+            {% endwith %}
+          {% endwith %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>  
+{% endblock %}
+
+{% block js%}
+<script src="/media/js/main.js"></script>
+{% endblock %}
+
+{% block title %}Detalles de la entrada{% endblock %}
+

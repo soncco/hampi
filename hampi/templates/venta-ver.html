@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% load mathfilters %}
+{% block content %}
+<div class="page-header">
+  <h3><i class="fa fa-file icon-new"></i> Detalles de la venta
+    <span class="small pull-right">
+      <a class="btn btn-success btn-sm" href="{% url 'ventas' %}"><i class="fa fa-table"></i> Ver todas las ventas</a>
+      <a class="btn btn-success btn-sm" href="{% url 'venta' %}"><i class="fa fa-book"></i> Registrar una venta</a>
+      <a class="btn btn-primary btn-sm" href="{% url 'venta_print' venta.id %}"><i class="fa fa-print"></i> Imprimir</a>
+    </span>
+  </h3>
+</div>
+<div class="row">
+  <div class="col-md-4">
+    <div class="page-header mini">
+      <h5 class="green">Información</h5>
+    </div>
+    <div class="form-group">
+      <label>Nro:</label>
+      {{ venta.pk }}
+    </div>
+    <div class="form-group">
+      <label>Almacén:</label>
+      {{ venta.almacen }}
+    </div>
+    <div class="form-group">
+      <label>Fecha:</label>
+      {{ venta.fecha }}
+    </div>
+    <div class="form-group">
+      <label>Documento:</label>
+      {{ venta.get_documento_display }}
+    </div>
+    <div class="form-group">
+      <label>Número de documento:</label>
+      {{ venta.numero_documento }}
+    </div>
+    <div class="form-group">
+      <label>Fecha del documento:</label>
+      {{ venta.fecha_documento }}
+    </div>
+    <div class="form-group">
+      <label>Cliente:</label>
+      {{ venta.cliente }} ({{ venta.cliente.numero_documento }})
+    </div>
+    <div class="form-group">
+      <label>Tipo de Venta:</label>
+      {{ venta.get_tipo_venta_display }}
+    </div>
+    {% if venta.tipo_venta == 'P' %}
+    <div class="form-group">
+      <label>Estado:</label>
+      {% if venta.deuda.estado == 'D' %}
+      <strong class="text-danger  ">{{ venta.deuda.get_estado_display }}</strong>
+      {% else %}
+      <strong class="text-success">{{ venta.deuda.get_estado_display }}</strong>
+      {% endif %}
+    </div>
+    {% endif %}
+  </div>
+  <div class="col-md-8 line-left">
+    <div class="page-header mini">
+      <h5>Detalles</h5>
+    </div>
+    <table class="table table-striped table-condensed table-bordered small">
+      <tfoot>
+        <tr>
+          <td colspan="6" class="text-right"><strong>Venta Total:</strong></td>
+          <td colspan="1" class="text-right warning">
+            {{ venta.total_venta }}
+          </td>
+        </tr>
+      </tfoot>
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Producto</th>
+          <th>Cantidad</th>
+          <th>Unitario</th>
+          <th>Subtotal</th>
+          <th>% Descuento</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody class="detalles">
+        {% for detalle in venta.ventadetalle_set.all %}
+        <tr>
+          <td>{{ detalle.producto.codigo }}</td>
+          <td>{{ detalle.producto }}</td>
+          <td>{{ detalle.cantidad }}</td>
+          <td>{{ detalle.precio_unitario }}</td>
+          <td>{{ detalle.cantidad|mul:detalle.precio_unitario }}</td>
+          <td>{{ detalle.descuento }}</td>
+          {% with subtotal=detalle.cantidad|mul:detalle.precio_unitario %}
+            {% with descmul=subtotal|mul:detalle.descuento %}
+              {% with descuento=descmul|div:100 %}
+              <td class="text-right">{{ subtotal|sub:descuento|floatformat:2 }}</td>
+              {% endwith %}
+            {% endwith %}
+          {% endwith %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% if venta.tipo_venta == 'P' %}
+    <div class="page-header mini">
+      <h5>Amortizaciones</h5>
+    </div>
+    <table class="table table-striped table-condensed table-bordered small">
+      {% if venta.deuda.estado == 'D' %}
+      <tfoot>
+        <tr>
+          <td colspan="4">
+            <a href="{% url 'amortizacion' venta.deuda.id %}" class="btn btn-info btn-sm btn-block no-line"><i class="fa fa-check-square"></i> Agregar amortización</a>
+          </td>
+        </tr>
+      </tfoot>
+      {% endif %}
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Recibido por</th>
+          <th>Monto</th>
+          <th>Saldo</th>
+        </tr>
+      </thead>
+      <tbody class="detalles">
+        {% for amortizacion in amortizaciones %}
+        <tr>
+          <td>{{ amortizacion.fecha }}</td>
+          <td>{{ amortizacion.recibido_por.first_name }}</td>
+          <td class="text-right">{{ amortizacion.monto }}</td>
+          <td class="text-right">{{ amortizacion.saldo }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block js%}
+<script src="/media/js/main.js"></script>
+{% endblock %}
+
+{% block title %}Detalles de la venta{% endblock %}
+

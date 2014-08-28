@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="page-header">
+  <h3><i class="fa fa-file icon-new"></i> Registrar Amortización
+    <span class="small pull-right">
+      <a class="btn btn-danger btn-sm" href="{% url 'venta_view' deuda.registro_padre.id %}"><i class="fa fa-arrow-left"></i> Regresar</a>
+    </span>
+  </h3>
+</div>
+<div class="row">
+  <div class="col-md-6">
+    <form action="{% url 'amortizacion' deuda.id %}" role="form" method="post" id="the-form">
+      <div class="form-group">
+        <input type="text" class="form-control datepicker" id="fecha" name="fecha" placeholder="Fecha de la amortización" autocomplete="off" required>
+      </div>
+      <div class="form-group">
+        <input type="number" class="form-control" id="monto" name="monto" step="any" min="0" placeholder="Adelanto" autocomplete="off" required>
+      </div>
+      <div class="actions">
+        <p class="text-center">
+          <button class="btn btn-success btn-block "><i class="fa fa-floppy-o"></i> Guardar</button>
+          {% csrf_token %}
+        </p>
+      </div>
+    </form>    
+  </div>
+  <div class="col-md-6">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">Datos de la deuda</h3>
+      </div>
+      <ul class="list-group">
+        <li class="list-group-item"><label>Cliente:</label> {{ deuda.registro_padre.cliente }}</li>
+        <li class="list-group-item"><label>Fecha:</label> {{ deuda.registro_padre.fecha }}</li>
+        <li class="list-group-item"><label>Monto Total:</label> {{ deuda.registro_padre.total_venta|floatformat:2 }}</li>
+        <li class="list-group-item"><label>Saldo:</label> {{ saldo|floatformat:2 }}</li>
+      </ul>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script src="/media/js/main.js"></script>
+<script src="/media/js/amortizacion.js"></script>
+{% endblock %}
+
+{% block title %}Registrar Amortización{% endblock %}
