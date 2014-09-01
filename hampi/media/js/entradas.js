@@ -19,7 +19,7 @@ var intimpa = intimpa || {};
   }
 
   var getUnitario = function(data) {
-    return (data.precio_credito / data.unidad_caja).toFixed(2);
+    return (data.precio_costo / data.unidad_caja).toFixed(2);
   }
 
   var acProductOptions = {

@@ -5,13 +5,12 @@ from django.contrib.auth.models import User
 from decimal import *
 
 class Producto(models.Model):
-  codigo = models.IntegerField()
+  codigo = models.CharField(max_length = 255)
   producto = models.CharField(max_length = 255)
   unidad_caja = models.IntegerField()
   precio_caja = models.DecimalField(max_digits = 10, decimal_places = 2, default = Decimal('0.00'))
   precio_unidad = models.DecimalField(max_digits = 10, decimal_places = 2, default = Decimal('0.00'))
-  precio_credito = models.DecimalField(max_digits = 10, decimal_places = 2, default = Decimal('0.00'))
-  precio_contado = models.DecimalField(max_digits = 10, decimal_places = 2, default = Decimal('0.00'))
+  precio_costo = models.DecimalField(max_digits = 10, decimal_places = 2, default = Decimal('0.00'))
   activo = models.BooleanField(default = True)
 
   def __unicode__(self):
