@@ -7,10 +7,15 @@ from decimal import *
 class Producto(models.Model):
   codigo = models.CharField(max_length = 255)
   producto = models.CharField(max_length = 255)
+  marca = models.CharField(max_length = 255)
+  unidad_medida = models.CharField(max_length = 100)
+  procedencia = models.CharField(max_length = 255, blank = True)
   unidad_caja = models.IntegerField()
   precio_caja = models.DecimalField(max_digits = 10, decimal_places = 2, default = Decimal('0.00'))
   precio_unidad = models.DecimalField(max_digits = 10, decimal_places = 2, default = Decimal('0.00'))
   precio_costo = models.DecimalField(max_digits = 10, decimal_places = 2, default = Decimal('0.00'))
+  lote = models.CharField(max_length = 100)
+  vencimiento = models.DateField()
   activo = models.BooleanField(default = True)
 
   def __unicode__(self):
@@ -29,7 +34,7 @@ class Cliente(models.Model):
   )
   segmento = models.ForeignKey(Segmento)
   razon_social = models.CharField(max_length = 255)
-  tipo_documento = models.CharField(max_length = 1, choices = TIPOS, default = 'D')
+  tipo_documento = models.CharField(max_length = 1, choices = TIPOS, default = 'R')
   numero_documento  = models.CharField(max_length = 60)
   direccion = models.CharField(max_length = 255)
   ciudad = models.CharField(max_length = 100)

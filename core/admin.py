@@ -3,9 +3,9 @@ from django.contrib import admin
 from models import Producto, Segmento, Cliente, Proveedor, Gasto, TipoGasto
 
 class ProductoAdmin(admin.ModelAdmin):
-  list_display = ('codigo', 'producto', 'unidad_caja','precio_unidad', 'precio_caja', 'activo',)
-  list_filter = ('activo',)
-  search_fields = ['codigo', 'producto']
+  list_display = ('codigo', 'producto', 'marca', 'procedencia', 'vencimiento', 'lote', 'unidad_caja','precio_unidad', 'precio_caja', 'activo',)
+  list_filter = ('activo', 'marca', 'procedencia', 'vencimiento', 'lote')
+  search_fields = ['codigo', 'producto', 'marca', 'procedencia']
 
 class ClienteAdmin(admin.ModelAdmin):
   list_display = ('razon_social', 'tipo_documento', 'numero_documento', 'ciudad', 'distrito',)

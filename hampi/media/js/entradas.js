@@ -36,8 +36,8 @@ var intimpa = intimpa || {};
           response($.map(data, function (item) {
             return {
               data: item,
-              label: item.codigo + ' - ' + item.producto,
-              value: item.codigo + ' - ' + item.producto
+              label: item.codigo + ' - ' + item.producto + ' ' + item.marca,
+              value: item.codigo + ' - ' + item.producto + ' ' + item.marca
             }
           }));
         }
@@ -116,8 +116,9 @@ var intimpa = intimpa || {};
           return (this.cantidad * this.unitario).toFixed(2);
         },
         total: function() {
-          descuento = (this.subtotal() * this.descuento) / 100;
-          return (this.subtotal() - descuento).toFixed(2);
+          //descuento = (this.subtotal() * this.descuento) / 100;
+          //return (this.subtotal() - descuento).toFixed(2);
+          return (this.subtotal() - this.descuento).toFixed(2);
         }
       };
 

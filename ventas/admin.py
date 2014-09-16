@@ -1,12 +1,15 @@
 from django.contrib import admin
 
-from models import Venta, VentaDetalle, Deuda, Amortizacion
+from models import Venta, VentaDetalle, Deuda, Amortizacion, Cotizacion, CotizacionDetalle
 
 class VentaDetalleInline(admin.TabularInline):
   model = VentaDetalle
 
 class AmortizacionInline(admin.TabularInline):
   model = Amortizacion
+
+class CotizacionDetalleInline(admin.TabularInline):
+  model = CotizacionDetalle
 
 class VentaAdmin(admin.ModelAdmin):
   list_display = ('id', 'fecha', 'documento', 'numero_documento', 'vendedor', 'cliente', 'total_venta',)
@@ -17,5 +20,11 @@ class DeudaAdmin(admin.ModelAdmin):
   list_display = ('registro_padre', 'total', 'estado',)
   inlines = [AmortizacionInline,]
 
+class CotizacionAdmin(admin.ModelAdmin):
+  list_display = ('id', 'fecha', 'referencia', 'quien', 'cliente', 'total_cotizacion',)
+  list_filter = ('quien__first_name', 'fecha', 'cliente',)
+  inlines = [CotizacionDetalleInline,]
+
 admin.site.register(Venta, VentaAdmin)
 admin.site.register(Deuda, DeudaAdmin)
+admin.site.register(Cotizacion, CotizacionAdmin)

@@ -182,7 +182,7 @@ def excel_ventas(request):
     sheet.write('H%s' % row, venta.precio_unitario, money)
     sheet.write('I%s' % row, venta.descuento)
     sheet.write('J%s' % row, venta.cantidad)
-    sheet.write_formula('K%s' % row, '=REDONDEAR(((F%s*H%s)-((F%s*H%s*G%s)/100)),2)' % (row, row, row, row, row))
+    sheet.write_formula('K%s' % row, '{=J%s*H%s-I%s}' % (row, row, row))
     sheet.write('L%s' % row, venta.registro_padre.fecha_documento, fecha)
     sheet.write('M%s' % row, venta.registro_padre.numero_documento)
     sheet.write('N%s' % row, venta.registro_padre.vendedor.username)

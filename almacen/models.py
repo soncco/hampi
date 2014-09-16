@@ -39,7 +39,7 @@ class EntradaDetalle(models.Model):
   producto = models.ForeignKey('core.Producto')
   precio_unitario = models.DecimalField(max_digits = 10, decimal_places = 2, default = Decimal('0.00'))
   cantidad = models.IntegerField()
-  descuento = models.FloatField()
+  descuento = models.DecimalField(max_digits = 10, decimal_places = 2, default = Decimal('0.00'))
 
 class Salida(models.Model):
   DOCUMENTOS = (
@@ -61,4 +61,4 @@ class SalidaDetalle(models.Model):
   producto = models.ForeignKey('core.Producto')
   precio_unitario = models.DecimalField(max_digits = 10, decimal_places = 2, default = Decimal('0.00'))
   cantidad = models.IntegerField()
-  descuento = models.FloatField()
+  descuento = models.DecimalField(max_digits = 10, decimal_places = 2, default = Decimal('0.00'))

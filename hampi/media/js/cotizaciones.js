@@ -5,18 +5,17 @@ var intimpa = intimpa || {};
   $detalles = $('.detalles');
   $tplDetalle = $('#tpl-detalle-row');
   $almacen = $('#almacen');
-  $tipo_venta = $('#tipo_venta');
-  $total_venta = $('#total_venta');
+  $total_cotizacion = $('#total_cotizacion');
 
   removeDetalle = function() {
     $tr = $(this).parent().parent();
     row = $tr.data('row');
     total = $tr.find('.total').text();
     $tr.remove();
-    intimpa.VentaDetallesCollection.remove(row);
-    previo_total = $total_venta.val() * 1;
+    intimpa.CotizacionDetallesCollection.remove(row);
+    previo_total = $total_cotizacion.val() * 1;
     previo_total -= (total*1);
-    $total_venta.val(previo_total.toFixed(2));
+    $total_cotizacion.val(previo_total.toFixed(2));
   }
 
   var acProductOptions = {
@@ -94,29 +93,24 @@ var intimpa = intimpa || {};
   $('#add-detalle').click(function() {
     $producto = $('.autocomplete-productos');
     $cantidad = $('.cantidad');
-    $descuento = $('.descuento');
+    $precio_unitario = $('.precio_unitario');
 
     if($producto.val() !== '' &&
-      $cantidad.val() !== '' &&
-      $descuento.val() !== '') {
+      $cantidad.val() !== '') {
       row = $tplDetalle.html();
       template = Handlebars.compile(row);
 
       var row = new Date().getTime();
-
       data = {
         row: row,
         producto: $producto.val(),
         cantidad: $cantidad.val(),
-        descuento: $descuento.val(),
-        unitario: $('#unitario').val(),
+        unitario: $precio_unitario.val(),
         subtotal: function () {
           return (this.cantidad * this.unitario).toFixed(2);
         },
         total: function() {
-          //descuento = (this.subtotal() * this.descuento) / 100;
-          //return (this.subtotal() - descuento).toFixed(2);
-          return (this.subtotal() - this.descuento).toFixed(2);
+          return this.subtotal()
         }
       };
 
@@ -124,22 +118,21 @@ var intimpa = intimpa || {};
 
       $detalles.find('[data-row=' + row + ']').delegate('.remove-detalle', 'click', removeDetalle);
 
-      intimpa.VentaDetallesCollection.add({
+      intimpa.CotizacionDetallesCollection.add({
         'row': row,
         'producto': $('#producto-id').val(),
         'precio_unitario': data.unitario,
         'cantidad': data.cantidad,
-        'descuento': data.descuento,
         'total': data.total()
       }, {'validate': true});
 
-      previo_total = $total_venta.val() * 1;
+      previo_total = $total_cotizacion.val() * 1;
       previo_total += (data.total()*1);
-      $total_venta.val(previo_total.toFixed(2));
+      $total_cotizacion.val(previo_total.toFixed(2));
 
       $producto.val('');
       $cantidad.val('').focus();
-      $descuento.val(0);
+      $precio_unitario.val(0);
 
     } else {
       intimpa.betterAlert.warning('Completa los campos requeridos del detalle.');
@@ -171,15 +164,15 @@ var intimpa = intimpa || {};
   }
 
   $form.submit(function(e) {
-    if(intimpa.VentaDetallesCollection.length == 0) {
+    if(intimpa.CotizacionDetallesCollection.length == 0) {
       e.preventDefault();
-      intimpa.betterAlert.warning('Tiene que haber al menos un detalle de la venta.');
+      intimpa.betterAlert.warning('Tiene que haber al menos un detalle de la cotización.');
       $cantidad.focus();
       return false;
     }
     var i = 0;
     total = 0;
-    intimpa.VentaDetallesCollection.each(function(item) {
+    intimpa.CotizacionDetallesCollection.each(function(item) {
       objProd = {
         'name': getName(i, 'producto'),
         'value': item.attributes.producto
@@ -192,51 +185,31 @@ var intimpa = intimpa || {};
         'name': getName(i, 'cantidad'),
         'value': item.attributes.cantidad
       };
-      objDesc = {
-        'name': getName(i, 'descuento'),
-        'value': item.attributes.descuento
-      };
       total += parseFloat(item.attributes.total);
 
       tplProducto = Handlebars.compile($tplHidden.html());
       tplUnitario = Handlebars.compile($tplHidden.html());
       tplCantidad = Handlebars.compile($tplHidden.html());
-      tplDescuento = Handlebars.compile($tplHidden.html());
 
       htmlProducto = tplProducto(objProd);
       htmlUnitario = tplUnitario(objUnit);
       htmlCantidad = tplCantidad(objCant);
-      htmlDescuento = tplDescuento(objDesc);
 
       $form.append(htmlProducto);
       $form.append(htmlUnitario);
       $form.append(htmlCantidad);
-      $form.append(htmlDescuento);
       i++;
     });
 
-    $total_venta.val(total.toFixed(2));
+    $total_cotizacion.val(total.toFixed(2));
     $('#id_' + prefix + '-TOTAL_FORMS').val(i);
-    //e.preventDefault();
-    //return false;
   });
 
   $almacen.change(function() {
-    intimpa.VentaDetallesCollection.reset();
+    intimpa.CotizacionDetallesCollection.reset();
     $detalles.html('');
-    $total_venta.val(0.0);
+    $total_cotizacion.val(0.0);
     $('.autocomplete-productos').val('');
-  });
-
-  $tipo_venta.change(function() {
-    val = $(this).val();
-    if(val == 'P') {
-      $('#monto').parent().show().addClass('animated bounceIn');
-      $('#monto').attr('required', 'required');
-    } else {
-      $('#monto').parent().hide().removeClass('animated bounceIn');
-      $('#monto').removeAttr('required');
-    }
   });
 
 })(jQuery)

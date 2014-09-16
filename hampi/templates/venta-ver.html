@@ -78,7 +78,7 @@
           <th>Cantidad</th>
           <th>Unitario</th>
           <th>Subtotal</th>
-          <th>% Descuento</th>
+          <th>Descuento</th>
           <th>Total</th>
         </tr>
       </thead>
@@ -92,11 +92,7 @@
           <td>{{ detalle.cantidad|mul:detalle.precio_unitario }}</td>
           <td>{{ detalle.descuento }}</td>
           {% with subtotal=detalle.cantidad|mul:detalle.precio_unitario %}
-            {% with descmul=subtotal|mul:detalle.descuento %}
-              {% with descuento=descmul|div:100 %}
-              <td class="text-right">{{ subtotal|sub:descuento|floatformat:2 }}</td>
-              {% endwith %}
-            {% endwith %}
+            <td class="text-right">{{ subtotal|sub:detalle.descuento|floatformat:2 }}</td>
           {% endwith %}
         </tr>
         {% endfor %}

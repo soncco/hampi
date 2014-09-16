@@ -31,7 +31,7 @@ class VentaDetalle(models.Model):
   producto = models.ForeignKey('core.Producto')
   precio_unitario = models.DecimalField(max_digits = 10, decimal_places = 2, default = Decimal('0.00'))
   cantidad = models.IntegerField()
-  descuento = models.FloatField()
+  descuento = models.DecimalField(max_digits = 10, decimal_places = 2, default = Decimal('0.00'))
 
 class Deuda(models.Model):
   ESTADOS = (
@@ -48,3 +48,23 @@ class Amortizacion(models.Model):
   monto = models.DecimalField(max_digits = 10, decimal_places = 2, default = Decimal('0.00'))
   saldo = models.DecimalField(max_digits = 10, decimal_places = 2, default = Decimal('0.00'))
   recibido_por = models.ForeignKey(User)
+
+class Cotizacion(models.Model):
+  fecha = models.DateField()
+  referencia = models.CharField(max_length = 255)
+  quien = models.ForeignKey(User)
+  cliente = models.ForeignKey('core.Cliente')
+  plazo = models.IntegerField()
+  validez = models.IntegerField()
+  glosa = models.TextField(blank = True)
+  total_cotizacion = models.DecimalField(max_digits = 10, decimal_places = 2, default = Decimal('0.00'))
+
+  class Meta:
+    verbose_name = ('Cotización')
+    verbose_name_plural = ('Cotizaciones')
+
+class CotizacionDetalle(models.Model):
+  registro_padre = models.ForeignKey(Cotizacion)
+  producto = models.ForeignKey('core.Producto')
+  precio_unitario = models.DecimalField(max_digits = 10, decimal_places = 2, default = Decimal('0.00'))
+  cantidad = models.IntegerField()

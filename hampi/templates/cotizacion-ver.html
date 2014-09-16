@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load mathfilters %}
+{% block content %}
+<div class="page-header">
+  <h3><i class="fa fa-file icon-new"></i> Detalles de la cotización
+    <span class="small pull-right">
+      <a class="btn btn-success btn-sm" href="{% url 'cotizaciones' %}"><i class="fa fa-table"></i> Ver todas las cotizaciones</a>
+      <a class="btn btn-success btn-sm" href="{% url 'cotizacion' %}"><i class="fa fa-book"></i> Registrar una cotización</a>
+      <a class="btn btn-primary btn-sm" href="{% url 'cotizacion_print' cotizacion.id %}"><i class="fa fa-print"></i> Imprimir</a>
+    </span>
+  </h3>
+</div>
+<div class="row">
+  <div class="col-md-4">
+    <div class="page-header mini">
+      <h5 class="green">Información</h5>
+    </div>
+    <div class="form-group">
+      <label>Nro:</label>
+      {{ cotizacion.pk }}
+    </div>
+    <div class="form-group">
+      <label>Fecha:</label>
+      {{ cotizacion.fecha }}
+    </div>
+    <div class="form-group">
+      <label>Referencia:</label>
+      {{ cotizacion.referencia }}
+    </div>
+    <div class="form-group">
+      <label>Cliente:</label>
+      {{ cotizacion.cliente }} ({{ cotizacion.cliente.numero_documento }})
+    </div>
+    <div class="form-group">
+      <label>Plazo:</label>
+      {{ cotizacion.plazo }} días
+    </div>
+    <div class="form-group">
+      <label>Validez:</label>
+      {{ cotizacion.validez }} días
+    </div>
+    <div class="form-group">
+      <label>Glosa:</label>
+      {{ cotizacion.glosa }}
+    </div>
+  </div>
+  <div class="col-md-8 line-left">
+    <div class="page-header mini">
+      <h5>Detalles</h5>
+    </div>
+    <table class="table table-striped table-condensed table-bordered small">
+      <tfoot>
+        <tr>
+          <td colspan="5" class="text-right"><strong>Cotización Total:</strong></td>
+          <td colspan="1" class="text-right warning">
+            {{ cotizacion.total_cotizacion }}
+          </td>
+        </tr>
+      </tfoot>
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Producto</th>
+          <th>Cantidad</th>
+          <th>Unitario</th>
+          <th>Subtotal</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody class="detalles">
+        {% for detalle in cotizacion.cotizaciondetalle_set.all %}
+        <tr>
+          <td>{{ detalle.producto.codigo }}</td>
+          <td>{{ detalle.producto }}</td>
+          <td>{{ detalle.cantidad }}</td>
+          <td>{{ detalle.precio_unitario }}</td>
+          <td>{{ detalle.cantidad|mul:detalle.precio_unitario }}</td>
+          {% with subtotal=detalle.cantidad|mul:detalle.precio_unitario %}
+            <td class="text-right">{{ subtotal|floatformat:2 }}</td>
+          {% endwith %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
+
+{% block js%}
+<script src="/media/js/main.js"></script>
+{% endblock %}
+
+{% block title %}Detalles de la cotización {{ cotizacion.pk }}{% endblock %}
+

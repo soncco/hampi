@@ -34,8 +34,8 @@ var intimpa = intimpa || {};
           response($.map(data, function (item) {
             return {
               data: item,
-              label: '(' + item.unidades + ') ' + item.producto.codigo + ' - ' + item.producto.producto,
-              value: item.producto.codigo + ' - ' + item.producto.producto
+              label: '(' + item.unidades + ') ' + item.producto.codigo + ' - ' + item.producto.producto + ' ' + item.producto.marca,
+              value: item.producto.codigo + ' - ' + item.producto.producto + ' ' + item.marca
             }
           }));
         }
@@ -82,8 +82,9 @@ var intimpa = intimpa || {};
           return (this.cantidad * this.unitario).toFixed(2);
         },
         total: function() {
-          descuento = (this.subtotal() * this.descuento) / 100;
-          return (this.subtotal() - descuento).toFixed(2);
+          //descuento = (this.subtotal() * this.descuento) / 100;
+          //return (this.subtotal() - descuento).toFixed(2);
+          return (this.subtotal() - this.descuento).toFixed(2);
         }
       };
 

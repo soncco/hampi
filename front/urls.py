@@ -38,4 +38,9 @@ urlpatterns = patterns('front.views',
   url(r'^liquidacion/$', 'liquidacion', name = 'liquidacion'),
   url(r'^liquidacion/print/(?P<fecha>.*)/(?P<id>.*)/(?P<user>.*)$', 'liquidacion_print', name = 'liquidacion_print'),
 
+  url(r'^cotizacion/$', 'cotizacion', name = 'cotizacion'),
+  url(r'^cotizacion/ver/(?P<id>.*)$', 'cotizacion_view', name = 'cotizacion_view'),
+  url(r'^cotizaciones/$', 'cotizaciones', name = 'cotizaciones'),
+  url(r'^cotizacion/print/(?P<id>.*)$', 'cotizacion_print', name = 'cotizacion_print'),
+
 )

@@ -18,8 +18,8 @@ from django_xhtml2pdf.utils import generate_pdf
 from decimal import *
 from datetime import date
 
-from ventas.forms import VentaForm, DetalleFormSet
-from ventas.models import Venta, VentaDetalle, Deuda, Amortizacion
+from ventas.forms import VentaForm, DetalleFormSet, CotizacionForm, CotizacionDetalleFormSet
+from ventas.models import Venta, VentaDetalle, Deuda, Amortizacion, Cotizacion, CotizacionDetalle
 from ventas.utils import total_amortizaciones, saldo_deuda
 
 from almacen.forms import EntradaForm, EntradaDetalleFormSet, SalidaForm, SalidaDetalleFormSet
@@ -388,3 +388,44 @@ def the_logout(request):
   logout(request)
 
   return HttpResponseRedirect(reverse('index'))
+
+
+@login_required
+def cotizacion(request):
+  if request.method == 'POST':
+    cotizacion_form = CotizacionForm(request.POST)
+    detalle_form = CotizacionDetalleFormSet(request.POST)
+
+    if cotizacion_form.is_valid() and detalle_form.is_valid():
+      instance = cotizacion_form.save()
+      detalle_form.instance = instance
+      detalle_form.save()
+
+      messages.success(request, 'Se ha guardado la cotización.')
+
+      return HttpResponseRedirect(reverse('cotizaciones'))
+
+  almacenes = Almacen.objects.all()
+  context = {'detalle_form': CotizacionDetalleFormSet, 'almacenes': almacenes}
+  return render_to_response('cotizacion-nuevo.html', context, context_instance = RequestContext(request))
+
+@login_required
+def cotizaciones(request):
+  cotizaciones = Cotizacion.objects.all().order_by('-id')
+  context = {'cotizaciones': cotizaciones}
+  return render_to_response('cotizaciones.html', context, context_instance = RequestContext(request))
+
+@login_required
+def cotizacion_view(request, id):
+  cotizacion = Cotizacion.objects.get(pk = id)
+  context = {'cotizacion': cotizacion}
+  return render_to_response('cotizacion-ver.html', context, context_instance = RequestContext(request))
+
+@login_required
+def cotizacion_print(request, id):
+  cotizacion = Cotizacion.objects.get(id = id)
+
+  resp = HttpResponse(content_type = 'application/pdf')
+  context = {'cotizacion': cotizacion}
+  result = generate_pdf('pdf/cotizacion.html', file_object = resp, context = context)
+  return result
