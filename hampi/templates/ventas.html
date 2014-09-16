@@ -55,7 +55,17 @@
       <td>{{ venta.get_tipo_venta_display }}</td>
       <td class="text-center">
         <a class="btn btn-sm btn-warning" href="{% url 'venta_view' venta.id %}" title="Ver detalles"><i class="fa fa-folder-open"></i></a>
-        <a class="btn btn-sm btn-info" href="{% url 'venta_print' venta.id %}"><i class="fa fa-print"></i></a>
+        <div class="btn-group">
+          <button type="button" class="btn btn-sm btn-info dropdown-toggle" data-toggle="dropdown">
+            <i class="fa fa-print"></i> <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" role="menu">
+            <li><a href="{% url 'venta_guia_print' venta.id %}">Guía de remisión</a></li>
+            <li><a href="{% url 'venta_factura_print' venta.id %}">Factura</a></li>
+            <li class="divider"></li>
+            <li><a href="{% url 'venta_print' venta.id %}">Reporte de venta</a></li>
+          </ul>
+        </div>
       </td>
     </tr>
     {% empty %}

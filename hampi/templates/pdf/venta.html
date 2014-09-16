@@ -24,6 +24,9 @@
         {% endif %}
       </p>
       <p>
+        <strong>Orden de Compra:</strong> {{ venta.orden_compra }} 
+      </p>
+      <p>
         <strong>Documento:</strong> {{ venta.get_documento_display }}
         <strong>Número de documento:</strong> {{ venta.numero_documento }}
         <strong>Fecha del documento:</strong> {{ venta.fecha_documento }}
@@ -42,7 +45,7 @@
             <th class="padding-cell">Cantidad</th>
             <th class="padding-cell">Unitario</th>
             <th class="padding-cell">Subtotal</th>
-            <th class="padding-cell">% Descuento</th>
+            <th class="padding-cell">Descuento</th>
             <th class="padding-cell">Total</th>
           </tr>
         </thead>
@@ -56,11 +59,7 @@
             <td class="text-right padding-cell">{{ detalle.cantidad|mul:detalle.precio_unitario|floatformat:2 }}</td>
             <td class="text-right padding-cell">{{ detalle.descuento }}</td>
             {% with subtotal=detalle.cantidad|mul:detalle.precio_unitario %}
-              {% with descmul=subtotal|mul:detalle.descuento %}
-                {% with descuento=descmul|div:100 %}
-                <td class="text-right padding-cell">{{ subtotal|sub:descuento|floatformat:2 }}</td>
-                {% endwith %}
-              {% endwith %}
+              <td class="text-right padding-cell">{{ subtotal|sub:detalle.descuento|floatformat:2 }}</td>
             {% endwith %}
           </tr>
           {% endfor %}

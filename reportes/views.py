@@ -13,7 +13,7 @@ except ImportError:
 from datetime import date
 import datetime
 
-from ventas.models import Deuda, Venta, VentaDetalle
+from ventas.models import Deuda, Venta, VentaDetalle, Cotizacion, CotizacionDetalle
 from ventas.utils import total_amortizaciones, saldo_deuda
 
 from almacen.models import Entrada, EntradaDetalle, Salida, SalidaDetalle, Stock, Almacen
@@ -676,5 +676,85 @@ def excel_proveedores(request):
   output.seek(0)
   response = HttpResponse(output.read(), content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
   response['Content-Disposition'] = "attachment; filename=proveedores-%s.xlsx" % date.today()
+
+  return response
+
+@login_required
+def excel_cotizaciones(request):
+
+  inicio = request.POST.get('inicio')
+  fin = request.POST.get('fin')
+
+  cotizaciones = CotizacionDetalle.objects.filter(registro_padre__fecha__range = (inicio, fin)).order_by('id')
+
+  output = StringIO.StringIO()
+
+  book = Workbook(output)  
+  sheet = book.add_worksheet(u'Cotizaciones')
+
+  bold = book.add_format({'bold': 1})
+  fecha = book.add_format({'num_format': 'dd/mm/yy'})
+  money = book.add_format({'num_format': '0.00'})
+
+  title = book.add_format({
+    'bold': 1,
+    'align': 'center',
+    'font_color': 'white',
+    'fg_color': '#18bc9c',
+  })
+
+  fecha2 = book.add_format({
+    'bold': 1,
+    'align': 'center',
+    'font_color': 'white',
+    'fg_color': '#2ecc71',
+    'num_format': 'd mmm yyyy'
+  })
+
+  sheet.merge_range('A1:I1', u'Reporte de Cotizaciones', title)
+  sheet.write('J1', u'Fecha Inicio:', bold)
+  sheet.write('K1', datetime.datetime.strptime(inicio, "%Y-%m-%d"), fecha2)
+  sheet.write('L1', u'Fecha Fin:', bold)
+  sheet.write('M1', datetime.datetime.strptime(fin, "%Y-%m-%d"), fecha2)
+
+  sheet.write('A3', u'Número', bold)
+  sheet.write('B3', u'Cliente', bold)
+  sheet.write('C3', u'Segmento', bold)
+  sheet.write('D3', u'Ciudad', bold)
+  sheet.write('E3', u'Código de Producto', bold)
+  sheet.write('F3', u'Producto', bold)
+  sheet.write('G3', u'Marca', bold)
+  sheet.write('H3', u'Precio Unitario', bold)
+  sheet.write('I3', u'Cantidad', bold)
+  sheet.write('J3', u'Valor', bold)
+  sheet.write('K3', u'Fecha', bold)
+  sheet.write('L3', u'Quien', bold)
+  sheet.write('M3', u'Total Cotización', bold)
+
+  row = 4
+  for cotizacion in cotizaciones:
+
+    sheet.write('A%s' % row, cotizacion.registro_padre.pk)
+    sheet.write('B%s' % row, cotizacion.registro_padre.cliente.razon_social)
+    sheet.write('C%s' % row, cotizacion.registro_padre.cliente.segmento.nombre)
+    sheet.write('D%s' % row, cotizacion.registro_padre.cliente.ciudad)
+    sheet.write('E%s' % row, cotizacion.producto.codigo)
+    sheet.write('F%s' % row, cotizacion.producto.producto)
+    sheet.write('G%s' % row, cotizacion.producto.marca)
+    sheet.write('H%s' % row, cotizacion.precio_unitario, money)
+    sheet.write('I%s' % row, cotizacion.cantidad)
+    sheet.write_formula('J%s' % row, '{=H%s*I%s}' % (row, row))
+    sheet.write('K%s' % row, cotizacion.registro_padre.fecha, fecha)
+    sheet.write('L%s' % row, cotizacion.registro_padre.quien.username)
+    sheet.write('M%s' % row, cotizacion.registro_padre.total_cotizacion)
+    row += 1
+
+  sheet.autofilter(('A3:M%s' % row))
+  book.close()
+
+  # construct response
+  output.seek(0)
+  response = HttpResponse(output.read(), content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+  response['Content-Disposition'] = "attachment; filename=cotizaciones-%s.xlsx" % date.today()
 
   return response

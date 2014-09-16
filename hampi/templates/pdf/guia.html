@@ -7,32 +7,37 @@
   <body>
     {% include 'pdf/meta.html' %}
     <div class="main-title">
-      <h2 class="line-up-down line-grey simple-shadow padding">Detalles de la Salida</h2>
+      <h2 class="line-up-down line-grey simple-shadow padding">Guía de remisión</h2>
     </div>
 
     <div class="info">
       <p>
-        <strong>Fecha:</strong> {{ salida.fecha }} 
+        <strong>Fecha:</strong> {{ venta.fecha }} 
       </p>
       <p>
-        <strong>Almacén:</strong> {{ salida.almacen }}
+        <strong>Número de documento:</strong> {{ venta.numero_documento }}
+        <strong>Fecha del documento:</strong> {{ venta.fecha_documento }}
       </p>
       <p>
-        <strong>Documento:</strong> {{ salida.get_documento_display }}
-        <strong>Número de documento:</strong> {{ salida.numero_documento }}
-        <strong>Fecha del documento:</strong> {{ salida.fecha_documento }}
+        <strong>Orden de Compra:</strong> {{ venta.orden_compra }} 
       </p>
       <p>
-        <strong>Quién:</strong> {{ salida.quien }}
+        <strong>Domicilio Partida:</strong> Magisterio
       </p>
-      {% if salida.venta %}
       <p>
-        <strong>Venta relacionada:</strong>
-        Nro {{salida.venta.pk}}
+        <strong>Domicilio Llegada:</strong> {{ venta.cliente.direccion }} {{ venta.cliente.direccion }} {{ venta.cliente.distrito }} {{ venta.cliente.ciudad }}
       </p>
-      {% endif %}
+      <p>
+        <strong>Destinatario:</strong> {{ venta.cliente }}
+      </p>
       <p class="line-down">
-        <strong>Notas:</strong> {{ salida.notas }}
+        <strong>RUC:</strong> {{ venta.cliente.numero_documento }}
+      </p>
+      <p>
+        <strong>Marca:</strong> {{ venta.placa }}
+      </p>
+      <p class="line-down">
+        <strong>Licencia:</strong> {{ venta.licencia }}
       </p>
     </div>
 
@@ -50,7 +55,7 @@
           </tr>
         </thead>
         <tbody class="detalles">
-          {% for detalle in salida.salidadetalle_set.all %}
+          {% for detalle in venta.ventadetalle_set.all %}
           <tr>
             <td class="padding-cell">{{ detalle.producto.codigo }}</td>
             <td class="padding-cell">{{ detalle.producto }}</td>
@@ -64,6 +69,14 @@
           </tr>
           {% endfor %}
         </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="6" class="text-right padding-cell"><strong>Venta Total:</strong></td>
+            <td colspan="1" class="text-right padding-cell">
+              {{ venta.total_venta|floatformat:2 }}
+            </td>
+          </tr>
+        </tfoot>
       </table>
     </div>
   </body>

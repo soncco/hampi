@@ -96,6 +96,33 @@ def venta_print(request, id):
   return result
 
 @login_required
+def venta_guia_print(request, id):
+  venta = Venta.objects.get(id = id)
+
+  resp = HttpResponse(content_type = 'application/pdf')
+  context = {'venta': venta}
+  result = generate_pdf('pdf/guia.html', file_object = resp, context = context)
+  return result
+
+@login_required
+def venta_factura_print(request, id):
+  venta = Venta.objects.get(id = id)
+
+  resp = HttpResponse(content_type = 'application/pdf')
+  context = {'venta': venta}
+  if venta.tipo_venta == 'P':
+    amortizaciones = Amortizacion.objects.filter(deuda = venta.deuda.pk)
+    context['amortizaciones'] = amortizaciones
+
+  impuesto = (venta.total_venta * 18) / 100
+  subtotal = venta.total_venta - impuesto
+  context['impuesto'] = impuesto
+  context['subtotal'] = subtotal
+
+  result = generate_pdf('pdf/factura.html', file_object = resp, context = context)
+  return result
+
+@login_required
 def deudas(request):
   deudas = Deuda.objects.all().order_by('-id')
   for deuda in deudas:

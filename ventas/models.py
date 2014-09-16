@@ -22,6 +22,10 @@ class Venta(models.Model):
   cliente = models.ForeignKey('core.Cliente')
   total_venta = models.DecimalField(max_digits = 10, decimal_places = 2, default = Decimal('0.00'))
   tipo_venta = models.CharField(max_length = 1, choices = TIPOS, default = 'C')
+  numero_guia = models.CharField(max_length = 100, blank = True)
+  orden_compra = models.CharField(max_length = 100, blank = True)
+  placa = models.CharField(max_length = 100)
+  licencia = models.CharField(max_length = 100)
 
   def __unicode__(self):
     return "Venta %s" % self.pk

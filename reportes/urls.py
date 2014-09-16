@@ -13,4 +13,6 @@ urlpatterns = patterns('reportes.views',
   url(r'^excel/inventario/$', 'excel_inventario', name = 'excel_inventario'),
   url(r'^excel/clientes/$', 'excel_clientes', name = 'excel_clientes'),
   url(r'^excel/proveedores/$', 'excel_proveedores', name = 'excel_proveedores'),
+
+  url(r'^excel/cotizaciones/$', 'excel_cotizaciones', name = 'excel_cotizaciones'),
 )

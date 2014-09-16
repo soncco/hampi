@@ -44,7 +44,7 @@
             <th class="padding-cell">Cantidad</th>
             <th class="padding-cell">Unitario</th>
             <th class="padding-cell">Subtotal</th>
-            <th class="padding-cell">% Descuento</th>
+            <th class="padding-cell">Descuento</th>
             <th class="padding-cell">Total</th>
           </tr>
         </thead>
@@ -58,11 +58,7 @@
             <td class="text-right padding-cell">{{ detalle.cantidad|mul:detalle.precio_unitario|floatformat:2 }}</td>
             <td class="text-right padding-cell">{{ detalle.descuento }}</td>
             {% with subtotal=detalle.cantidad|mul:detalle.precio_unitario %}
-              {% with descmul=subtotal|mul:detalle.descuento %}
-                {% with descuento=descmul|div:100 %}
-                <td class="text-right padding-cell">{{ subtotal|sub:descuento|floatformat:2 }}</td>
-                {% endwith %}
-              {% endwith %}
+              <td class="text-right padding-cell">{{ subtotal|sub:detalle.descuento|floatformat:2 }}</td>
             {% endwith %}
           </tr>
           {% endfor %}

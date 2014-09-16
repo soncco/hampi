@@ -10,6 +10,8 @@ urlpatterns = patterns('front.views',
   url(r'^venta/ver/(?P<id>.*)$', 'venta_view', name = 'venta_view'),
   url(r'^ventas/$', 'ventas', name = 'ventas'),
   url(r'^venta/print/(?P<id>.*)$', 'venta_print', name = 'venta_print'),
+  url(r'^venta/guia/print/(?P<id>.*)$', 'venta_guia_print', name = 'venta_guia_print'),
+  url(r'^venta/factura/print/(?P<id>.*)$', 'venta_factura_print', name = 'venta_factura_print'),
 
   url(r'^amortizacion/(?P<id>.*)$', 'amortizacion', name = 'amortizacion'),
 
