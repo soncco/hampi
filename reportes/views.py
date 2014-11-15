@@ -156,18 +156,20 @@ def excel_ventas(request):
   sheet.write('E3', u'Distrito', bold)
   sheet.write('F3', u'Código de Producto', bold)
   sheet.write('G3', u'Producto', bold)
-  sheet.write('H3', u'Precio Unitario', bold)
-  sheet.write('I3', u'Descuento', bold)
-  sheet.write('J3', u'Cantidad', bold)
-  sheet.write('K3', u'Valor', bold)
-  sheet.write('L3', u'Fecha de Venta', bold)
-  sheet.write('M3', u'Número de Documento', bold)
-  sheet.write('N3', u'Vendedor', bold)
-  sheet.write('O3', u'Total Venta', bold)
-  sheet.write('P3', u'Total Amortización', bold)
-  sheet.write('Q3', u'Saldo', bold)
-  sheet.write('R3', u'Tipo', bold)
-  sheet.write('S3', u'Almacén', bold)
+  sheet.write('H3', u'Lote', bold)
+  sheet.write('I3', u'Vencimiento', bold)
+  sheet.write('J3', u'Precio Unitario', bold)
+  sheet.write('K3', u'Descuento', bold)
+  sheet.write('L3', u'Cantidad', bold)
+  sheet.write('M3', u'Valor', bold)
+  sheet.write('N3', u'Fecha de Venta', bold)
+  sheet.write('O3', u'Número de Documento', bold)
+  sheet.write('P3', u'Vendedor', bold)
+  sheet.write('Q3', u'Total Venta', bold)
+  sheet.write('R3', u'Total Amortización', bold)
+  sheet.write('S3', u'Saldo', bold)
+  sheet.write('T3', u'Tipo', bold)
+  sheet.write('U3', u'Almacén', bold)
 
   row = 4
   for venta in ventas:
@@ -177,32 +179,34 @@ def excel_ventas(request):
     sheet.write('C%s' % row, venta.registro_padre.cliente.segmento.nombre)
     sheet.write('D%s' % row, venta.registro_padre.cliente.ciudad)
     sheet.write('E%s' % row, venta.registro_padre.cliente.distrito)
-    sheet.write('F%s' % row, venta.producto.codigo)
-    sheet.write('G%s' % row, venta.producto.producto)
-    sheet.write('H%s' % row, venta.precio_unitario, money)
-    sheet.write('I%s' % row, venta.descuento)
-    sheet.write('J%s' % row, venta.cantidad)
-    sheet.write_formula('K%s' % row, '{=J%s*H%s-I%s}' % (row, row, row))
-    sheet.write('L%s' % row, venta.registro_padre.fecha_documento, fecha)
-    sheet.write('M%s' % row, venta.registro_padre.numero_documento)
-    sheet.write('N%s' % row, venta.registro_padre.vendedor.username)
-    sheet.write('O%s' % row, venta.registro_padre.total_venta)
+    sheet.write('F%s' % row, venta.lote.producto.codigo)
+    sheet.write('G%s' % row, venta.lote.producto.producto)
+    sheet.write('H%s' % row, venta.lote.numero)
+    sheet.write('I%s' % row, venta.lote.vencimiento, fecha)
+    sheet.write('J%s' % row, venta.precio_unitario, money)
+    sheet.write('K%s' % row, venta.descuento)
+    sheet.write('L%s' % row, venta.cantidad)
+    sheet.write_formula('M%s' % row, '{=L%s*J%s-K%s}' % (row, row, row))
+    sheet.write('N%s' % row, venta.registro_padre.fecha_documento, fecha)
+    sheet.write('O%s' % row, venta.registro_padre.numero_documento)
+    sheet.write('P%s' % row, venta.registro_padre.vendedor.username)
+    sheet.write('Q%s' % row, venta.registro_padre.total_venta)
     try:
-      sheet.write('P%s' % row, total_amortizaciones(venta.registro_padre.deuda))
+      sheet.write('R%s' % row, total_amortizaciones(venta.registro_padre.deuda))
     except:
-      sheet.write('P%s' % row, 'Contado')
+      sheet.write('R%s' % row, 'Contado')
 
     try:
-      sheet.write('Q%s' % row, saldo_deuda(venta.registro_padre.deuda))
+      sheet.write('S%s' % row, saldo_deuda(venta.registro_padre.deuda))
       sheet.write_formula('Q%s' % row, '{=O%s-P%s}' % (row, row), money)
     except:
-      sheet.write('Q%s' % row, 'Sin saldo')
+      sheet.write('S%s' % row, 'Sin saldo')
 
-    sheet.write('R%s' % row, venta.registro_padre.get_tipo_venta_display())
-    sheet.write('S%s' % row, venta.registro_padre.almacen.nombre)
+    sheet.write('T%s' % row, venta.registro_padre.get_tipo_venta_display())
+    sheet.write('U%s' % row, venta.registro_padre.almacen.nombre)
     row += 1
 
-  sheet.autofilter(('A3:S%s' % row))
+  sheet.autofilter(('A3:U%s' % row))
   book.close()
 
   # construct response
@@ -257,7 +261,7 @@ def excel_ranking(request):
 
   row = 4
   for producto in productos:
-    p = ventas.filter(producto = producto)
+    p = ventas.filter(lote__producto = producto)
     suma = p.aggregate(Sum('cantidad'))
     if suma['cantidad__sum'] != None:
       sheet.write('A%s' % row, producto.producto)
@@ -339,6 +343,8 @@ def excel_entradas(request):
   sheet.write('H3', u'Código', bold)
   sheet.write('I3', u'Producto', bold)
   sheet.write('J3', u'Cantidad', bold)
+  sheet.write('K3', u'Lote', bold)
+  sheet.write('L3', u'Vencimiento', bold)
 
   row = 4
   for entrada in entradas:
@@ -353,13 +359,15 @@ def excel_entradas(request):
     except:
       sheet.write('F%s' % row, 'Sin Proveedor')
     sheet.write('G%s' % row, entrada.entrada_padre.quien.username)
-    sheet.write('H%s' % row, entrada.producto.codigo)
-    sheet.write('I%s' % row, entrada.producto.producto)
+    sheet.write('H%s' % row, entrada.lote.producto.codigo)
+    sheet.write('I%s' % row, entrada.lote.producto.producto)
     sheet.write('J%s' % row, entrada.cantidad)
+    sheet.write('K%s' % row, entrada.lote.numero)
+    sheet.write('L%s' % row, entrada.lote.vencimiento, fecha)
 
     row += 1
 
-  sheet.autofilter(('A3:J%s' % row))
+  sheet.autofilter(('A3:L%s' % row))
   book.close()
 
   # construct response
@@ -417,6 +425,8 @@ def excel_salidas(request):
   sheet.write('H3', u'Código', bold)
   sheet.write('I3', u'Producto', bold)
   sheet.write('J3', u'Cantidad', bold)
+  sheet.write('K3', u'Lote', bold)
+  sheet.write('L3', u'Vencimiento', bold)
 
   row = 4
   for salida in salidas:
@@ -428,13 +438,15 @@ def excel_salidas(request):
     sheet.write('E%s' % row, salida.salida_padre.almacen.nombre)
     sheet.write('F%s' % row, salida.salida_padre.venta.pk if salida.salida_padre.venta != None else 'Sin venta')
     sheet.write('G%s' % row, salida.salida_padre.quien.username)
-    sheet.write('H%s' % row, salida.producto.codigo)
-    sheet.write('I%s' % row, salida.producto.producto)
+    sheet.write('H%s' % row, salida.lote.producto.codigo)
+    sheet.write('I%s' % row, salida.lote.producto.producto)
     sheet.write('J%s' % row, salida.cantidad)
+    sheet.write('K%s' % row, salida.lote.numero)
+    sheet.write('L%s' % row, salida.lote.vencimiento, fecha)
 
     row += 1
 
-  sheet.autofilter(('A3:J%s' % row))
+  sheet.autofilter(('A3:L%s' % row))
   book.close()
 
   # construct response
@@ -544,28 +556,32 @@ def excel_inventario(request):
 
   sheet.write('A3', u'Código', bold)
   sheet.write('B3', u'Producto', bold)
-  sheet.write('C3', u'Cantidad', bold)
-  sheet.write('D3', u'Unitario', bold)
-  sheet.write('E3', u'Precio Crédito', bold)
-  sheet.write('F3', u'Total Venta', bold)
-  sheet.write('G3', u'Total Real', bold)
-  sheet.write('H3', u'Almacén', bold)
+  sheet.write('C3', u'Lote', bold)
+  sheet.write('D3', u'Vencimiento', bold)
+  sheet.write('E3', u'Cantidad', bold)
+  sheet.write('F3', u'Unitario', bold)
+  sheet.write('G3', u'Precio Crédito', bold)
+  sheet.write('H3', u'Total Venta', bold)
+  sheet.write('I3', u'Total Real', bold)
+  sheet.write('J3', u'Almacén', bold)
 
   row = 4
   for st in stock:
 
-    sheet.write('A%s' % row, st.producto.codigo)
-    sheet.write('B%s' % row, st.producto.producto)
-    sheet.write('C%s' % row, st.unidades)
-    sheet.write('D%s' % row, st.producto.precio_unidad, money)
-    sheet.write('E%s' % row, (st.producto.precio_credito / st.producto.unidad_caja), money)
-    sheet.write_formula('F%s' % row, '{=C%s*D%s}' % (row, row))
-    sheet.write_formula('G%s' % row, '{=C%s*E%s}' % (row, row))
-    sheet.write('H%s' % row, st.en_almacen.nombre)
+    sheet.write('A%s' % row, st.lote.producto.codigo)
+    sheet.write('B%s' % row, st.lote.producto.producto)
+    sheet.write('C%s' % row, st.lote.numero)
+    sheet.write('D%s' % row, st.lote.fecha)
+    sheet.write('E%s' % row, st.unidades)
+    sheet.write('F%s' % row, st.producto.precio_unidad, money)
+    sheet.write('G%s' % row, (st.producto.precio_credito / st.producto.unidad_caja), money)
+    sheet.write_formula('H%s' % row, '{=E%s*F%s}' % (row, row))
+    sheet.write_formula('I%s' % row, '{=E%s*G%s}' % (row, row))
+    sheet.write('J%s' % row, st.en_almacen.nombre)
 
     row += 1
 
-  sheet.autofilter(('A3:H%s' % row))
+  sheet.autofilter(('A3:J%s' % row))
   book.close()
 
   # construct response
