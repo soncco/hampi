@@ -58,10 +58,10 @@
       <input type="text" class="form-control" name="numero_guia" id="numero_guia" placeholder="Número de Guía" required>
     </div>
     <div class="form-group">
-      <input type="text" class="form-control" name="placa" id="placa" placeholder="Vehículo Placa" required>
+      <input type="text" class="form-control" name="placa" id="placa" placeholder="Vehículo Placa">
     </div>
     <div class="form-group">
-      <input type="text" class="form-control" name="licencia" id="licencia" placeholder="Licencia de Conducir" required>
+      <input type="text" class="form-control" name="licencia" id="licencia" placeholder="Licencia de Conducir">
     </div>
   </div>
   <div class="col-md-8 line-left">
@@ -103,7 +103,7 @@
     <table class="table table-striped table-condensed table-bordered small">
       <tfoot>
         <tr>
-          <td colspan="5" class="text-right">Venta Total:</td>
+          <td colspan="7" class="text-right">Venta Total:</td>
           <td colspan="2" class="text-right">
             <input type="number" class="form-control input-sm" id="total_venta" name="total_venta" readonly value="0.0">
           </td>
@@ -111,6 +111,8 @@
       </tfoot>
       <thead>
         <tr>
+          <th>Lote</th>
+          <th>Vencimiento</th>
           <th>Producto</th>
           <th>Cantidad</th>
           <th>Unitario</th>
@@ -140,6 +142,8 @@
 </form>
 <input type="hidden" id="producto-id" name="producto-id">
 <input type="hidden" id="unitario" name="unitario">
+<input type="hidden" id="vencimiento" name="vencimiento">
+<input type="hidden" id="numero" name="numero">
 {% endblock %}
 
 {% block js %}
@@ -160,6 +164,8 @@
 {% block templates %}
 <script type="text/x-handlebars-template" id="tpl-detalle-row">
   <tr class="animated bounceInDown" data-row="{% templatetag openvariable %}row{% templatetag closevariable %}">
+    <td>{% templatetag openvariable %}numero{% templatetag closevariable %}</td>
+    <td>{% templatetag openvariable %}vencimiento{% templatetag closevariable %}</td>
     <td>{% templatetag openvariable %}producto{% templatetag closevariable %}</td>
     <td class="text-right">{% templatetag openvariable %}cantidad{% templatetag closevariable %}</td>
     <td class="text-right">{% templatetag openvariable %}unitario{% templatetag closevariable %}</td>

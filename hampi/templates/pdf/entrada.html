@@ -41,6 +41,8 @@
           <tr>
             <th class="padding-cell">Codigo</th>
             <th class="wide-percent padding-cell">Producto</th>
+            <th class="padding-cell">Lote Nro</th>
+            <th class="padding-cell">Vencimiento</th>
             <th class="padding-cell">Cantidad</th>
             <th class="padding-cell">Unitario</th>
             <th class="padding-cell">Subtotal</th>
@@ -51,8 +53,10 @@
         <tbody class="detalles">
           {% for detalle in entrada.entradadetalle_set.all %}
           <tr>
-            <td class="padding-cell">{{ detalle.producto.codigo }}</td>
-            <td class="padding-cell">{{ detalle.producto }}</td>
+            <td class="padding-cell">{{ detalle.lote.producto.codigo }}</td>
+            <td class="padding-cell">{{ detalle.lote.producto }}</td>
+            <td class="padding-cell">{{ detalle.lote.numero }}</td>
+            <td class="padding-cell">{{ detalle.lote.vencimiento }}</td>
             <td class="text-right padding-cell">{{ detalle.cantidad }}</td>
             <td class="text-right padding-cell">{{ detalle.precio_unitario }}</td>
             <td class="text-right padding-cell">{{ detalle.cantidad|mul:detalle.precio_unitario|floatformat:2 }}</td>

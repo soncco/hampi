@@ -22,6 +22,8 @@
           <tr>
             <th class="padding-cell">Código</th>
             <th class="wide-percent padding-cell">Producto</th>
+            <th class="padding-cell">Lote Nro</th>
+            <th class="padding-cell">Vencimiento</th>
             <th class="padding-cell">Cantidad</th>
             <th class="padding-cell">Unitario</th>
             <th class="padding-cell">Total</th>
@@ -30,11 +32,13 @@
         <tbody class="detalles">
           {% for detalle in stock %}
           <tr>
-            <td class="padding-cell">{{ detalle.producto.codigo }}</td>
-            <td class="padding-cell">{{ detalle.producto }}</td>
+            <td class="padding-cell">{{ detalle.lote.producto.codigo }}</td>
+            <td class="padding-cell">{{ detalle.lote.producto }}</td>
+            <td class="padding-cell">{{ detalle.lote.numero }}</td>
+            <td class="padding-cell">{{ detalle.lote.vencimiento }}</td>
             <td class="text-right padding-cell">{{ detalle.unidades }}</td>
-            <td class="text-right padding-cell">{{ detalle.producto.precio_unidad|floatformat:2 }}</td>
-            <td class="text-right padding-cell">{{ detalle.unidades|mul:detalle.producto.precio_unidad|floatformat:2 }}</td>
+            <td class="text-right padding-cell">{{ detalle.lote.producto.precio_unidad|floatformat:2 }}</td>
+            <td class="text-right padding-cell">{{ detalle.unidades|mul:detalle.lote.producto.precio_unidad|floatformat:2 }}</td>
           </tr>
           {% endfor %}
         </tbody>

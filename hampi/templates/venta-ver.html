@@ -65,9 +65,9 @@
     <table class="table table-striped table-condensed table-bordered small">
       <tfoot>
         <tr>
-          <td colspan="6" class="text-right"><strong>Venta Total:</strong></td>
+          <td colspan="8" class="text-right"><strong>Venta Total:</strong></td>
           <td colspan="1" class="text-right warning">
-            {{ venta.total_venta }}
+            {{ venta.total_venta|floatformat:2 }}
           </td>
         </tr>
       </tfoot>
@@ -75,6 +75,8 @@
         <tr>
           <th>Código</th>
           <th>Producto</th>
+          <th>Lote Nro</th>
+          <th>Vencimiento</th>
           <th>Cantidad</th>
           <th>Unitario</th>
           <th>Subtotal</th>
@@ -85,8 +87,10 @@
       <tbody class="detalles">
         {% for detalle in venta.ventadetalle_set.all %}
         <tr>
-          <td>{{ detalle.producto.codigo }}</td>
-          <td>{{ detalle.producto }}</td>
+          <td>{{ detalle.lote.producto.codigo }}</td>
+          <td>{{ detalle.lote.producto }}</td>
+          <td>{{ detalle.lote.numero }}</td>
+          <td>{{ detalle.lote.vencimiento }}</td>
           <td>{{ detalle.cantidad }}</td>
           <td>{{ detalle.precio_unitario }}</td>
           <td>{{ detalle.cantidad|mul:detalle.precio_unitario }}</td>

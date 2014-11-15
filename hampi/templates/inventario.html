@@ -26,6 +26,8 @@
     <tr>
       <th>Código</th>
       <th>Producto</th>
+      <th>Lote</th>
+      <th>Vencimiento</th>
       <th class="filter-select filter-exact" data-placeholder="Almacén">Almacén</th>
       <th>Unidades</th>
     </tr>
@@ -33,20 +35,22 @@
   <tbody>
     {% for producto in stock %}
     <tr>
-      <td>{{ producto.producto.codigo }}</td>
-      <td>{{ producto.producto }}</td>
+      <td>{{ producto.lote.producto.codigo }}</td>
+      <td>{{ producto.lote.producto }}</td>
+      <td>{{ producto.lote.numero }}</td>
+      <td>{{ producto.lote.vencimiento }}</td>
       <td>{{ producto.en_almacen }}</td>
       <td>{{ producto.unidades }}</td>
     </tr>
     {% empty %}
     <tr>
-      <td colspan="4" class="text-center">No hay ningún producto en los almacenes.</td>
+      <td colspan="6" class="text-center">No hay ningún producto en los almacenes.</td>
     </tr>
     {% endfor %}
   </tbody>
   <tfoot>
     <tr>
-      <th colspan="4" class="ts-pager form-horizontal">
+      <th colspan="6" class="ts-pager form-horizontal">
         <button type="button" class="btn first"><i class="icon-step-backward glyphicon glyphicon-step-backward"></i></button>
         <button type="button" class="btn prev"><i class="icon-arrow-left glyphicon glyphicon-backward"></i></button>
         <span class="pagedisplay"></span> <!-- this can be any element, including an input -->

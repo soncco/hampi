@@ -19,14 +19,14 @@ var intimpa = intimpa || {};
   }
 
   var getUnitario = function(data) {
-    return (data.precio_costo / data.unidad_caja).toFixed(2);
+    return (data.producto.precio_costo / data.producto.unidad_caja).toFixed(2);
   }
 
   var acProductOptions = {
     minLength: 1,
     source: function(request, response) {
       $.ajax({
-        url: '/api/productos-filter/',
+        url: '/api/lotes-filter/',
         dataType: 'json',
         data: {
           term: request.term
@@ -36,8 +36,14 @@ var intimpa = intimpa || {};
           response($.map(data, function (item) {
             return {
               data: item,
-              label: item.codigo + ' - ' + item.producto + ' ' + item.marca,
-              value: item.codigo + ' - ' + item.producto + ' ' + item.marca
+              label: item.numero + ' - '
+                + item.producto.codigo + ' - '
+                + item.producto.producto + ' '
+                + item.producto.marca,
+              value: item.numero + ' - '
+                + item.producto.codigo + ' - '
+                + item.producto.producto + ' '
+                + item.producto.marca
             }
           }));
         }
@@ -45,6 +51,7 @@ var intimpa = intimpa || {};
     },
     response: function(e, ui) {
       if(ui.content.length === 0) {
+        //$('.alert-product').show();
         var parent = $(e.target).parent();
         parent.find('.autocomplete-productos').val('');
       }
@@ -52,9 +59,12 @@ var intimpa = intimpa || {};
     select: function(e, ui) {
       $('#producto-id').val(ui.item.data.id);
       $('#unitario').val(getUnitario(ui.item.data));
+      $('#vencimiento').val(ui.item.data.vencimiento);
+      $('#numero').val(ui.item.data.numero);
     },
     change: function(e,ui) {
       if(!ui.item) {
+        //$('.alert-product').show();
         var parent = $(e.target).parent();
         parent.find('.autocomplete-productos').val('');
       }
@@ -97,6 +107,8 @@ var intimpa = intimpa || {};
     $producto = $('.autocomplete-productos');
     $cantidad = $('.cantidad');
     $descuento = $('.descuento');
+    $vencimiento = $('#vencimiento');
+    $numero = $('#numero');
 
     if($producto.val() !== '' &&
       $cantidad.val() !== '' &&
@@ -108,6 +120,8 @@ var intimpa = intimpa || {};
 
       data = {
         row: row,
+        vencimiento: $vencimiento.val(),
+        numero: $numero.val(),
         producto: $producto.val(),
         cantidad: $cantidad.val(),
         descuento: $descuento.val(),
@@ -122,13 +136,15 @@ var intimpa = intimpa || {};
         }
       };
 
+      debugger;
+
       $detalles.append(template(data));
 
       $detalles.find('[data-row=' + row + ']').delegate('.remove-detalle', 'click', removeDetalle);
 
       intimpa.VentaDetallesCollection.add({
         'row': row,
-        'producto': $('#producto-id').val(),
+        'lote': $('#producto-id').val(),
         'precio_unitario': data.unitario,
         'cantidad': data.cantidad,
         'descuento': data.descuento,
@@ -183,8 +199,8 @@ var intimpa = intimpa || {};
     total = 0;
     intimpa.VentaDetallesCollection.each(function(item) {
       objProd = {
-        'name': getName(i, 'producto'),
-        'value': item.attributes.producto
+        'name': getName(i, 'lote'),
+        'value': item.attributes.lote
       };
       objUnit = {
         'name': getName(i, 'precio_unitario'),
@@ -233,5 +249,7 @@ var intimpa = intimpa || {};
       $('#proveedor').removeAttr('required');
     }
   });
+
+  $('.alert-product').hide();
 
 })(jQuery)

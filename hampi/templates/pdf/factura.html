@@ -43,8 +43,8 @@
         <tbody class="detalles">
           {% for detalle in venta.ventadetalle_set.all %}
           <tr>
-            <td class="padding-cell">{{ detalle.producto.codigo }}</td>
-            <td class="padding-cell">{{ detalle.producto }}</td>
+            <td class="padding-cell">{{ detalle.lote.producto.codigo }}</td>
+            <td class="padding-cell">{{ detalle.lote.producto }} Lote: {{ detalle.lote.numero }}, Vencimiento: {{ detalle.lote.vencimiento }}</td>
             <td class="text-right padding-cell">{{ detalle.cantidad }}</td>
             <td class="text-right padding-cell">{{ detalle.precio_unitario }}</td>
             <td class="text-right padding-cell">{{ detalle.cantidad|mul:detalle.precio_unitario|floatformat:2 }}</td>

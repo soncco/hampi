@@ -14,12 +14,18 @@ class Producto(models.Model):
   precio_caja = models.DecimalField(max_digits = 10, decimal_places = 2, default = Decimal('0.00'))
   precio_unidad = models.DecimalField(max_digits = 10, decimal_places = 2, default = Decimal('0.00'))
   precio_costo = models.DecimalField(max_digits = 10, decimal_places = 2, default = Decimal('0.00'))
-  lote = models.CharField(max_length = 100)
-  vencimiento = models.DateField()
   activo = models.BooleanField(default = True)
 
   def __unicode__(self):
     return self.producto
+
+class Lote(models.Model):
+  numero = models.CharField(max_length = 255)
+  vencimiento = models.DateField()
+  producto = models.ForeignKey(Producto)
+
+  #def __unicode__(self):
+  #  return '%s - Lote: %s %s' (self.producto, self.numero, self.vencimiento)
 
 class Segmento(models.Model):
   nombre = models.CharField(max_length = 100)
@@ -36,9 +42,9 @@ class Cliente(models.Model):
   razon_social = models.CharField(max_length = 255)
   tipo_documento = models.CharField(max_length = 1, choices = TIPOS, default = 'R')
   numero_documento  = models.CharField(max_length = 60)
-  direccion = models.CharField(max_length = 255)
-  ciudad = models.CharField(max_length = 100)
-  distrito = models.CharField(max_length = 100)
+  direccion = models.CharField(max_length = 255, blank = True)
+  ciudad = models.CharField(max_length = 100, blank = True)
+  distrito = models.CharField(max_length = 100, blank = True)
   telefono = models.CharField(max_length = 50, blank = True)
 
   def __unicode__(self):
@@ -47,9 +53,9 @@ class Cliente(models.Model):
 class Proveedor(models.Model):
   razon_social = models.CharField(max_length = 255)
   ruc = models.CharField(max_length = 11)
-  direccion = models.CharField(max_length = 100)
-  ciudad = models.CharField(max_length = 100)
-  distrito = models.CharField(max_length = 100)
+  direccion = models.CharField(max_length = 100, blank = True)
+  ciudad = models.CharField(max_length = 100, blank = True)
+  distrito = models.CharField(max_length = 100, blank = True)
   telefono = models.CharField(max_length = 50, blank = True)
 
   class Meta:

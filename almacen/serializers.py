@@ -1,6 +1,6 @@
 from models import Almacen, Stock
 from rest_framework import serializers
-from core.serializers import ProductoAlmacenSerializer
+from core.serializers import LoteAlmacenSerializer
 
 class AlmacenSerializer(serializers.HyperlinkedModelSerializer):
   class Meta:
@@ -8,7 +8,7 @@ class AlmacenSerializer(serializers.HyperlinkedModelSerializer):
     fields = ('url', 'id', 'nombre',)
 
 class StockSerializer(serializers.HyperlinkedModelSerializer):
-  producto =  ProductoAlmacenSerializer()
+  lote =  LoteAlmacenSerializer()
   class Meta:
     model = Stock
-    fields = ('producto', 'unidades',)
+    fields = ('lote', 'unidades',)

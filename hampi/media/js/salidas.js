@@ -34,8 +34,15 @@ var intimpa = intimpa || {};
           response($.map(data, function (item) {
             return {
               data: item,
-              label: '(' + item.unidades + ') ' + item.producto.codigo + ' - ' + item.producto.producto + ' ' + item.producto.marca,
-              value: item.producto.codigo + ' - ' + item.producto.producto + ' ' + item.marca
+              label: '(' + item.unidades + ') ' 
+                + item.lote.numero + ' - ' 
+                + item.lote.producto.codigo + ' - ' 
+                + item.lote.producto.producto + ' ' 
+                + item.lote.producto.marca,
+              value: item.lote.producto.codigo + ' - ' 
+                + item.lote.numero + ' ' 
+                + item.lote.producto.producto + ' ' 
+                + item.lote.producto.marca
             }
           }));
         }
@@ -48,8 +55,10 @@ var intimpa = intimpa || {};
       }
     },
     select: function(e, ui) {
-      $('#producto-id').val(ui.item.data.producto.id);
-      $('#unitario').val(ui.item.data.producto.precio_unidad);
+      $('#producto-id').val(ui.item.data.lote.id);
+      $('#unitario').val(ui.item.data.lote.producto.precio_unidad);
+      $('#numero').val(ui.item.data.lote.numero);
+      $('#vencimiento').val(ui.item.data.lote.vencimiento);
     },
     change: function(e,ui) {
       if(!ui.item) {
@@ -63,6 +72,8 @@ var intimpa = intimpa || {};
     $producto = $('.autocomplete-productos');
     $cantidad = $('.cantidad');
     $descuento = $('.descuento');
+    $numero = $('#numero');
+    $vencimiento = $('#vencimiento');
 
     if($producto.val() !== '' &&
       $cantidad.val() !== '' &&
@@ -75,6 +86,8 @@ var intimpa = intimpa || {};
       data = {
         row: row,
         producto: $producto.val(),
+        numero: $numero.val(),
+        vencimiento: $vencimiento.val(),
         cantidad: $cantidad.val(),
         descuento: $descuento.val(),
         unitario: $('#unitario').val(),
@@ -94,7 +107,7 @@ var intimpa = intimpa || {};
 
       intimpa.VentaDetallesCollection.add({
         'row': row,
-        'producto': $('#producto-id').val(),
+        'lote': $('#producto-id').val(),
         'precio_unitario': data.unitario,
         'cantidad': data.cantidad,
         'descuento': data.descuento,
@@ -142,8 +155,8 @@ var intimpa = intimpa || {};
     total = 0;
     intimpa.VentaDetallesCollection.each(function(item) {
       objProd = {
-        'name': getName(i, 'producto'),
-        'value': item.attributes.producto
+        'name': getName(i, 'lote'),
+        'value': item.attributes.lote
       };
       objUnit = {
         'name': getName(i, 'precio_unitario'),

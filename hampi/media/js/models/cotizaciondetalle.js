@@ -7,7 +7,7 @@ var intimpa = intimpa || {};
     defaults: function() {
       return {
         row: 0,
-        producto: 0,
+        lote: 0,
         precio_unitario: 0,
         cantidad: 1,
         total: 0
@@ -15,7 +15,7 @@ var intimpa = intimpa || {};
     },
 
     validate: function(attribs) {
-      if(attribs.producto < 0) {
+      if(attribs.lote < 0) {
         return 'No haz escogido un producto';
       }
 

@@ -1,11 +1,16 @@
 from django.contrib import admin
 
-from models import Producto, Segmento, Cliente, Proveedor, Gasto, TipoGasto
+from models import Producto, Segmento, Cliente, Proveedor, Gasto, TipoGasto, Lote
 
 class ProductoAdmin(admin.ModelAdmin):
-  list_display = ('codigo', 'producto', 'marca', 'procedencia', 'vencimiento', 'lote', 'unidad_caja','precio_unidad', 'precio_caja', 'activo',)
-  list_filter = ('activo', 'marca', 'procedencia', 'vencimiento', 'lote')
-  search_fields = ['codigo', 'producto', 'marca', 'procedencia']
+  list_display = ('codigo', 'producto', 'marca', 'procedencia', 'unidad_caja','precio_unidad', 'precio_caja', 'activo',)
+  list_filter = ('activo', 'marca', 'procedencia')
+  search_fields = ['codigo', 'producto__producto', 'marca', 'procedencia']
+
+class LoteAdmin(admin.ModelAdmin):
+  list_display = ('numero', 'vencimiento', 'producto',)
+  list_filter = ('vencimiento',)
+  search_fields = ['numero']
 
 class ClienteAdmin(admin.ModelAdmin):
   list_display = ('razon_social', 'tipo_documento', 'numero_documento', 'ciudad', 'distrito',)
@@ -22,6 +27,7 @@ class GastoAdmin(admin.ModelAdmin):
 
 admin.site.register(Segmento)
 admin.site.register(Producto, ProductoAdmin)
+admin.site.register(Lote, LoteAdmin)
 admin.site.register(Cliente, ClienteAdmin)
 admin.site.register(Proveedor, ProveedorAdmin)
 admin.site.register(Gasto, GastoAdmin)

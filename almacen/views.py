@@ -23,6 +23,6 @@ class StockAlmacenFilterList(generics.ListAPIView):
     queryset = Stock.objects.filter(en_almacen = almacen, unidades__gt = 0)
 
     if term is not None:
-      queryset = queryset.filter(producto__producto__icontains = term) | queryset.filter(producto__codigo__icontains = term)
+      queryset = queryset.filter(lote__producto__producto__icontains = term) | queryset.filter(lote__producto__codigo__icontains = term) | queryset.filter(lote__numero__icontains = term)
 
     return queryset

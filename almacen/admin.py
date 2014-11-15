@@ -5,12 +5,12 @@ from django.contrib import admin
 from models import Almacen, Stock, Entrada, EntradaDetalle, Salida, SalidaDetalle
 
 class StockAdmin(admin.ModelAdmin):
-  list_display = ('en_almacen', 'codigo', 'producto', 'unidades',)
+  list_display = ('en_almacen', 'codigo', 'lote', 'unidades',)
   list_filter = ('en_almacen',)
-  search_fields = ['producto__codigo', 'producto__producto']
+  search_fields = ['lote__producto__codigo', 'lote__producto__producto']
 
   def codigo(self, obj):
-    return "%s" % (obj.producto.codigo)
+    return "%s" % (obj.lote.producto.codigo)
   codigo.short_description = "Código"
 
 class EntradaDetalleInline(admin.TabularInline):

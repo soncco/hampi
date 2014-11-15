@@ -22,7 +22,7 @@ var intimpa = intimpa || {};
     minLength: 1,
     source: function(request, response) {
       $.ajax({
-        url: '/api/almacen/stock-filter/',
+        url: '/api/almacen/lotes-filter/',
         dataType: 'json',
         data: {
           term: request.term,

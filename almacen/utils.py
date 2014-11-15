@@ -12,22 +12,22 @@ def entrada_stock(entrada):
   for detalle in detalles:
     agregar_stock(detalle, entrada.almacen)
 
-def existe_stock(producto, en_almacen):
-  conteo = Stock.objects.filter(producto = producto, en_almacen = en_almacen).count()
+def existe_stock(lote, en_almacen):
+  conteo = Stock.objects.filter(lote = lote, en_almacen = en_almacen).count()
   return (conteo > 0)
 
 def quitar_stock(detalle, almacen):
-  stock = Stock.objects.get(producto = detalle.producto, en_almacen = almacen)
+  stock = Stock.objects.get(lote = detalle.lote, en_almacen = almacen)
   stock.unidades = stock.unidades - detalle.cantidad
   stock.save()
 
 def agregar_stock(detalle, almacen):
-  if existe_stock(detalle.producto, almacen):
-    stock = Stock.objects.get(producto = detalle.producto, en_almacen = almacen)
+  if existe_stock(detalle.lote, almacen):
+    stock = Stock.objects.get(lote = detalle.lote, en_almacen = almacen)
     stock.unidades = stock.unidades + detalle.cantidad
     stock.save()
   else:
-    stock = Stock(producto = detalle.producto, en_almacen = almacen, unidades = detalle.cantidad)
+    stock = Stock(lote = detalle.lote, en_almacen = almacen, unidades = detalle.cantidad)
     stock.save()
 
 def generar_salida_venta(venta):
@@ -44,7 +44,7 @@ def generar_salida_venta(venta):
 
   for detalle in venta.ventadetalle_set.all():
     salida_detalle = SalidaDetalle()
-    salida_detalle.producto = detalle.producto
+    salida_detalle.lote = detalle.lote
     salida_detalle.precio_unitario = detalle.precio_unitario
     salida_detalle.cantidad = detalle.cantidad
     salida_detalle.descuento = detalle.descuento
@@ -57,15 +57,15 @@ def total_monto_stock(en_almacen):
   stock = Stock.objects.filter(en_almacen = en_almacen)
   total = 0
   for row in stock:
-    total += row.unidades * row.producto.precio_unidad
+    total += row.unidades * row.lote.producto.precio_unidad
   return total
 
 def get_unitario(producto):
-  return (producto.precio_credito / producto.unidad_caja)
+  return (producto.precio_caja / producto.unidad_caja)
 
 def total_monto_stock_real(en_almacen):
   stock = Stock.objects.filter(en_almacen = en_almacen)
   total = 0
   for row in stock:
-    total += row.unidades * get_unitario(row.producto)
+    total += row.unidades * get_unitario(row.lote.producto)
   return total

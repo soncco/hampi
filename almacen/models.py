@@ -16,7 +16,7 @@ class Almacen(models.Model):
 
 class Stock(models.Model):
   en_almacen = models.ForeignKey(Almacen)
-  producto = models.ForeignKey('core.Producto')
+  lote = models.ForeignKey('core.Lote')
   unidades = models.IntegerField()
 
 class Entrada(models.Model):
@@ -36,7 +36,7 @@ class Entrada(models.Model):
 
 class EntradaDetalle(models.Model):
   entrada_padre = models.ForeignKey(Entrada)
-  producto = models.ForeignKey('core.Producto')
+  lote = models.ForeignKey('core.Lote')
   precio_unitario = models.DecimalField(max_digits = 10, decimal_places = 2, default = Decimal('0.00'))
   cantidad = models.IntegerField()
   descuento = models.DecimalField(max_digits = 10, decimal_places = 2, default = Decimal('0.00'))
@@ -58,7 +58,7 @@ class Salida(models.Model):
 
 class SalidaDetalle(models.Model):
   salida_padre = models.ForeignKey(Salida)
-  producto = models.ForeignKey('core.Producto')
+  lote = models.ForeignKey('core.Lote')
   precio_unitario = models.DecimalField(max_digits = 10, decimal_places = 2, default = Decimal('0.00'))
   cantidad = models.IntegerField()
   descuento = models.DecimalField(max_digits = 10, decimal_places = 2, default = Decimal('0.00'))

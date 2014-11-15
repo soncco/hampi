@@ -24,15 +24,15 @@ class Venta(models.Model):
   tipo_venta = models.CharField(max_length = 1, choices = TIPOS, default = 'C')
   numero_guia = models.CharField(max_length = 100, blank = True)
   orden_compra = models.CharField(max_length = 100, blank = True)
-  placa = models.CharField(max_length = 100)
-  licencia = models.CharField(max_length = 100)
+  placa = models.CharField(max_length = 100, blank = True)
+  licencia = models.CharField(max_length = 100, blank = True)
 
   def __unicode__(self):
     return "Venta %s" % self.pk
 
 class VentaDetalle(models.Model):
   registro_padre = models.ForeignKey(Venta)
-  producto = models.ForeignKey('core.Producto')
+  lote = models.ForeignKey('core.Lote')
   precio_unitario = models.DecimalField(max_digits = 10, decimal_places = 2, default = Decimal('0.00'))
   cantidad = models.IntegerField()
   descuento = models.DecimalField(max_digits = 10, decimal_places = 2, default = Decimal('0.00'))
@@ -69,6 +69,6 @@ class Cotizacion(models.Model):
 
 class CotizacionDetalle(models.Model):
   registro_padre = models.ForeignKey(Cotizacion)
-  producto = models.ForeignKey('core.Producto')
+  lote = models.ForeignKey('core.Lote')
   precio_unitario = models.DecimalField(max_digits = 10, decimal_places = 2, default = Decimal('0.00'))
   cantidad = models.IntegerField()
