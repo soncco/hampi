@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from decimal import *
 
 class Producto(models.Model):
-  codigo = models.CharField(max_length = 255)
+  codigo = models.CharField(max_length = 255, blank = True)
   producto = models.CharField(max_length = 255)
   marca = models.CharField(max_length = 255)
   comercial = models.CharField(max_length = 255, blank = True)
