@@ -4,7 +4,7 @@ from rest_framework import serializers
 class ProductoSerializer(serializers.HyperlinkedModelSerializer):
   class Meta:
     model = Producto
-    fields = ('url', 'id', 'codigo', 'unidad_caja', 'producto', 'marca', 'procedencia', 'unidad_medida', 'precio_unidad', 'precio_caja', 'precio_costo', 'activo',)
+    fields = ('url', 'id', 'codigo', 'unidad_caja', 'comercial', 'producto', 'marca', 'procedencia', 'unidad_medida', 'precio_unidad', 'precio_caja', 'precio_costo', 'activo',)
 
 class LoteSerializer(serializers.HyperlinkedModelSerializer):
   producto = ProductoSerializer()

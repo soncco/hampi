@@ -1,0 +1,97 @@
+<div class="modal fade" id="productModal" tabindex="-1" role="dialog" aria-labelledby="productModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+        <form action="{% url 'producto' %}" method="POST">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cerrar</span></button>
+        <h4 class="modal-title" id="myModalLabel">Agregar producto</h4>
+      </div>
+      <div class="modal-body">
+          <div class="page-header mini">
+            <h5>Producto</h5>
+          </div>
+          <div class="form-group">
+            <input type="text" class="form-control" id="codigo" name="codigo" placeholder="Código" maxlenght="255" required>
+          </div>
+          <div class="form-group">
+            <input type="text" class="form-control" id="producto" name="producto" placeholder="Nombre del Producto" maxlenght="255" required>
+          </div>
+          <div class="form-group">
+            <input type="text" class="form-control" id="comercial" name="comercial" placeholder="Nombre comercial" maxlenght="255">
+          </div>
+          <div class="form-group">
+            <input type="text" class="form-control" id="marca" name="marca" placeholder="Marca" maxlenght="255" required>
+          </div>
+          <div class="form-group">
+            <input type="text" class="form-control" id="unidad_medida" name="unidad_medida" placeholder="Unidad de medida" maxlenght="255" required>
+          </div>
+          <div class="form-group">
+            <input type="text" class="form-control" id="procedencia" name="procedencia" placeholder="Procedencia" maxlenght="255">
+          </div>
+          <div class="form-group">
+            <input type="number" step="1" min="1" class="form-control" id="unidad_caja" name="unidad_caja" placeholder="Unidades en Caja" required>
+          </div>
+          <div class="form-group">
+            <input type="number" step="0.01" min="0" class="form-control" id="precio_caja" name="precio_caja" placeholder="Precio de Caja" required>
+          </div>
+          <div class="form-group">
+            <input type="number" step="0.01" min="0" class="form-control" id="precio_unidad" name="precio_unidad" placeholder="Precio unitario" required>
+          </div>
+          <div class="form-group">
+            <input type="number" step="0.01" min="0" class="form-control" id="precio_costo" name="precio_costo" placeholder="Precio de costo" required>
+          </div>
+          <div class="page-header mini">
+            <h5>Lote</h5>
+          </div>
+          <div class="form-group">
+            <input type="text" class="form-control" id="numero-p" name="numero" placeholder="Numero de lote" maxlenght="255" required>
+          </div>
+          <div class="form-group">
+            <input type="text" class="form-control datepicker" id="vencimiento-p" name="vencimiento" placeholder="Fecha de vencimiento" required>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary save-producto">Guardar</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+        {% csrf_token %}
+      </div>
+        </form>
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="productLoteModal" tabindex="-1" role="dialog" aria-labelledby="productLoteModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form action="{% url 'producto_lote' %}" method="POST">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Cerrar</span></button>
+        <h4 class="modal-title" id="myModalLabelLote">Agregar lote a producto existente</h4>
+      </div>
+      <div class="modal-body">
+          <div class="page-header mini">
+            <h5>Producto</h5>
+          </div>
+          <div class="form-group">
+            <input type="text" class="form-control ac-producto" id="producto-nombre" name="producto-nombre" placeholder="Busca el producto" maxlenght="255" required>
+          </div>
+          <div class="page-header mini">
+            <h5>Lote</h5>
+          </div>
+          <div class="form-group">
+            <input type="text" class="form-control" id="numero-lote" name="numero" placeholder="Numero de lote" maxlenght="255" required>
+          </div>
+          <div class="form-group">
+            <input type="text" class="form-control datepicker" id="vencimiento-lote" name="vencimiento" placeholder="Fecha de vencimiento" required>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary save-producto-lote">Guardar producto y lote</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+        <input type="hidden" id="producto-nuevo-id" name="producto-id" value="">
+        {% csrf_token %}
+      </div>
+        </form>
+    </div>
+  </div>
+</div>

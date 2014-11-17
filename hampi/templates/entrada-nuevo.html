@@ -49,7 +49,7 @@
     </div>
     <div class="alert alert-warning alert-product">
       <a class="close" data-dismiss="alert" href="#" aria-hidden="true">&times;</a>
-      <p>No existe el producto. <button type="button" class="btn btn-xs btn-primary add-product">Agregar producto</button></p>
+      <p>No existe el lote o el producto. <button type="button" class="btn btn-xs btn-primary add-product">Agregar producto nuevo y lote</button> <button type="button" class="btn btn-xs btn-primary add-product-lote">Agregar lote a producto existente</button></p>
     </div>
     <table class="table table-striped table-condensed">
       <thead>
@@ -139,6 +139,7 @@
 <script src="/media/js/collections/ventadetalles.js"></script>
 <script src="/media/js/main.js"></script>
 <script src="/media/js/entradas.js"></script>
+<script src="/media/js/add-producto.js"></script>
 {% endblock %}
 
 {% block title %}Registrar Entrada{% endblock %}
@@ -162,4 +163,8 @@
   <script type="text/x-handlebars-template" id="tpl-hidden">
   <input type="hidden" name="{% templatetag openvariable %} name {% templatetag closevariable %}" value="{% templatetag openvariable %} value {% templatetag closevariable %}">
 </script>
+{% endblock %}
+
+{% block modals %}
+{% include 'extras/product-modal.html' %}
 {% endblock %}

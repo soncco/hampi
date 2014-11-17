@@ -8,6 +8,7 @@ class Producto(models.Model):
   codigo = models.CharField(max_length = 255)
   producto = models.CharField(max_length = 255)
   marca = models.CharField(max_length = 255)
+  comercial = models.CharField(max_length = 255, blank = True)
   unidad_medida = models.CharField(max_length = 100)
   procedencia = models.CharField(max_length = 255, blank = True)
   unidad_caja = models.IntegerField()

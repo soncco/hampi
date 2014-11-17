@@ -26,7 +26,8 @@ from almacen.forms import EntradaForm, EntradaDetalleFormSet, SalidaForm, Salida
 from almacen.models import Almacen, Entrada, Salida, Stock
 from almacen.utils import generar_salida_venta, entrada_stock, salida_stock, total_monto_stock, total_monto_stock_real
 
-from core.models import Gasto, Cliente, Proveedor, TipoGasto
+from core.models import Gasto, Cliente, Proveedor, TipoGasto, Lote, Producto
+from core.forms import ProductoForm
 
 from .utils import total_gastos, total_contados, total_amortizacion, total_liquidacion, diff_dates
 
@@ -456,3 +457,26 @@ def cotizacion_print(request, id):
   context = {'cotizacion': cotizacion}
   result = generate_pdf('pdf/cotizacion.html', file_object = resp, context = context)
   return result
+
+@login_required
+def producto(request):
+  producto_form = ProductoForm(request.POST)
+
+  if producto_form.is_valid():
+    instance = producto_form.save()
+    instance.activo = True
+    instance.save()
+
+    lote = Lote(producto = instance, numero = request.POST.get('numero'), vencimiento = request.POST.get('vencimiento'))
+    lote.save()
+    
+    return HttpResponse('1')
+
+@login_required
+def producto_lote(request):
+  instance = Producto.objects.get(pk = request.POST.get('producto-id'))
+
+  lote = Lote(producto = instance, numero = request.POST.get('numero'), vencimiento = request.POST.get('vencimiento'))
+  lote.save()
+  
+  return HttpResponse('1')

@@ -51,7 +51,7 @@ var intimpa = intimpa || {};
     },
     response: function(e, ui) {
       if(ui.content.length === 0) {
-        //$('.alert-product').show();
+        $('.alert-product').show();
         var parent = $(e.target).parent();
         parent.find('.autocomplete-productos').val('');
       }
@@ -64,7 +64,7 @@ var intimpa = intimpa || {};
     },
     change: function(e,ui) {
       if(!ui.item) {
-        //$('.alert-product').show();
+        $('.alert-product').show();
         var parent = $(e.target).parent();
         parent.find('.autocomplete-productos').val('');
       }

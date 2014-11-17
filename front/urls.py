@@ -45,4 +45,7 @@ urlpatterns = patterns('front.views',
   url(r'^cotizaciones/$', 'cotizaciones', name = 'cotizaciones'),
   url(r'^cotizacion/print/(?P<id>.*)$', 'cotizacion_print', name = 'cotizacion_print'),
 
+  url(r'^producto/agregar$', 'producto', name = 'producto'),
+  url(r'^producto/lote/agregar$', 'producto_lote', name = 'producto_lote'),  
+
 )
