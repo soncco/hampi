@@ -55,7 +55,7 @@ def venta(request):
         deuda = Deuda(registro_padre = instance, total = saldo, estado = 'D')
         deuda.save()
 
-        amortizacion = Amortizacion(deuda = deuda, fecha = instance.fecha, monto = Decimal(monto), saldo = saldo, recibido_por = request.user)
+        amortizacion = Amortizacion(deuda = deuda, fecha = instance.fecha_factura, monto = Decimal(monto), saldo = saldo, recibido_por = request.user)
         amortizacion.save()
         messages.success(request, 'Se ha creado también una deuda y una amortización.')
       messages.success(request, 'Se ha guardado la venta y se ha creado una salida.')

@@ -50,7 +50,7 @@ class ClienteFilterList(generics.ListAPIView):
     term = self.request.QUERY_PARAMS.get('term', None)
 
     if term is not None:
-      queryset = queryset.filter(razon_social__icontains = term) | queryset.filter(numero_documento__icontains = term)
+      queryset = queryset.filter(razon_social__icontains = term) | queryset.filter(numero_documento__icontains = term) | queryset.filter(codcliente__icontains = term)
 
     return queryset
 

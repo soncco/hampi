@@ -38,6 +38,7 @@ class Cliente(models.Model):
     ('R', 'RUC'),
   )
   segmento = models.ForeignKey(Segmento)
+  codcliente = models.CharField(max_length = 255, blank = True)
   razon_social = models.CharField(max_length = 255)
   tipo_documento = models.CharField(max_length = 1, choices = TIPOS, default = 'R')
   numero_documento  = models.CharField(max_length = 60)

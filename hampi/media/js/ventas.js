@@ -16,7 +16,7 @@ var intimpa = intimpa || {};
     intimpa.VentaDetallesCollection.remove(row);
     previo_total = $total_venta.val() * 1;
     previo_total -= (total*1);
-    $total_venta.val(previo_total.toFixed(2));
+    $total_venta.val(previo_total.toFixed(3));
   }
 
   var acProductOptions = {
@@ -61,7 +61,7 @@ var intimpa = intimpa || {};
       $('.iunitario').val(ui.item.data.lote.producto.precio_unidad);
       cantidad = $('.cantidad').val();
       unitario = $('.iunitario').val();
-      total = (cantidad * unitario).toFixed(2)
+      total = (cantidad * unitario).toFixed(3)
       $('.itotal').val(total);
     },
     change: function(e,ui) {
@@ -86,7 +86,7 @@ var intimpa = intimpa || {};
           response($.map(data, function (item) {
             return {
               data: item,
-              label: item.numero_documento + ' - ' + item.razon_social,
+              label: item.codcliente + ' - ' + item.numero_documento + ' - ' + item.razon_social,
               value: item.razon_social,
             }
           }));
@@ -150,7 +150,7 @@ var intimpa = intimpa || {};
 
       previo_total = $total_venta.val() * 1;
       previo_total += (data.total*1);
-      $total_venta.val(previo_total.toFixed(2));
+      $total_venta.val(previo_total.toFixed(3));
 
       $producto.val('');
       $cantidad.val('').focus();
@@ -232,7 +232,7 @@ var intimpa = intimpa || {};
       i++;
     });
 
-    $total_venta.val(total.toFixed(2));
+    $total_venta.val(total.toFixed(3));
 
     $('#id_' + prefix + '-TOTAL_FORMS').val(i);
 
@@ -259,14 +259,14 @@ var intimpa = intimpa || {};
   $('.cantidad').change(function() {
     unitario = $('.iunitario').val();
     cantidad = $('.cantidad').val();
-    total = (unitario * cantidad).toFixed(2)
+    total = (unitario * cantidad).toFixed(3)
     $('.itotal').val(total);
   });
 
   $('.iunitario').change(function() {
     unitario = $('.iunitario').val();
     cantidad = $('.cantidad').val();
-    total = (unitario * cantidad).toFixed(2)
+    total = (unitario * cantidad).toFixed(3)
     $('.itotal').val(total);
   });
 
