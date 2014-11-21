@@ -23,10 +23,6 @@
       <label>Fecha:</label>
       {{ entrada.fecha }}
     </div>
-    <div class="form-group">
-      <label>Documento:</label>
-      {{ entrada.get_documento_display }}
-    </div>
     {% if entrada.documento != 'G' %}
     <div class="form-group">
       <label>Proveedor:</label>
@@ -34,12 +30,20 @@
     </div>
     {% endif %}
     <div class="form-group">
-      <label>Número de documento:</label>
-      {{ entrada.numero_documento }}
+      <label>Número de factura:</label>
+      {{ entrada.numero_factura }}
     </div>
     <div class="form-group">
-      <label>Fecha del documento:</label>
-      {{ entrada.fecha_documento }}
+      <label>Fecha de factura:</label>
+      {{ entrada.fecha_factura }}
+    </div>
+    <div class="form-group">
+      <label>Número de guía:</label>
+      {{ entrada.numero_guia }}
+    </div>
+    <div class="form-group">
+      <label>Fecha de guía:</label>
+      {{ entrada.fecha_guia }}
     </div>
     <div class="form-group">
       <label>Quien:</label>
@@ -63,8 +67,6 @@
           <th>Vencimiento</th>
           <th>Cantidad</th>
           <th>Unitario</th>
-          <th>Subtotal</th>
-          <th>Descuento</th>
           <th>Total</th>
         </tr>
       </thead>
@@ -76,12 +78,8 @@
           <td>{{ detalle.lote.numero }}</td>
           <td>{{ detalle.lote.vencimiento }}</td>
           <td>{{ detalle.cantidad }}</td>
-          <td>{{ detalle.precio_unitario }}</td>
-          <td>{{ detalle.cantidad|mul:detalle.precio_unitario }}</td>
-          <td>{{ detalle.descuento }}</td>
-          {% with subtotal=detalle.cantidad|mul:detalle.precio_unitario %}
-            <td class="text-right">{{ subtotal|sub:detalle.descuento|floatformat:2 }}</td>
-          {% endwith %}
+          <td>{{ detalle.precio_unitario|floatformat:6 }}</td>
+          <td>{{ detalle.cantidad|mul:detalle.precio_unitario|floatformat:6 }}</td>
         </tr>
         {% endfor %}
       </tbody>

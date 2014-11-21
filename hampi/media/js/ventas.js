@@ -36,12 +36,12 @@ var intimpa = intimpa || {};
               data: item,
               label: '(' + item.unidades + ') ' 
                 + item.lote.numero + ' - ' 
-                + item.lote.producto.codigo + ' - ' 
-                + item.lote.producto.producto + ' ' 
+                + item.lote.producto.producto + ' - '
+                + item.lote.producto.comercial + ' - ' 
                 + item.lote.producto.marca,
-              value: item.lote.producto.codigo + ' - ' 
-                + item.lote.numero + ' ' 
-                + item.lote.producto.producto + ' ' 
+              value: item.lote.numero + ' - '
+                + item.lote.producto.comercial + ' - ' 
+                + item.lote.producto.producto + ' - ' 
                 + item.lote.producto.marca
             }
           }));
@@ -56,9 +56,13 @@ var intimpa = intimpa || {};
     },
     select: function(e, ui) {
       $('#producto-id').val(ui.item.data.lote.id);
-      $('#unitario').val(ui.item.data.lote.producto.precio_unidad);
       $('#numero').val(ui.item.data.lote.numero);
       $('#vencimiento').val(ui.item.data.lote.vencimiento);
+      $('.iunitario').val(ui.item.data.lote.producto.precio_unidad);
+      cantidad = $('.cantidad').val();
+      unitario = $('.iunitario').val();
+      total = (cantidad * unitario).toFixed(2)
+      $('.itotal').val(total);
     },
     change: function(e,ui) {
       if(!ui.item) {
@@ -97,19 +101,25 @@ var intimpa = intimpa || {};
     },
     select: function(e, ui) {
       $('#cliente-id').val(ui.item.data.id);
+      llegada = ui.item.data.direccion + ' - '
+        + ui.item.data.ciudad + ' - '
+        + ui.item.data.distrito;
+      $('#llegada').val(llegada)
     },
   }
 
   $('#add-detalle').click(function() {
     $producto = $('.autocomplete-productos');
     $cantidad = $('.cantidad');
-    $descuento = $('.descuento');
+    $iunitario = $('.iunitario');
+    $itotal = $('.itotal');
     $numero = $('#numero');
     $vencimiento = $('#vencimiento');
 
     if($producto.val() !== '' &&
       $cantidad.val() !== '' &&
-      $descuento.val() !== '') {
+      $iunitario.val() !== '' &&
+      $itotal.val() !== '') {
       row = $tplDetalle.html();
       template = Handlebars.compile(row);
 
@@ -121,16 +131,8 @@ var intimpa = intimpa || {};
         numero: $numero.val(),
         vencimiento: $vencimiento.val(),
         cantidad: $cantidad.val(),
-        descuento: $descuento.val(),
-        unitario: $('#unitario').val(),
-        subtotal: function () {
-          return (this.cantidad * this.unitario).toFixed(2);
-        },
-        total: function() {
-          //descuento = (this.subtotal() * this.descuento) / 100;
-          //return (this.subtotal() - descuento).toFixed(2);
-          return (this.subtotal() - this.descuento).toFixed(2);
-        }
+        unitario: $('.iunitario').val(),
+        total: $('.itotal').val()
       };
 
       $detalles.append(template(data));
@@ -142,21 +144,22 @@ var intimpa = intimpa || {};
         'lote': $('#producto-id').val(),
         'precio_unitario': data.unitario,
         'cantidad': data.cantidad,
-        'descuento': data.descuento,
-        'total': data.total()
+        'unitario': data.unitario,
+        'total': data.total
       }, {'validate': true});
 
       previo_total = $total_venta.val() * 1;
-      previo_total += (data.total()*1);
+      previo_total += (data.total*1);
       $total_venta.val(previo_total.toFixed(2));
 
       $producto.val('');
       $cantidad.val('').focus();
-      $descuento.val(0);
+      $iunitario.val('');
+      $itotal.val('');
 
     } else {
       intimpa.betterAlert.warning('Completa los campos requeridos del detalle.');
-      $cantidad.focus();
+      $('.cantidad').focus();
     }
   });
 
@@ -166,7 +169,8 @@ var intimpa = intimpa || {};
   $('.autocomplete-productos').change(function() {
     if($(this).val() === '') {
       $('#producto-id').val('');
-      $('#unitario').val('');
+      $('.iunitario').val('');
+      $('.itotal').val('');
     }
   });
 
@@ -187,7 +191,7 @@ var intimpa = intimpa || {};
     if(intimpa.VentaDetallesCollection.length == 0) {
       e.preventDefault();
       intimpa.betterAlert.warning('Tiene que haber al menos un detalle de la venta.');
-      $cantidad.focus();
+      $('.cantidad').focus();
       return false;
     }
     var i = 0;
@@ -205,33 +209,33 @@ var intimpa = intimpa || {};
         'name': getName(i, 'cantidad'),
         'value': item.attributes.cantidad
       };
-      objDesc = {
-        'name': getName(i, 'descuento'),
-        'value': item.attributes.descuento
+      objTotal = {
+        'name': getName(i, 'total'),
+        'value': item.attributes.total
       };
       total += parseFloat(item.attributes.total);
 
       tplProducto = Handlebars.compile($tplHidden.html());
       tplUnitario = Handlebars.compile($tplHidden.html());
       tplCantidad = Handlebars.compile($tplHidden.html());
-      tplDescuento = Handlebars.compile($tplHidden.html());
+      tplTotal = Handlebars.compile($tplHidden.html());
 
       htmlProducto = tplProducto(objProd);
       htmlUnitario = tplUnitario(objUnit);
       htmlCantidad = tplCantidad(objCant);
-      htmlDescuento = tplDescuento(objDesc);
+      htmlTotal = tplTotal(objTotal);
 
       $form.append(htmlProducto);
       $form.append(htmlUnitario);
       $form.append(htmlCantidad);
-      $form.append(htmlDescuento);
+      $form.append(htmlTotal);
       i++;
     });
 
     $total_venta.val(total.toFixed(2));
+
     $('#id_' + prefix + '-TOTAL_FORMS').val(i);
-    //e.preventDefault();
-    //return false;
+
   });
 
   $almacen.change(function() {
@@ -250,6 +254,20 @@ var intimpa = intimpa || {};
       $('#monto').parent().hide().removeClass('animated bounceIn');
       $('#monto').removeAttr('required');
     }
+  });
+
+  $('.cantidad').change(function() {
+    unitario = $('.iunitario').val();
+    cantidad = $('.cantidad').val();
+    total = (unitario * cantidad).toFixed(2)
+    $('.itotal').val(total);
+  });
+
+  $('.iunitario').change(function() {
+    unitario = $('.iunitario').val();
+    cantidad = $('.cantidad').val();
+    total = (unitario * cantidad).toFixed(2)
+    $('.itotal').val(total);
   });
 
 })(jQuery)

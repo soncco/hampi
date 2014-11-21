@@ -22,7 +22,7 @@ class ProductoFilterList(generics.ListAPIView):
     term = self.request.QUERY_PARAMS.get('term', None)
 
     if term is not None:
-      queryset = queryset.filter(producto__icontains = term) | queryset.filter(codigo__icontains = term)
+      queryset = queryset.filter(producto__icontains = term) | queryset.filter(codigo__icontains = term) | queryset.filter(marca__icontains = term) | queryset.filter(comercial__icontains = term)
 
     return queryset
 
@@ -34,7 +34,7 @@ class LoteFilterList(generics.ListAPIView):
     term = self.request.QUERY_PARAMS.get('term', None)
 
     if term is not None:
-      queryset = queryset.filter(producto__producto__icontains = term) | queryset.filter(producto__codigo__icontains = term) | queryset.filter(numero__icontains = term)
+      queryset = queryset.filter(producto__producto__icontains = term) | queryset.filter(producto__codigo__icontains = term) | queryset.filter(numero__icontains = term) | queryset.filter(producto__codigo__icontains = term) |  queryset.filter(producto__marca__icontains = term) |  queryset.filter(producto__comercial__icontains = term)
 
     return queryset
 

@@ -14,6 +14,8 @@ var intimpa = intimpa || {};
               + '<p>' + message + '</p>'
             + '</div>';
     $('#messages').html(html);
-  }
+  };
+
+  $('[data-toggle="tooltip"]').tooltip();
 
 })(jQuery)

@@ -20,15 +20,11 @@ class Stock(models.Model):
   unidades = models.IntegerField()
 
 class Entrada(models.Model):
-  DOCUMENTOS = (
-    ('B', 'Boleta'),
-    ('F', 'Factura'),
-    ('G', 'Guía de Remisión')
-  )
   fecha = models.DateField()
-  documento = models.CharField(max_length = 1, choices = DOCUMENTOS, default = 'F')
-  numero_documento = models.CharField(max_length = 60)
-  fecha_documento = models.DateField()
+  numero_factura = models.CharField(max_length = 60)
+  fecha_factura = models.DateField()
+  numero_guia = models.CharField(max_length = 60)
+  fecha_guia = models.DateField()
   almacen = models.ForeignKey(Almacen)
   notas = models.TextField(blank = True)
   proveedor = models.ForeignKey('core.Proveedor', blank = True, null = True)
@@ -37,20 +33,16 @@ class Entrada(models.Model):
 class EntradaDetalle(models.Model):
   entrada_padre = models.ForeignKey(Entrada)
   lote = models.ForeignKey('core.Lote')
-  precio_unitario = models.DecimalField(max_digits = 10, decimal_places = 2, default = Decimal('0.00'))
+  precio_unitario = models.DecimalField(max_digits = 19, decimal_places = 6, default = Decimal('0.000000'))
   cantidad = models.IntegerField()
-  descuento = models.DecimalField(max_digits = 10, decimal_places = 2, default = Decimal('0.00'))
+  total = models.DecimalField(max_digits = 19, decimal_places = 6, default = Decimal('0.000000'))
 
 class Salida(models.Model):
-  DOCUMENTOS = (
-    ('B', 'Boleta'),
-    ('F', 'Factura'),
-    ('G', 'Guía de Remisión')
-  )
   fecha = models.DateField()
-  documento = models.CharField(max_length = 1, choices = DOCUMENTOS, default = 'F')
-  numero_documento = models.CharField(max_length = 60)
-  fecha_documento = models.DateField()
+  numero_factura = models.CharField(max_length = 60)
+  fecha_factura = models.DateField()
+  numero_guia = models.CharField(max_length = 60)
+  fecha_guia = models.DateField()
   almacen = models.ForeignKey(Almacen)
   notas = models.TextField(blank = True)
   quien = models.ForeignKey(User)
@@ -59,6 +51,6 @@ class Salida(models.Model):
 class SalidaDetalle(models.Model):
   salida_padre = models.ForeignKey(Salida)
   lote = models.ForeignKey('core.Lote')
-  precio_unitario = models.DecimalField(max_digits = 10, decimal_places = 2, default = Decimal('0.00'))
+  precio_unitario = models.DecimalField(max_digits = 19, decimal_places = 6, default = Decimal('0.000000'))
   cantidad = models.IntegerField()
-  descuento = models.DecimalField(max_digits = 10, decimal_places = 2, default = Decimal('0.00'))
+  total = models.DecimalField(max_digits = 19, decimal_places = 6, default = Decimal('0.000000'))

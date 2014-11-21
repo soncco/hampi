@@ -11,43 +11,37 @@
             <h5>Producto</h5>
           </div>
           <div class="form-group">
-            <input type="text" class="form-control" id="codigo" name="codigo" placeholder="Código" maxlenght="255">
+            <input type="text" class="form-control" id="codigo" name="codigo" placeholder="Código" maxlenght="255" data-toggle="tooltip" data-placement="bottom" title="Código">
           </div>
           <div class="form-group">
-            <input type="text" class="form-control" id="producto" name="producto" placeholder="Nombre del Producto" maxlenght="255" required>
+            <input type="text" class="form-control" id="producto" name="producto" placeholder="Nombre del Producto *" maxlenght="255" required data-toggle="tooltip" data-placement="bottom" title="Nombre del Producto">
           </div>
           <div class="form-group">
-            <input type="text" class="form-control" id="comercial" name="comercial" placeholder="Nombre comercial" maxlenght="255">
+            <input type="text" class="form-control" id="comercial" name="comercial" placeholder="Nombre comercial" maxlenght="255" data-toggle="tooltip" data-placement="bottom" title="Nombre comercial">
           </div>
           <div class="form-group">
-            <input type="text" class="form-control" id="marca" name="marca" placeholder="Marca" maxlenght="255" required>
+            <input type="text" class="form-control" id="marca" name="marca" placeholder="Marca *" maxlenght="255" required data-toggle="tooltip" data-placement="bottom" title="Marca">
           </div>
           <div class="form-group">
-            <input type="text" class="form-control" id="unidad_medida" name="unidad_medida" placeholder="Unidad de medida" maxlenght="255" required>
+            <input type="text" class="form-control" id="unidad_medida" name="unidad_medida" placeholder="Unidad de medida *" maxlenght="255" required data-toggle="tooltip" data-placement="bottom" title="Unidad de medida">
           </div>
           <div class="form-group">
-            <input type="text" class="form-control" id="procedencia" name="procedencia" placeholder="Procedencia" maxlenght="255">
+            <input type="text" class="form-control" id="procedencia" name="procedencia" placeholder="Procedencia" maxlenght="255" data-toggle="tooltip" data-placement="bottom" title="Procedencia">
           </div>
           <div class="form-group">
-            <input type="number" step="1" min="1" class="form-control" id="unidad_caja" name="unidad_caja" placeholder="Unidades en Caja" required>
+            <input type="number" step="0.01" min="0" class="form-control" id="precio_unidad" name="precio_unidad" placeholder="Precio unitario *" required data-toggle="tooltip" data-placement="bottom" title="Precio Unitario">
           </div>
           <div class="form-group">
-            <input type="number" step="0.01" min="0" class="form-control" id="precio_caja" name="precio_caja" placeholder="Precio de Caja" required>
-          </div>
-          <div class="form-group">
-            <input type="number" step="0.01" min="0" class="form-control" id="precio_unidad" name="precio_unidad" placeholder="Precio unitario" required>
-          </div>
-          <div class="form-group">
-            <input type="number" step="0.01" min="0" class="form-control" id="precio_costo" name="precio_costo" placeholder="Precio de costo" required>
+            <input type="number" step="0.01" min="0" class="form-control" id="precio_costo" name="precio_costo" placeholder="Precio de costo *" required data-toggle="tooltip" data-placement="bottom" title="Precio de costo">
           </div>
           <div class="page-header mini">
             <h5>Lote</h5>
           </div>
           <div class="form-group">
-            <input type="text" class="form-control" id="numero-p" name="numero" placeholder="Numero de lote" maxlenght="255" required>
+            <input type="text" class="form-control" id="numero-p" name="numero" placeholder="Numero de lote *" maxlenght="255" required data-toggle="tooltip" data-placement="bottom" title="Número de lote">
           </div>
           <div class="form-group">
-            <input type="text" class="form-control datepicker" id="vencimiento-p" name="vencimiento" placeholder="Fecha de vencimiento" required>
+            <input type="text" class="form-control datepicker" id="vencimiento-p" name="vencimiento" placeholder="Fecha de vencimiento *" required data-toggle="tooltip" data-placement="bottom" title="Fecha de vencimiento">
           </div>
       </div>
       <div class="modal-footer">
@@ -73,20 +67,20 @@
             <h5>Producto</h5>
           </div>
           <div class="form-group">
-            <input type="text" class="form-control ac-producto" id="producto-nombre" name="producto-nombre" placeholder="Busca el producto" maxlenght="255" required>
+            <input type="text" class="form-control ac-producto" id="producto-nombre" name="producto-nombre" placeholder="Busca el producto *" maxlenght="255" required data-toggle="tooltip" data-placement="bottom" title="Busca el producto">
           </div>
           <div class="page-header mini">
             <h5>Lote</h5>
           </div>
           <div class="form-group">
-            <input type="text" class="form-control" id="numero-lote" name="numero" placeholder="Numero de lote" maxlenght="255" required>
+            <input type="text" class="form-control" id="numero-lote" name="numero" placeholder="Número de lote *" maxlenght="255" required data-toggle="tooltip" data-placement="bottom" title="Número de Lote">
           </div>
           <div class="form-group">
-            <input type="text" class="form-control datepicker" id="vencimiento-lote" name="vencimiento" placeholder="Fecha de vencimiento" required>
+            <input type="text" class="form-control datepicker" id="vencimiento-lote" name="vencimiento" placeholder="Fecha de vencimiento *" required data-toggle="tooltip" data-placement="bottom" title="Fecha de vencimiento">
           </div>
       </div>
       <div class="modal-footer">
-        <button type="submit" class="btn btn-primary save-producto-lote">Guardar producto y lote</button>
+        <button type="submit" class="btn btn-primary save-producto-lote">Guardar nuevo lote</button>
         <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
         <input type="hidden" id="producto-nuevo-id" name="producto-id" value="">
         {% csrf_token %}

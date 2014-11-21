@@ -32,10 +32,11 @@ def agregar_stock(detalle, almacen):
 
 def generar_salida_venta(venta):
   salida = Salida()
-  salida.fecha = venta.fecha
-  salida.documento = venta.documento
-  salida.numero_documento = venta.numero_documento
-  salida.fecha_documento = venta.fecha_documento
+  salida.fecha = venta.fecha_factura
+  salida.numero_factura = venta.numero_factura
+  salida.fecha_factura = venta.fecha_factura
+  salida.numero_guia = venta.numero_guia
+  salida.fecha_guia = venta.fecha_guia
   salida.almacen = venta.almacen
   salida.notas = 'Salida generada desde la Venta número %s' % venta.pk
   salida.quien = venta.vendedor
@@ -47,7 +48,7 @@ def generar_salida_venta(venta):
     salida_detalle.lote = detalle.lote
     salida_detalle.precio_unitario = detalle.precio_unitario
     salida_detalle.cantidad = detalle.cantidad
-    salida_detalle.descuento = detalle.descuento
+    salida_detalle.total = detalle.total
     salida_detalle.salida_padre = salida
     salida_detalle.save()
 
@@ -60,12 +61,9 @@ def total_monto_stock(en_almacen):
     total += row.unidades * row.lote.producto.precio_unidad
   return total
 
-def get_unitario(producto):
-  return (producto.precio_caja / producto.unidad_caja)
-
 def total_monto_stock_real(en_almacen):
   stock = Stock.objects.filter(en_almacen = en_almacen)
   total = 0
   for row in stock:
-    total += row.unidades * get_unitario(row.lote.producto)
+    total += row.unidades * row.lote.producto.precio_unidad
   return total

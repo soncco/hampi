@@ -48,6 +48,8 @@ def venta(request):
 
       if instance.tipo_venta == 'P':
         monto = request.POST.get('monto')
+        if monto == '':
+          monto = 0
 
         saldo = instance.total_venta - Decimal(monto)
         deuda = Deuda(registro_padre = instance, total = saldo, estado = 'D')
@@ -59,6 +61,10 @@ def venta(request):
       messages.success(request, 'Se ha guardado la venta y se ha creado una salida.')
 
       return HttpResponseRedirect(reverse('ventas'))
+
+    else:
+      print entrada_form.errors
+      print detalle_form.errors
 
   almacenes = Almacen.objects.all()
   context = {'detalle_form': DetalleFormSet, 'almacenes': almacenes}

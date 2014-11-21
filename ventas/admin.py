@@ -12,8 +12,8 @@ class CotizacionDetalleInline(admin.TabularInline):
   model = CotizacionDetalle
 
 class VentaAdmin(admin.ModelAdmin):
-  list_display = ('id', 'fecha', 'documento', 'numero_documento', 'vendedor', 'cliente', 'total_venta',)
-  list_filter = ('vendedor__first_name', 'fecha', 'cliente',)
+  list_display = ('id', 'numero_factura', 'numero_guia', 'vendedor', 'cliente', 'total_venta',)
+  list_filter = ('vendedor__first_name', 'cliente',)
   inlines = [VentaDetalleInline,]
 
 class DeudaAdmin(admin.ModelAdmin):

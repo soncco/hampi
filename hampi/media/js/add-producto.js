@@ -16,12 +16,12 @@ var intimpa = intimpa || {};
           response($.map(data, function (item) {
             return {
               data: item,
-              label: item.codigo + ' - '
-                + item.producto + ' '
-                + item.marca,
-              value: item.codigo + ' - '
-                + item.producto + ' '
-                + item.marca
+              label: item.producto + ' '
+                + item.marca + ' - '
+                + item.comercial,
+              value: item.producto + ' '
+                + item.marca + ' - '
+                + item.comercial
             }
           }));
         }
@@ -74,6 +74,9 @@ var intimpa = intimpa || {};
       'success': function(data) {
         $('#productModal').modal('hide');
         $('.alert-product').hide();
+        $('#productModal form input').each(function() {
+          $(this).val('');
+        });
       }
     });
     return false;
@@ -88,9 +91,14 @@ var intimpa = intimpa || {};
       'success': function(data) {
         $('#productLoteModal').modal('hide');
         $('.alert-product').hide();
+        $('#productModal form input').each(function() {
+          $(this).val('');
+        });
       }
     });
     return false;
   });
+
+  $.fn.modal.Constructor.prototype.enforceFocus = function() {};
 
 })(jQuery)

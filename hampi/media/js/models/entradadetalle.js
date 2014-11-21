@@ -2,7 +2,7 @@ var intimpa = intimpa || {};
 
 (function() {
 
-  intimpa.VentaDetalle = Backbone.Model.extend({
+  intimpa.EntradaDetalle = Backbone.Model.extend({
     idAttribute: "row",
     defaults: function() {
       return {

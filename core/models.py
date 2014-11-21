@@ -11,10 +11,8 @@ class Producto(models.Model):
   comercial = models.CharField(max_length = 255, blank = True)
   unidad_medida = models.CharField(max_length = 100)
   procedencia = models.CharField(max_length = 255, blank = True)
-  unidad_caja = models.IntegerField()
-  precio_caja = models.DecimalField(max_digits = 10, decimal_places = 2, default = Decimal('0.00'))
-  precio_unidad = models.DecimalField(max_digits = 10, decimal_places = 2, default = Decimal('0.00'))
-  precio_costo = models.DecimalField(max_digits = 10, decimal_places = 2, default = Decimal('0.00'))
+  precio_unidad = models.DecimalField(max_digits = 19, decimal_places = 6, default = Decimal('0.000000'))
+  precio_costo = models.DecimalField(max_digits = 19, decimal_places = 6, default = Decimal('0.000000'))
   activo = models.BooleanField(default = True)
 
   def __unicode__(self):

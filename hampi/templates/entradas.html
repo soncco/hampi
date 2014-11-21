@@ -14,8 +14,10 @@
   <thead>
     <tr>
       <th>Fecha de Entrada</th>
-      <th class="filter-select filter-exact" data-placeholder="Documento">Documento</th>
-      <th>Fecha de Documento</th>
+      <th>Factura</th>
+      <th>Fecha de Factura</th>
+      <th>Guía</th>
+      <th>Fecha de Guía</th>
       <th class="filter-select filter-exact" data-placeholder="Quién">Quién</th>
       <th class="filter-select filter-exact" data-placeholder="Almacén">Almacen</th>
       <th class="sorter-false">Acciones</th>
@@ -25,8 +27,10 @@
     {% for entrada in entradas %}
     <tr>
       <td>{{ entrada.fecha|date:"d b Y" }}</td>
-      <td>{{ entrada.get_documento_display }}</td>
-      <td>{{ entrada.fecha_documento|date:"d b Y" }}</td>
+      <td>{{ entrada.numero_factura }}</td>
+      <td>{{ entrada.fecha_factura|date:"d b Y" }}</td>
+      <td>{{ entrada.numero_guia }}</td>
+      <td>{{ entrada.fecha_guia|date:"d b Y" }}</td>
       <td>{{ entrada.quien.first_name }}</td>
       <td>{{ entrada.almacen }}</td>
       <td class="text-center">
@@ -36,13 +40,13 @@
     </tr>
     {% empty %}
     <tr>
-      <td colspan="6" class="text-center">No hay entradas registradas</td>
+      <td colspan="8" class="text-center">No hay entradas registradas</td>
     </tr>
     {% endfor %}
   </tbody>
   <tfoot>
     <tr>
-      <th colspan="6" class="ts-pager form-horizontal">
+      <th colspan="8" class="ts-pager form-horizontal">
         <button type="button" class="btn first"><i class="icon-step-backward glyphicon glyphicon-step-backward"></i></button>
         <button type="button" class="btn prev"><i class="icon-arrow-left glyphicon glyphicon-backward"></i></button>
         <span class="pagedisplay"></span> <!-- this can be any element, including an input -->

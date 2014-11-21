@@ -18,9 +18,12 @@
         <strong>Almacén:</strong> {{ entrada.almacen }}
       </p>
       <p>
-        <strong>Documento:</strong> {{ entrada.get_documento_display }}
-        <strong>Número de documento:</strong> {{ entrada.numero_documento }}
-        <strong>Fecha del documento:</strong> {{ entrada.fecha_documento }}
+        <strong>Número de factura:</strong> {{ entrada.numero_factura }}
+        <strong>Fecha de factura:</strong> {{ entrada.fecha_factura }}
+      </p>
+      <p>
+        <strong>Número de guía:</strong> {{ entrada.numero_guia }}
+        <strong>Fecha de guía:</strong> {{ entrada.fecha_guia }}
       </p>
       {% if entrada.documento != 'G' %}
       <p>
@@ -45,8 +48,6 @@
             <th class="padding-cell">Vencimiento</th>
             <th class="padding-cell">Cantidad</th>
             <th class="padding-cell">Unitario</th>
-            <th class="padding-cell">Subtotal</th>
-            <th class="padding-cell">Descuento</th>
             <th class="padding-cell">Total</th>
           </tr>
         </thead>
@@ -58,12 +59,8 @@
             <td class="padding-cell">{{ detalle.lote.numero }}</td>
             <td class="padding-cell">{{ detalle.lote.vencimiento }}</td>
             <td class="text-right padding-cell">{{ detalle.cantidad }}</td>
-            <td class="text-right padding-cell">{{ detalle.precio_unitario }}</td>
-            <td class="text-right padding-cell">{{ detalle.cantidad|mul:detalle.precio_unitario|floatformat:2 }}</td>
-            <td class="text-right padding-cell">{{ detalle.descuento }}</td>
-            {% with subtotal=detalle.cantidad|mul:detalle.precio_unitario %}
-              <td class="text-right padding-cell">{{ subtotal|sub:detalle.descuento|floatformat:2 }}</td>
-            {% endwith %}
+            <td class="text-right padding-cell">{{ detalle.precio_unitario|floatformat:6 }}</td>
+            <td class="text-right padding-cell">{{ detalle.cantidad|mul:detalle.precio_unitario|floatformat:6 }}</td>
           </tr>
           {% endfor %}
         </tbody>

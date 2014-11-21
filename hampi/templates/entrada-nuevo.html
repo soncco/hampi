@@ -22,25 +22,23 @@
       </select>
     </div>
     <div class="form-group">
-      <select name="documento" id="documento" class="form-control" required>
-        <option value="">Documento</option>
-        <option value="B">Boleta</option>
-        <option value="F">Factura</option>
-        <option value="G">Guía de Remisión</option>
-      </select>
-    </div>
-    <div class="form-group" style="display: none;">
-      <input type="text" class="form-control autocomplete-proveedores" id="proveedor" required autocomplete="off" placeholder="Proveedor">
+      <input type="text" class="form-control autocomplete-proveedores" id="proveedor" required autocomplete="off" placeholder="Proveedor *" data-toggle="tooltip" data-placement="bottom" title="Proveedor">
       <input type="hidden" id="proveedor-id" name="proveedor" value="">
     </div>
     <div class="form-group">
-      <input type="text" class="form-control" name="numero_documento" id="numero_documento" required autocomplete="off" placeholder="Número Documento">
+      <input type="text" class="form-control" name="numero_factura" id="numero_factura" required autocomplete="off" placeholder="Número Factura *" data-toggle="tooltip" data-placement="bottom" title="Número Factura">
     </div>
     <div class="form-group">
-      <input type="text" class="form-control datepicker" name="fecha_documento" id="fecha_documento" required autocomplete="off" placeholder="Fecha del Documento">
+      <input type="text" class="form-control datepicker" name="fecha_factura" id="fecha_factura" required autocomplete="off" placeholder="Fecha Factura *" data-toggle="tooltip" data-placement="bottom" title="Fecha Factura">
     </div>
     <div class="form-group">
-      <textarea name="notas" id="notas" cols="30" rows="10" class="form-control" placeholder="Notas"></textarea>
+      <input type="text" class="form-control" name="numero_guia" id="numero_guia" required autocomplete="off" placeholder="Número Guía *" data-toggle="tooltip" data-placement="bottom" title="Número Guía">
+    </div>
+    <div class="form-group">
+      <input type="text" class="form-control datepicker" name="fecha_guia" id="fecha_guia" required autocomplete="off" placeholder="Fecha Guía *" data-toggle="tooltip" data-placement="bottom" title="Fecha Guía">
+    </div>
+    <div class="form-group">
+      <textarea name="notas" id="notas" cols="30" rows="10" class="form-control" placeholder="Notas" data-toggle="tooltip" data-placement="top" title="Notas"></textarea>
     </div>
   </div>
   <div class="col-md-8 line-left">
@@ -56,7 +54,6 @@
         <tr>
           <th class="col-md-2">Cantidad</th>
           <th>Producto</th>
-          <th class="col-md-2">Descuento</th>
         </tr>
       </thead>
       <tbody id="detalles">
@@ -67,14 +64,11 @@
           <td>
             <input type="text" class="form-control input-sm autocomplete-productos">
           </td>
-          <td>
-            <input type="number" class="form-control input-sm descuento" min="0" step="any" value="0">
-          </td>
         </tr>
       </tbody>
       <tfoot>
         <tr>
-          <td colspan="3">
+          <td colspan="2">
             <button class="btn btn-info btn-block btn-sm" type="button" id="add-detalle"><i class="fa fa-plus-circle"></i> Agregar</button>
           </td>
         </tr>
@@ -84,14 +78,6 @@
       <h5>Detalles Agregados</h5>
     </div>
     <table class="table table-striped able-condensed table-bordered small">
-      <tfoot>
-        <tr>
-          <td colspan="7" class="text-right">Venta Total:</td>
-          <td colspan="2" class="text-right">
-            <input type="number" class="form-control input-sm" id="total_venta" name="total_venta" readonly value="0.0">
-          </td>
-        </tr>
-      </tfoot>
       <thead>
         <tr>
           <th>Lote</th>
@@ -99,8 +85,6 @@
           <th>Producto</th>
           <th>Cantidad</th>
           <th>Unitario</th>
-          <th>Subtotal</th>
-          <th>Descuento</th>
           <th>Total</th>
           <th></th>
         </tr>
@@ -135,8 +119,8 @@
 <script src="/media/bower_components/handlebars/handlebars.min.js"></script>
 <script src="/media/bower_components/underscore/underscore.js"></script>
 <script src="/media/bower_components/backbone/backbone.js"></script>
-<script src="/media/js/models/ventadetalle.js"></script>
-<script src="/media/js/collections/ventadetalles.js"></script>
+<script src="/media/js/models/entradadetalle.js"></script>
+<script src="/media/js/collections/entradadetalles.js"></script>
 <script src="/media/js/main.js"></script>
 <script src="/media/js/entradas.js"></script>
 <script src="/media/js/add-producto.js"></script>
@@ -152,15 +136,13 @@
     <td>{% templatetag openvariable %}producto{% templatetag closevariable %}</td>
     <td class="text-right">{% templatetag openvariable %}cantidad{% templatetag closevariable %}</td>
     <td class="text-right">{% templatetag openvariable %}unitario{% templatetag closevariable %}</td>
-    <td class="text-right">{% templatetag openvariable %}subtotal{% templatetag closevariable %}</td>
-    <td class="text-right">{% templatetag openvariable %}descuento{% templatetag closevariable %}</td>
     <td class="text-right total">{% templatetag openvariable %}total{% templatetag closevariable %}</td>
     <td>
       <button class="btn btn-danger btn-sm remove-detalle" type="button"><i class="fa fa-times"></i></button>
     </td>
   </tr>
 </script>
-  <script type="text/x-handlebars-template" id="tpl-hidden">
+<script type="text/x-handlebars-template" id="tpl-hidden">
   <input type="hidden" name="{% templatetag openvariable %} name {% templatetag closevariable %}" value="{% templatetag openvariable %} value {% templatetag closevariable %}">
 </script>
 {% endblock %}
