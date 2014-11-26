@@ -36,7 +36,7 @@ def generar_salida_venta(venta):
   salida.numero_factura = venta.numero_factura
   salida.fecha_factura = venta.fecha_factura
   salida.numero_guia = venta.numero_guia
-  salida.fecha_guia = venta.fecha_guia
+  salida.fecha_guia = venta.fecha_emision
   salida.almacen = venta.almacen
   salida.notas = 'Salida generada desde la Venta número %s' % venta.pk
   salida.quien = venta.vendedor
