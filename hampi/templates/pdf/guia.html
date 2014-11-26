@@ -1,77 +1,66 @@
 {% load mathfilters %}
-<!doctype html>
 <html>
-  <head>
-    {% include 'pdf/styles.html' %}
-  </head>
-  <body>
-    {% include 'pdf/meta.html' %}
-    <div class="main-title">
-      <h2 class="line-up-down line-grey simple-shadow padding">Guía de remisión</h2>
-    </div>
+<head>
+<style type="text/css">
+  @page {
+    size: a4 portrait;
 
-    <div class="info">
-      <p>
-        <strong>Fecha Emisión:</strong> {{ venta.fecha_emision }} 
-        <strong>Fecha Traslado:</strong> {{ venta.fecha_traslado }} 
-      </p>
-      <p>
-        <strong>Número de documento:</strong> {{ venta.numero_guia }}
-      </p>
-      <p>
-        <strong>Orden de Compra:</strong> {{ venta.orden_compra }} 
-      </p>
-      <p>
-        <strong>Domicilio Partida:</strong> Magisterio
-      </p>
-      <p>
-        <strong>Domicilio Llegada:</strong> {{ venta.cliente.direccion }} {{ venta.cliente.direccion }} {{ venta.cliente.distrito }} {{ venta.cliente.ciudad }}
-      </p>
-      <p>
-        <strong>Destinatario:</strong> {{ venta.cliente }}
-      </p>
-      <p class="line-down">
-        <strong>RUC:</strong> {{ venta.cliente.numero_documento }}
-      </p>
-      <p>
-        <strong>Marca:</strong> {{ venta.placa }}
-      </p>
-      <p class="line-down">
-        <strong>Licencia:</strong> {{ venta.licencia }}
-      </p>
-    </div>
+    @frame cliente {             /* Content frame 1 */
+        left: 44pt; width: 245pt; top: 90pt; height: 632pt;
+    }
+    @frame guia {             /* Content frame 2 */
+        left: 323pt; width: 245pt; top: 90pt; height: 632pt;
+    }
+  }
+</style>
+</head>
+<body>
+  <div id="cliente">
+    {{venta.cliente}}
+    {{venta.cliente.numero_documento}}
+    {{venta.cliente.direccion}} - {{venta.cliente.ciudad}} - {{venta.cliente.distrito}}
+  </div>
 
-    <div class="details">
-      <table class="table table-bordered" repeat="1">
-        <thead>
-          <tr>
-            <th class="padding-cell">Código</th>
-            <th class="wide-percent padding-cell">Producto</th>
-            <th class="padding-cell">Cantidad</th>
-            <th class="padding-cell">Unitario</th>
-            <th class="padding-cell">Total</th>
-          </tr>
-        </thead>
-        <tbody class="detalles">
-          {% for detalle in venta.ventadetalle_set.all %}
-          <tr>
-            <td class="padding-cell">{{ detalle.lote.producto.codigo }}</td>
-            <td class="padding-cell">{{ detalle.lote.producto }} Lote: {{ detalle.lote.numero }}, Vencimiento: {{ detalle.lote.vencimiento }}</td>
-            <td class="text-right padding-cell">{{ detalle.cantidad }}</td>
-            <td class="text-right padding-cell">{{ detalle.precio_unitario }}</td>
-            <td class="text-right padding-cell">{{ detalle.cantidad|mul:detalle.precio_unitario|floatformat:2 }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-        <tfoot>
-          <tr>
-            <td colspan="4" class="text-right padding-cell"><strong>Venta Total:</strong></td>
-            <td colspan="1" class="text-right padding-cell">
-              {{ venta.total_venta|floatformat:2 }}
-            </td>
-          </tr>
-        </tfoot>
-      </table>
-    </div>
-  </body>
+  <div id="guia">
+    {{venta.fecha_emision|date:"d/m/Y"}}
+    {{venta.numero_guia}}
+  </div>
+
+  <div id="codcliente">
+    {{venta.cliente.codcliente}}
+  </div>
+
+  <div id="oc">
+    {{venta.orden_compra}}
+  </div>
+
+  <div id="condiciones">
+    {{venta.condiciones}}
+  </div>
+
+  <div id="vencimiento">
+    {{venta.vencimiento|date:"d/m/y"}}
+  </div>
+
+  <div id="condiciones">
+    {{venta.quien}}
+  </div>
+
+  <div id="condiciones">
+    {{venta.hora}}
+  </div>
+
+  <div id="detalles">
+    {% for detalle in venta.ventadetalle_set.all %}
+      {{detalle.codigo}}
+      {{detalle.cantidad}}
+      {{detalle.lote.producto}}
+      {{detalle.lote.numero}}
+      {{detalle.lote.vencimiento|date:"d/m/y"}}
+      {{detalle.precio_unidad}}
+      {{detalle.total}}
+    {% endfor %}
+  </div>
+  
+</body>
 </html>
