@@ -468,6 +468,8 @@ def cotizacion_print(request, id):
   result = generate_pdf('pdf/cotizacion.html', file_object = resp, context = context)
   return result
 
+from django.views.decorators.csrf import csrf_exempt
+@csrf_exempt
 @login_required
 def producto(request):
   producto_form = ProductoForm(request.POST)
@@ -483,6 +485,7 @@ def producto(request):
     
     return HttpResponse('1')
 
+@csrf_exempt
 @login_required
 def producto_lote(request):
   instance = Producto.objects.get(pk = request.POST.get('producto-id'))
@@ -492,7 +495,6 @@ def producto_lote(request):
   
   return HttpResponse('1')
 
-from django.views.decorators.csrf import csrf_exempt
 @csrf_exempt
 @login_required
 def venta_editar(request):
