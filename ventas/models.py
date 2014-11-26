@@ -27,7 +27,6 @@ class Venta(models.Model):
 
   # Guia
   numero_guia = models.CharField(max_length = 60)
-  fecha_guia = models.DateField()
   fecha_emision = models.DateField()
   fecha_traslado = models.DateField()
   procedencia = models.CharField(max_length = 255)

@@ -270,4 +270,17 @@ var intimpa = intimpa || {};
     $('.itotal').val(total);
   });
 
+  $('.datepicker-start').datepicker({
+    changeMonth: true,
+    changeYear: true,
+    dateFormat: 'yy-mm-dd',
+    onSelect: function(date) {
+      debugger;
+      $end = $('.datepicker-end');
+      endDate = $(this).datepicker('getDate', '+30d');
+      endDate.setDate(endDate.getDate()+30);
+      $end.datepicker('setDate', endDate);
+    }
+  });
+
 })(jQuery)

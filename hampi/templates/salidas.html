@@ -14,8 +14,8 @@
   <thead>
     <tr>
       <th>Fecha de Salida</th>
-      <th class="filter-select filter-exact" data-placeholder="Documento">Documento</th>
-      <th>Fecha de Documento</th>
+      <th>Fecha de Factura</th>
+      <th>Número de Factura</th>
       <th class="filter-select filter-exact" data-placeholder="Quién">Quién</th>
       <th class="filter-select filter-exact" data-placeholder="Almacén">Almacen</th>
       <th>Venta</th>
@@ -26,8 +26,8 @@
     {% for salida in salidas %}
     <tr>
       <td>{{ salida.fecha|date:"d b Y" }}</td>
-      <td>{{ salida.get_documento_display }}</td>
-      <td>{{ salida.fecha_documento|date:"d b Y" }}</td>
+      <td>{{ salida.fecha_factura|date:"d b Y" }}</td>
+      <td>{{ salida.numero_factura }}</td>
       <td>{{ salida.quien.first_name }}</td>
       <td>{{ salida.almacen }}</td>
       <td>

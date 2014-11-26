@@ -24,16 +24,20 @@
       {{ salida.fecha }}
     </div>
     <div class="form-group">
-      <label>Documento:</label>
-      {{ salida.get_documento_display }}
+      <label>Número de factura:</label>
+      {{ salida.numero_factura }}
     </div>
     <div class="form-group">
-      <label>Número de documento:</label>
-      {{ salida.numero_documento }}
+      <label>Fecha del factura:</label>
+      {{ salida.fecha_factura }}
     </div>
     <div class="form-group">
-      <label>Fecha del documento:</label>
-      {{ salida.fecha_documento }}
+      <label>Número de guía:</label>
+      {{ salida.numero_guia }}
+    </div>
+    <div class="form-group">
+      <label>Fecha del guía:</label>
+      {{ salida.fecha_guia }}
     </div>
     <div class="form-group">
       <label>Quien:</label>
@@ -63,8 +67,6 @@
           <th>Vencimiento</th>
           <th>Cantidad</th>
           <th>Unitario</th>
-          <th>Subtotal</th>
-          <th>Descuento</th>
           <th>Total</th>
         </tr>
       </thead>
@@ -78,10 +80,6 @@
           <td>{{ detalle.cantidad }}</td>
           <td>{{ detalle.precio_unitario }}</td>
           <td>{{ detalle.cantidad|mul:detalle.precio_unitario }}</td>
-          <td>{{ detalle.descuento }}</td>
-          {% with subtotal=detalle.cantidad|mul:detalle.precio_unitario %}
-            <td class="text-right">{{ subtotal|sub:detalle.descuento|floatformat:2 }}</td>
-          {% endwith %}
         </tr>
         {% endfor %}
       </tbody>

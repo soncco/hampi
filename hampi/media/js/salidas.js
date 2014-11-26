@@ -36,11 +36,9 @@ var intimpa = intimpa || {};
               data: item,
               label: '(' + item.unidades + ') ' 
                 + item.lote.numero + ' - ' 
-                + item.lote.producto.codigo + ' - ' 
                 + item.lote.producto.producto + ' ' 
                 + item.lote.producto.marca,
-              value: item.lote.producto.codigo + ' - ' 
-                + item.lote.numero + ' ' 
+              value: item.lote.numero + ' ' 
                 + item.lote.producto.producto + ' ' 
                 + item.lote.producto.marca
             }
@@ -71,13 +69,11 @@ var intimpa = intimpa || {};
   $('#add-detalle').click(function() {
     $producto = $('.autocomplete-productos');
     $cantidad = $('.cantidad');
-    $descuento = $('.descuento');
     $numero = $('#numero');
     $vencimiento = $('#vencimiento');
 
     if($producto.val() !== '' &&
-      $cantidad.val() !== '' &&
-      $descuento.val() !== '') {
+      $cantidad.val() !== '') {
       row = $tplDetalle.html();
       template = Handlebars.compile(row);
 
@@ -89,16 +85,10 @@ var intimpa = intimpa || {};
         numero: $numero.val(),
         vencimiento: $vencimiento.val(),
         cantidad: $cantidad.val(),
-        descuento: $descuento.val(),
         unitario: $('#unitario').val(),
-        subtotal: function () {
+        total: function () {
           return (this.cantidad * this.unitario).toFixed(2);
         },
-        total: function() {
-          //descuento = (this.subtotal() * this.descuento) / 100;
-          //return (this.subtotal() - descuento).toFixed(2);
-          return (this.subtotal() - this.descuento).toFixed(2);
-        }
       };
 
       $detalles.append(template(data));
@@ -110,7 +100,6 @@ var intimpa = intimpa || {};
         'lote': $('#producto-id').val(),
         'precio_unitario': data.unitario,
         'cantidad': data.cantidad,
-        'descuento': data.descuento,
         'total': data.total()
       }, {'validate': true});
 
@@ -120,7 +109,6 @@ var intimpa = intimpa || {};
 
       $producto.val('');
       $cantidad.val('').focus();
-      $descuento.val(0);
 
     } else {
       intimpa.betterAlert.warning('Completa los campos requeridos del detalle.');
@@ -166,26 +154,26 @@ var intimpa = intimpa || {};
         'name': getName(i, 'cantidad'),
         'value': item.attributes.cantidad
       };
-      objDesc = {
-        'name': getName(i, 'descuento'),
-        'value': item.attributes.descuento
+      objTotal = {
+        'name': getName(i, 'total'),
+        'value': item.attributes.total
       };
       total += parseFloat(item.attributes.total);
 
       tplProducto = Handlebars.compile($tplHidden.html());
       tplUnitario = Handlebars.compile($tplHidden.html());
       tplCantidad = Handlebars.compile($tplHidden.html());
-      tplDescuento = Handlebars.compile($tplHidden.html());
+      tplTotal = Handlebars.compile($tplHidden.html());
 
       htmlProducto = tplProducto(objProd);
       htmlUnitario = tplUnitario(objUnit);
       htmlCantidad = tplCantidad(objCant);
-      htmlDescuento = tplDescuento(objDesc);
+      htmlTotal = tplCantidad(objTotal);
 
       $form.append(htmlProducto);
       $form.append(htmlUnitario);
       $form.append(htmlCantidad);
-      $form.append(htmlDescuento);
+      $form.append(htmlTotal);
       i++;
     });
 

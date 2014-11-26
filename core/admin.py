@@ -3,7 +3,7 @@ from django.contrib import admin
 from models import Producto, Segmento, Cliente, Proveedor, Gasto, TipoGasto, Lote
 
 class ProductoAdmin(admin.ModelAdmin):
-  list_display = ('codigo', 'producto', 'marca', 'procedencia', 'precio_unidad', 'activo',)
+  list_display = ('producto', 'marca', 'procedencia', 'precio_costo', 'precio_unidad', 'activo',)
   list_filter = ('activo', 'marca', 'procedencia',)
   search_fields = ['codigo', 'producto__producto', 'marca', 'procedencia']
 

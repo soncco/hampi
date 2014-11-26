@@ -29,7 +29,7 @@ def excel_deudas(request):
   fin = request.POST.get('fin')
   tipo = request.POST.get('tipo')
 
-  deudas = Deuda.objects.filter(registro_padre__fecha_documento__range = (inicio, fin)).order_by('id')
+  deudas = Deuda.objects.filter(registro_padre__fecha_factura__range = (inicio, fin)).order_by('id')
 
   if tipo != 'todos':
     if tipo == 'cancelados':
@@ -86,8 +86,8 @@ def excel_deudas(request):
   row = 4
   for deuda in deudas:
     sheet.write('A%s' % row, deuda.registro_padre.almacen.nombre)
-    sheet.write('B%s' % row, deuda.registro_padre.fecha_documento, fecha)
-    sheet.write('C%s' % row, deuda.registro_padre.numero_documento)
+    sheet.write('B%s' % row, deuda.registro_padre.fecha_factura, fecha)
+    sheet.write('C%s' % row, deuda.registro_padre.numero_factura)
     sheet.write('D%s' % row, deuda.total, money)
     sheet.write('E%s' % row, total_amortizaciones(deuda), money)
     sheet.write_formula('F%s' % row, '{=D%s-E%s}' % (row, row), money)
@@ -95,7 +95,7 @@ def excel_deudas(request):
     sheet.write('H%s' % row, deuda.registro_padre.cliente.segmento.nombre)
     sheet.write('I%s' % row, deuda.registro_padre.cliente.ciudad)
     sheet.write('J%s' % row, deuda.registro_padre.cliente.distrito)
-    sheet.write('K%s' % row, diff_dates(deuda.registro_padre.fecha_documento, date.today()))
+    sheet.write('K%s' % row, diff_dates(deuda.registro_padre.fecha_factura, date.today()))
     sheet.write('L%s' % row, deuda.registro_padre.pk)
     sheet.write('M%s' % row, deuda.registro_padre.vendedor.username)
     sheet.write('N%s' % row, deuda.get_estado_display())
@@ -117,7 +117,7 @@ def excel_ventas(request):
   inicio = request.POST.get('inicio')
   fin = request.POST.get('fin')
 
-  ventas = VentaDetalle.objects.filter(registro_padre__fecha_documento__range = (inicio, fin)).order_by('id')
+  ventas = VentaDetalle.objects.filter(registro_padre__fecha_factura__range = (inicio, fin)).order_by('id')
 
   output = StringIO.StringIO()
 
@@ -159,17 +159,16 @@ def excel_ventas(request):
   sheet.write('H3', u'Lote', bold)
   sheet.write('I3', u'Vencimiento', bold)
   sheet.write('J3', u'Precio Unitario', bold)
-  sheet.write('K3', u'Descuento', bold)
-  sheet.write('L3', u'Cantidad', bold)
-  sheet.write('M3', u'Valor', bold)
-  sheet.write('N3', u'Fecha de Venta', bold)
-  sheet.write('O3', u'Número de Documento', bold)
-  sheet.write('P3', u'Vendedor', bold)
-  sheet.write('Q3', u'Total Venta', bold)
-  sheet.write('R3', u'Total Amortización', bold)
-  sheet.write('S3', u'Saldo', bold)
-  sheet.write('T3', u'Tipo', bold)
-  sheet.write('U3', u'Almacén', bold)
+  sheet.write('K3', u'Cantidad', bold)
+  sheet.write('L3', u'Total', bold)
+  sheet.write('M3', u'Fecha de Venta', bold)
+  sheet.write('N3', u'Número de Documento', bold)
+  sheet.write('O3', u'Vendedor', bold)
+  sheet.write('P3', u'Total Venta', bold)
+  sheet.write('Q3', u'Total Amortización', bold)
+  sheet.write('R3', u'Saldo', bold)
+  sheet.write('S3', u'Tipo', bold)
+  sheet.write('T3', u'Almacén', bold)
 
   row = 4
   for venta in ventas:
@@ -184,29 +183,28 @@ def excel_ventas(request):
     sheet.write('H%s' % row, venta.lote.numero)
     sheet.write('I%s' % row, venta.lote.vencimiento, fecha)
     sheet.write('J%s' % row, venta.precio_unitario, money)
-    sheet.write('K%s' % row, venta.descuento)
-    sheet.write('L%s' % row, venta.cantidad)
-    sheet.write_formula('M%s' % row, '{=L%s*J%s-K%s}' % (row, row, row))
-    sheet.write('N%s' % row, venta.registro_padre.fecha_documento, fecha)
-    sheet.write('O%s' % row, venta.registro_padre.numero_documento)
-    sheet.write('P%s' % row, venta.registro_padre.vendedor.username)
-    sheet.write('Q%s' % row, venta.registro_padre.total_venta)
+    sheet.write('K%s' % row, venta.cantidad)
+    sheet.write_formula('L%s' % row, '{=K%s*J%s}' % (row, row))
+    sheet.write('M%s' % row, venta.registro_padre.fecha_factura, fecha)
+    sheet.write('N%s' % row, venta.registro_padre.numero_factura)
+    sheet.write('O%s' % row, venta.registro_padre.vendedor.username)
+    sheet.write('P%s' % row, venta.registro_padre.total_venta)
     try:
-      sheet.write('R%s' % row, total_amortizaciones(venta.registro_padre.deuda))
+      sheet.write('Q%s' % row, total_amortizaciones(venta.registro_padre.deuda))
     except:
-      sheet.write('R%s' % row, 'Contado')
+      sheet.write('Q%s' % row, 'Contado')
 
     try:
-      sheet.write('S%s' % row, saldo_deuda(venta.registro_padre.deuda))
-      sheet.write_formula('Q%s' % row, '{=O%s-P%s}' % (row, row), money)
+      sheet.write('R%s' % row, saldo_deuda(venta.registro_padre.deuda))
+      sheet.write_formula('Q%s' % row, '{=P%s-Q%s}' % (row, row), money)
     except:
-      sheet.write('S%s' % row, 'Sin saldo')
+      sheet.write('R%s' % row, 'Sin saldo')
 
-    sheet.write('T%s' % row, venta.registro_padre.get_tipo_venta_display())
-    sheet.write('U%s' % row, venta.registro_padre.almacen.nombre)
+    sheet.write('S%s' % row, venta.registro_padre.get_tipo_venta_display())
+    sheet.write('T%s' % row, venta.registro_padre.almacen.nombre)
     row += 1
 
-  sheet.autofilter(('A3:U%s' % row))
+  sheet.autofilter(('A3:T%s' % row))
   book.close()
 
   # construct response
@@ -223,7 +221,7 @@ def excel_ranking(request):
   inicio = request.POST.get('inicio')
   fin = request.POST.get('fin')
 
-  ventas = VentaDetalle.objects.filter(registro_padre__fecha_documento__range = (inicio, fin)).order_by('id')
+  ventas = VentaDetalle.objects.filter(registro_padre__fecha_factura__range = (inicio, fin)).order_by('id')
 
   productos = Producto.objects.filter(activo = True)
 
@@ -301,7 +299,7 @@ def excel_entradas(request):
   inicio = request.POST.get('inicio')
   fin = request.POST.get('fin')
 
-  entradas = EntradaDetalle.objects.filter(entrada_padre__fecha_documento__range = (inicio, fin)).order_by('id')
+  entradas = EntradaDetalle.objects.filter(entrada_padre__fecha_factura__range = (inicio, fin)).order_by('id')
 
   output = StringIO.StringIO()
 
@@ -334,40 +332,38 @@ def excel_entradas(request):
   sheet.write('J1', datetime.datetime.strptime(fin, "%Y-%m-%d"), fecha2)
 
   sheet.write('A3', u'Fecha', bold)
-  sheet.write('B3', u'Documento', bold)
-  sheet.write('C3', u'Número de Documento', bold)
-  sheet.write('D3', u'Fecha de Documento', bold)
-  sheet.write('E3', u'Almacén', bold)
-  sheet.write('F3', u'Proveedor', bold)
-  sheet.write('G3', u'Quién', bold)
-  sheet.write('H3', u'Código', bold)
-  sheet.write('I3', u'Producto', bold)
-  sheet.write('J3', u'Cantidad', bold)
-  sheet.write('K3', u'Lote', bold)
-  sheet.write('L3', u'Vencimiento', bold)
+  sheet.write('B3', u'Número de Factura', bold)
+  sheet.write('C3', u'Fecha de Guía', bold)
+  sheet.write('D3', u'Almacén', bold)
+  sheet.write('E3', u'Proveedor', bold)
+  sheet.write('F3', u'Quién', bold)
+  sheet.write('G3', u'Código', bold)
+  sheet.write('H3', u'Producto', bold)
+  sheet.write('I3', u'Cantidad', bold)
+  sheet.write('J3', u'Lote', bold)
+  sheet.write('K3', u'Vencimiento', bold)
 
   row = 4
   for entrada in entradas:
 
     sheet.write('A%s' % row, entrada.entrada_padre.fecha, fecha)
-    sheet.write('B%s' % row, entrada.entrada_padre.get_documento_display())
-    sheet.write('C%s' % row, entrada.entrada_padre.numero_documento)
-    sheet.write('D%s' % row, entrada.entrada_padre.fecha_documento, fecha)
-    sheet.write('E%s' % row, entrada.entrada_padre.almacen.nombre)
+    sheet.write('B%s' % row, entrada.entrada_padre.numero_factura)
+    sheet.write('C%s' % row, entrada.entrada_padre.fecha_factura, fecha)
+    sheet.write('D%s' % row, entrada.entrada_padre.almacen.nombre)
     try:
-      sheet.write('F%s' % row, entrada.entrada_padre.proveedor.razon_social)
+      sheet.write('E%s' % row, entrada.entrada_padre.proveedor.razon_social)
     except:
-      sheet.write('F%s' % row, 'Sin Proveedor')
-    sheet.write('G%s' % row, entrada.entrada_padre.quien.username)
-    sheet.write('H%s' % row, entrada.lote.producto.codigo)
-    sheet.write('I%s' % row, entrada.lote.producto.producto)
-    sheet.write('J%s' % row, entrada.cantidad)
-    sheet.write('K%s' % row, entrada.lote.numero)
-    sheet.write('L%s' % row, entrada.lote.vencimiento, fecha)
+      sheet.write('E%s' % row, 'Sin Proveedor')
+    sheet.write('F%s' % row, entrada.entrada_padre.quien.username)
+    sheet.write('G%s' % row, entrada.lote.producto.codigo)
+    sheet.write('H%s' % row, entrada.lote.producto.producto)
+    sheet.write('I%s' % row, entrada.cantidad)
+    sheet.write('J%s' % row, entrada.lote.numero)
+    sheet.write('K%s' % row, entrada.lote.vencimiento, fecha)
 
     row += 1
 
-  sheet.autofilter(('A3:L%s' % row))
+  sheet.autofilter(('A3:K%s' % row))
   book.close()
 
   # construct response

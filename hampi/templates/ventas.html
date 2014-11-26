@@ -27,8 +27,8 @@
     <tr>
       <th>Número</th>
       <th class="filter-select filter-exact" data-placeholder="Almacén">Almacén</th>
-      <th class="filter-select filter-exact" data-placeholder="Documento">Documento</th>
-      <th>Fecha de Documento</th>
+      <th>Fecha de Factura</th>
+      <th>N° de Factura</th>
       <th class="filter-select filter-exact" data-placeholder="Vendedor">Vendedor</th>
       <th>Cliente</th>
       <th>Total Venta S/.</th>
@@ -42,8 +42,8 @@
     <tr>
       <td>{{ venta.pk }}</td>
       <td>{{ venta.almacen }}</td>
-      <td>{{ venta.get_documento_display }}</td>
-      <td>{{ venta.fecha_documento|date:"d b Y" }}</td>
+      <td>{{ venta.fecha_factura|date:"d b Y" }}</td>
+      <td>{{ venta.numero_factura }}</td>
       <td>{{ venta.vendedor.first_name }}</td>
       <td>{{ venta.cliente.razon_social }}</td>
       <td class="text-right">{{ venta.total_venta|floatformat:2 }}</td>

@@ -133,7 +133,7 @@ def venta_factura_print(request, id):
 def deudas(request):
   deudas = Deuda.objects.all().order_by('-id')
   for deuda in deudas:
-    deuda.atrasado = diff_dates(deuda.registro_padre.fecha_documento, date.today())
+    deuda.atrasado = diff_dates(deuda.registro_padre.fecha_factura, date.today())
     deuda.saldo = saldo_deuda(deuda)
 
   context = {'deudas': deudas}
@@ -224,6 +224,10 @@ def salida(request):
 
       messages.success(request, 'Se ha guardado la salida y se ha actualizado el Stock.')
       return HttpResponseRedirect(reverse('salidas'))
+
+    else:
+      print salida_form.errors
+      print detalle_form.errors
 
   almacenes = Almacen.objects.all()
   context = {'detalle_form': SalidaDetalleFormSet, 'almacenes': almacenes}
@@ -327,7 +331,7 @@ def liquidacion(request):
     context['quien'] = quien
 
     gastos = Gasto.objects.filter(almacen = almacen, fecha = fecha, quien = quien)
-    contados = Venta.objects.filter(almacen = almacen, fecha_documento = fecha, vendedor = quien, tipo_venta = 'C')
+    contados = Venta.objects.filter(almacen = almacen, fecha_factura = fecha, vendedor = quien, tipo_venta = 'C')
     amortizaciones = Amortizacion.objects.filter(deuda__registro_padre__almacen = almacen, fecha = fecha, recibido_por = quien)
     amortizaciones = amortizaciones.filter(~Q(monto = 0))
 
@@ -363,7 +367,7 @@ def liquidacion_print(request, fecha, id, user):
   context['quien'] = quien
 
   gastos = Gasto.objects.filter(almacen = almacen, fecha = fecha, quien = quien)
-  contados = Venta.objects.filter(almacen = almacen, fecha_documento = fecha, vendedor = quien, tipo_venta = 'C')
+  contados = Venta.objects.filter(almacen = almacen, fecha_factura = fecha, vendedor = quien, tipo_venta = 'C')
   amortizaciones = Amortizacion.objects.filter(deuda__registro_padre__almacen = almacen, fecha = fecha, recibido_por = quien)
   amortizaciones = amortizaciones.filter(~Q(monto = 0))
 
@@ -471,6 +475,7 @@ def producto(request):
   if producto_form.is_valid():
     instance = producto_form.save()
     instance.activo = True
+    instance.precio_costo = instance.precio_costo * Decimal(1.18)
     instance.save()
 
     lote = Lote(producto = instance, numero = request.POST.get('numero'), vencimiento = request.POST.get('vencimiento'))
@@ -485,4 +490,18 @@ def producto_lote(request):
   lote = Lote(producto = instance, numero = request.POST.get('numero'), vencimiento = request.POST.get('vencimiento'))
   lote.save()
   
+  return HttpResponse('1')
+
+from django.views.decorators.csrf import csrf_exempt
+@csrf_exempt
+@login_required
+def venta_editar(request):
+  pk = request.POST.get('pk')
+  name = request.POST.get('name')
+  value = request.POST.get('value')
+  
+  venta = Venta.objects.get(pk = pk)
+  setattr(venta, name, value)
+  venta.save()
+
   return HttpResponse('1')

@@ -22,18 +22,19 @@
       </select>
     </div>
     <div class="form-group">
-      <select name="documento" id="documento" class="form-control" required>
-        <option value="">Documento</option>
-        <option value="B">Boleta</option>
-        <option value="F">Factura</option>
-        <option value="G">Guía de Remisión</option>
-      </select>
+      <input type="text" class="form-control datepicker" name="fecha" id="fecha" required autocomplete="off" placeholder="Fecha de Salida *">
     </div>
     <div class="form-group">
-      <input type="text" class="form-control" name="numero_documento" id="numero_documento" required autocomplete="off" placeholder="Número Documento">
+      <input type="text" class="form-control" name="numero_factura" id="numero_factura" required autocomplete="off" placeholder="Número Factura *">
     </div>
     <div class="form-group">
-      <input type="text" class="form-control datepicker" name="fecha_documento" id="fecha_documento" required autocomplete="off" placeholder="Fecha del Documento">
+      <input type="text" class="form-control datepicker" name="fecha_factura" id="fecha_factura" required autocomplete="off" placeholder="Fecha de Factura *">
+    </div>
+    <div class="form-group">
+      <input type="text" class="form-control" name="numero_guia" id="numero_guia" required autocomplete="off" placeholder="Número Guía *">
+    </div>
+    <div class="form-group">
+      <input type="text" class="form-control datepicker" name="fecha_guia" id="fecha_guia" required autocomplete="off" placeholder="Fecha de Guía *">
     </div>
     <div class="form-group">
       <textarea name="notas" id="notas" cols="30" rows="10" class="form-control" placeholder="Notas"></textarea>
@@ -48,7 +49,6 @@
         <tr>
           <th class="col-md-2">Cantidad</th>
           <th>Producto</th>
-          <th class="col-md-2">Descuento</th>
         </tr>
       </thead>
       <tbody id="detalles">
@@ -58,9 +58,6 @@
           </td>
           <td>
             <input type="text" class="form-control input-sm autocomplete-productos">
-          </td>
-          <td>
-            <input type="number" class="form-control input-sm descuento" min="0" step="any" value="0">
           </td>
         </tr>
       </tbody>
@@ -78,7 +75,7 @@
     <table class="table table-striped able-condensed table-bordered small">
       <tfoot>
         <tr>
-          <td colspan="7" class="text-right">Venta Total:</td>
+          <td colspan="5" class="text-right">Venta Total:</td>
           <td colspan="2" class="text-right">
             <input type="number" class="form-control input-sm" id="total_venta" name="total_venta" readonly value="0.0">
           </td>
@@ -91,8 +88,6 @@
           <th>Producto</th>
           <th>Cantidad</th>
           <th>Unitario</th>
-          <th>Subtotal</th>
-          <th>Descuento</th>
           <th>Total</th>
           <th></th>
         </tr>
@@ -143,8 +138,6 @@
     <td>{% templatetag openvariable %}producto{% templatetag closevariable %}</td>
     <td class="text-right">{% templatetag openvariable %}cantidad{% templatetag closevariable %}</td>
     <td class="text-right">{% templatetag openvariable %}unitario{% templatetag closevariable %}</td>
-    <td class="text-right">{% templatetag openvariable %}subtotal{% templatetag closevariable %}</td>
-    <td class="text-right">{% templatetag openvariable %}descuento{% templatetag closevariable %}</td>
     <td class="text-right total">{% templatetag openvariable %}total{% templatetag closevariable %}</td>
     <td>
       <button class="btn btn-danger btn-sm remove-detalle" type="button"><i class="fa fa-times"></i></button>

@@ -15,9 +15,6 @@
         <strong>Número:</strong> {{ venta.pk }} 
       </p>
       <p>
-        <strong>Fecha:</strong> {{ venta.fecha }} 
-      </p>
-      <p>
         <strong>Almacén:</strong> {{ venta.almacen }} <strong>Tipo de Venta:</strong> {{ venta.get_tipo_venta_display }}
         {% if venta.tipo_venta == 'P' %}
         <strong>Estado:</strong> {{ venta.deuda.get_estado_display }}
@@ -27,9 +24,12 @@
         <strong>Orden de Compra:</strong> {{ venta.orden_compra }} 
       </p>
       <p>
-        <strong>Documento:</strong> {{ venta.get_documento_display }}
-        <strong>Número de documento:</strong> {{ venta.numero_documento }}
-        <strong>Fecha del documento:</strong> {{ venta.fecha_documento }}
+        <strong>Factura:</strong> {{ venta.numero_factura }}
+        <strong>Fecha de factura:</strong> {{ venta.fecha_factura }}
+      </p>
+      <p>
+        <strong>Guía:</strong> {{ venta.numero_guia }}
+        <strong>Fecha de guía:</strong> {{ venta.fecha_guia }}
       </p>
       <p class="line-down">
         <strong>Cliente:</strong> {{ venta.cliente }} ({{ venta.cliente.numero_documento }})
@@ -46,8 +46,6 @@
             <th>Vencimiento</th>
             <th class="padding-cell">Cantidad</th>
             <th class="padding-cell">Unitario</th>
-            <th class="padding-cell">Subtotal</th>
-            <th class="padding-cell">Descuento</th>
             <th class="padding-cell">Total</th>
           </tr>
         </thead>
@@ -61,16 +59,12 @@
             <td class="text-right padding-cell">{{ detalle.cantidad }}</td>
             <td class="text-right padding-cell">{{ detalle.precio_unitario }}</td>
             <td class="text-right padding-cell">{{ detalle.cantidad|mul:detalle.precio_unitario|floatformat:2 }}</td>
-            <td class="text-right padding-cell">{{ detalle.descuento }}</td>
-            {% with subtotal=detalle.cantidad|mul:detalle.precio_unitario %}
-              <td class="text-right padding-cell">{{ subtotal|sub:detalle.descuento|floatformat:2 }}</td>
-            {% endwith %}
           </tr>
           {% endfor %}
         </tbody>
         <tfoot>
           <tr>
-            <td colspan="8" class="text-right padding-cell"><strong>Venta Total:</strong></td>
+            <td colspan="6" class="text-right padding-cell"><strong>Venta Total:</strong></td>
             <td colspan="1" class="text-right padding-cell">
               {{ venta.total_venta|floatformat:2 }}
             </td>

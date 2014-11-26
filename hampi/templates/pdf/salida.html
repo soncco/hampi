@@ -18,9 +18,12 @@
         <strong>Almacén:</strong> {{ salida.almacen }}
       </p>
       <p>
-        <strong>Documento:</strong> {{ salida.get_documento_display }}
-        <strong>Número de documento:</strong> {{ salida.numero_documento }}
-        <strong>Fecha del documento:</strong> {{ salida.fecha_documento }}
+        <strong>Número de factura:</strong> {{ salida.numero_factura }}
+        <strong>Fecha del factura:</strong> {{ salida.fecha_factura }}
+      </p>
+      <p>
+        <strong>Número de guía:</strong> {{ salida.numero_guia }}
+        <strong>Fecha del guía:</strong> {{ salida.fecha_guia }}
       </p>
       <p>
         <strong>Quién:</strong> {{ salida.quien }}
@@ -46,8 +49,6 @@
             <th class="padding-cell">Vencimiento</th>
             <th class="padding-cell">Cantidad</th>
             <th class="padding-cell">Unitario</th>
-            <th class="padding-cell">Subtotal</th>
-            <th class="padding-cell">Descuento</th>
             <th class="padding-cell">Total</th>
           </tr>
         </thead>
@@ -61,10 +62,6 @@
             <td class="text-right padding-cell">{{ detalle.cantidad }}</td>
             <td class="text-right padding-cell">{{ detalle.precio_unitario }}</td>
             <td class="text-right padding-cell">{{ detalle.cantidad|mul:detalle.precio_unitario|floatformat:2 }}</td>
-            <td class="text-right padding-cell">{{ detalle.descuento }}</td>
-            {% with subtotal=detalle.cantidad|mul:detalle.precio_unitario %}
-              <td class="text-right padding-cell">{{ subtotal|sub:detalle.descuento|floatformat:2 }}</td>
-            {% endwith %}
           </tr>
           {% endfor %}
         </tbody>
