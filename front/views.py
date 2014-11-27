@@ -194,16 +194,16 @@ def venta_guia_print(request, id):
 
   # Fechas.
   top = 680
-  left = 60
+  left = 10
 
   p.drawString(left, top, venta.fecha_emision.strftime('%d/%m/%Y'))
-  p.drawString(left + 300, top, venta.fecha_traslado.strftime('%d/%m/%Y'))
+  p.drawString(left + 150, top, venta.fecha_traslado.strftime('%d/%m/%Y'))
 
   # Meta.
   top = 650
   p.drawString(left, top, venta.condiciones)
-  p.drawString(left + 300, top, venta.orden_compra)
-  p.drawString(left + 500, top, venta.fecha_factura.strftime('%d/%m/%Y'))
+  p.drawString(left + 50, top, venta.orden_compra)
+  p.drawString(left + 100, top, venta.fecha_factura.strftime('%d/%m/%Y'))
 
   # Direcciones.
   top = 600
