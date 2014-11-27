@@ -193,22 +193,22 @@ def venta_guia_print(request, id):
   p.setFont('A1979', fontsize)
 
   # Fechas.
-  top = 750
-  left = 30
+  top = 680
+  left = 60
 
   p.drawString(left, top, venta.fecha_emision.strftime('%d/%m/%Y'))
-  p.drawString(left + 100, top, venta.fecha_traslado.strftime('%d/%m/%Y'))
+  p.drawString(left + 300, top, venta.fecha_traslado.strftime('%d/%m/%Y'))
 
   # Meta.
-  top = 700
+  top = 650
   p.drawString(left, top, venta.condiciones)
-  p.drawString(left + 100, top, venta.orden_compra)
-  p.drawString(left + 200, top, venta.fecha_factura.strftime('%d/%m/%Y'))
+  p.drawString(left + 300, top, venta.orden_compra)
+  p.drawString(left + 500, top, venta.fecha_factura.strftime('%d/%m/%Y'))
 
   # Direcciones.
-  top = 650
+  top = 600
   p.drawString(left, top, venta.procedencia.upper())
-  p.drawString(left + 300, top, venta.llegada.upper())
+  p.drawString(left + 500, top, venta.llegada.upper())
 
   # Destino y Transporte.
   top = 600
