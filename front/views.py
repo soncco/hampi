@@ -189,7 +189,7 @@ def venta_guia_print(request, id):
 
   pdfmetrics.registerFont(TTFont('A1979', 'A1979.ttf'))
   p = canvas.Canvas(response, pagesize = A4)
-  p.setFont('A1979', 8)
+  p.setFont('A1979', 7)
 
   # Fechas.
   top = 750
@@ -249,7 +249,7 @@ def venta_guia_print(request, id):
   styles = getSampleStyleSheet()
   style = ParagraphStyle('A1979')
   style.fontName = 'A1979'
-  style.fontSize = 8
+  style.fontSize = 7
 
   story = []
   text = 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nulla voluptatibus dolorem ea tempora, recusandae autem explicabo modi tempore quod molestias sint consequuntur nesciunt nihil vero neque maxime unde tenetur, accusamus?'
