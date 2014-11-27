@@ -241,6 +241,22 @@ def venta_guia_print(request, id):
   p.drawString(left+400, top, venta.transportista)
   p.drawString(left+400, top-10, venta.ruc_transportista)
 
+  from reportlab.platypus import Paragraph, Frame
+  from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+  from reportlab.lib.units import inch
+  from reportlab.lib.enums import TA_JUSTIFY
+
+  styles = getSampleStyleSheet()
+  style = ParagraphStyle('A1979')
+  style.fontName = 'A1979'
+  style.fontSize = 8
+
+  story = []
+  text = 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nulla voluptatibus dolorem ea tempora, recusandae autem explicabo modi tempore quod molestias sint consequuntur nesciunt nihil vero neque maxime unde tenetur, accusamus?'
+  story.append(Paragraph(text, style))
+  f = Frame(100, 100, 200, 200, showBoundary = 0)
+  f.addFromList(story, p)
+
 
   p.showPage()
   p.save()
