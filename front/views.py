@@ -186,7 +186,7 @@ def venta_guia_print(request, id):
   response = HttpResponse(content_type = 'application/pdf')
 
   reportlab.rl_config.warnOnMissingFontGlyphs = 0
-  fontsize = 5
+  fontsize = 7
 
   pdfmetrics.registerFont(TTFont('A1979', 'A1979.ttf'))
   p = canvas.Canvas(response, pagesize = A4)
