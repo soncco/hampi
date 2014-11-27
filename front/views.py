@@ -21,6 +21,8 @@ from reportlab.lib.pagesizes import A4
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from unidecode import unidecode
+from reportlab.platypus import Paragraph, Frame
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 
 from numword.numword_es import cardinal
 
@@ -118,61 +120,83 @@ def venta_factura_print(request, id):
   response = HttpResponse(content_type = 'application/pdf')
 
   reportlab.rl_config.warnOnMissingFontGlyphs = 0
+  fontsize = 8
 
   pdfmetrics.registerFont(TTFont('A1979', 'A1979.ttf'))
   p = canvas.Canvas(response, pagesize = A4)
-  p.setFont('A1979', 8)
+  p.setFont('A1979', fontsize)
+
+  styles = getSampleStyleSheet()
+  style = ParagraphStyle('A1979')
+  style.fontName = 'A1979'
+  style.fontSize = fontsize
 
   # Cliente.
-  top = 750
-  left = 30
-  p.drawString(left, top, unidecode(venta.cliente.razon_social.upper()))
+
+  top = 470
+  left = 78
+  story = []
+  story.append(Paragraph(unidecode(venta.cliente.razon_social.upper()), style))
+  f = Frame(left, top, 300, 200, showBoundary = 0)
+  f.addFromList(story, p)
+
+  top = 650
+  left = 60
   p.drawString(left, top - 15, venta.cliente.numero_documento)
-  p.drawString(left, top - 30, '%s - %s - %s' % (venta.cliente.direccion.upper(), venta.cliente.ciudad.upper(), venta.cliente.distrito.upper()))
+
+  top = 430
+  left = 75
+  story = []
+  story.append(Paragraph('%s - %s - %s' % (venta.cliente.direccion.upper(), venta.cliente.ciudad.upper(), venta.cliente.distrito.upper()), style))
+  f = Frame(left, top, 270, 200, showBoundary = 0)
+  f.addFromList(story, p)
 
   # Guía.
-  left = 450
+  top = 660
+  left = 490
   p.drawString(left, top, venta.fecha_emision.strftime('%d/%m/%Y'))
-  p.drawString(left, top - 15, venta.numero_guia)
+  p.drawString(left, top - 45, venta.numero_guia)
 
   # Meta.
-  left = 30
-  top = 650
+  left = 50
+  top = 570
   p.drawString(left, top, venta.cliente.codcliente.upper())
-  p.drawString(left + 100, top, venta.orden_compra.upper())
-  p.drawString(left + 200, top, venta.condiciones.upper())
-  p.drawString(left + 300, top, venta.vencimiento.strftime('%d/%m/%Y'))
-  p.drawString(left + 400, top, venta.vendedor.first_name.upper())
-  p.drawString(left + 500, top, venta.hora)
+  p.drawString(left + 120, top, venta.orden_compra.upper())
+  p.drawString(left + 190, top, venta.condiciones.upper())
+  p.drawString(left + 292, top, venta.vencimiento.strftime('%d/%m/%Y'))
+  #p.drawString(left + 400, top, venta.vendedor.first_name.upper())
+  p.drawString(left + 520, top, venta.hora)
   
   # Detalles.
-  top = 600
+  top = 530
   left = 30
   for detalle in venta.ventadetalle_set.all():
     p.drawString(left, top, detalle.lote.producto.codigo)
-    p.drawString(left+100, top, str(detalle.cantidad))
-    p.drawString(left+200, top, unidecode(detalle.lote.producto.producto.upper()))
-    p.drawString(left+300, top, detalle.lote.numero)
-    p.drawString(left+400, top, detalle.lote.vencimiento.strftime('%d/%m/%Y'))
-    p.drawString(left+500, top, str(detalle.precio_unitario))
-    p.drawString(left+600, top, str(detalle.total))
+    p.drawRightString(left+30, top, str(detalle.cantidad))
+    p.drawString(left+50, top, detalle.lote.producto.unidad_medida.upper())
+    p.drawString(left+75, top, '%s - %s' % (unidecode(detalle.lote.producto.producto.upper()), unidecode(detalle.lote.producto.marca.upper())))
+    p.drawString(left+90, top-10, 'LOTE: %s' % detalle.lote.numero)
+    p.drawString(left+300, top-10, 'VCTO: %s' % detalle.lote.vencimiento.strftime('%d/%m/%Y'))
+    p.drawRightString(left+470, top, '%.3f' % detalle.precio_unitario)
+    p.drawRightString(left+530, top, '%.3f' % detalle.total)
 
-    top -= 10
+    top -= 25
 
   # Cardinal.
-  top = 100
-  p.drawString(left, top, cardinal(float(venta.total_venta)).upper())
+  top = 138
+  p.drawString(left+30, top, cardinal(float(venta.total_venta)).upper())
 
   # IGV.
-  top = 50
+  top = 115
   left = 500
 
   igv = float(venta.total_venta) * 0.18
   subtotal = float(venta.total_venta) - igv
 
+  top = 120
   p.drawString(left, top, '%.2f' % subtotal)
   p.drawString(left, top - 15, '%.2f' % igv)
-  p.drawString(left, top - 30, str(venta.total_venta))
+  p.drawString(left, top - 30, '%.2f' % venta.total_venta)
 
   p.showPage()
   p.save()
@@ -192,71 +216,77 @@ def venta_guia_print(request, id):
   p = canvas.Canvas(response, pagesize = A4)
   p.setFont('A1979', fontsize)
 
-  # Fechas.
-  top = 680
-  left = 10
-
-  p.drawString(left, top, venta.fecha_emision.strftime('%d/%m/%Y'))
-  p.drawString(left + 150, top, venta.fecha_traslado.strftime('%d/%m/%Y'))
-
-  # Meta.
-  top = 650
-  p.drawString(left, top, venta.condiciones)
-  p.drawString(left + 50, top, venta.orden_compra)
-  p.drawString(left + 100, top, venta.fecha_factura.strftime('%d/%m/%Y'))
-
-  # Direcciones.
-  top = 600
-  p.drawString(left, top, venta.procedencia.upper())
-  p.drawString(left + 500, top, venta.llegada.upper())
-
-  # Destino y Transporte.
-  top = 600
-  p.drawString(left, top, unidecode(venta.cliente.razon_social))
-  p.drawString(left, top - 15, venta.cliente.numero_documento)
-
-  left = 400
-  p.drawString(left, top, venta.vehiculo.upper())
-  p.drawString(left, top - 10, venta.inscripcion.upper())
-  p.drawString(left, top - 20, venta.licencia.upper())
-
-  # Detalles.
-  top = 550
-  left = 30
-  for detalle in venta.ventadetalle_set.all():
-    p.drawString(left, top, detalle.lote.producto.codigo)
-    p.drawString(left+100, top, str(detalle.cantidad))
-    p.drawString(left+200, top, unidecode(detalle.lote.producto.producto.upper()))
-    p.drawString(left+300, top, detalle.lote.numero)
-    p.drawString(left+400, top, detalle.lote.vencimiento.strftime('%d/%m/%Y'))
-    p.drawString(left+500, top, detalle.lote.producto.unidad_medida.upper())
-
-    top -= 10
-
-  # Comprobates y transporte.
-  top = 100
-  left = 30
-  p.drawString(left, top, 'FACTURA')
-  p.drawString(left+100, top-10, venta.numero_factura)
-
-  p.drawString(left+400, top, venta.transportista)
-  p.drawString(left+400, top-10, venta.ruc_transportista)
-
-  from reportlab.platypus import Paragraph, Frame
-  from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-  from reportlab.lib.units import inch
-  from reportlab.lib.enums import TA_JUSTIFY
-
   styles = getSampleStyleSheet()
   style = ParagraphStyle('A1979')
   style.fontName = 'A1979'
   style.fontSize = fontsize
 
+  # Fechas.
+  top = 680
+  left = 100
+
+  p.drawString(left, top, venta.fecha_emision.strftime('%d/%m/%Y'))
+  p.drawString(left + 150, top, venta.fecha_traslado.strftime('%d/%m/%Y'))
+
+  # Meta.
+  top = 645
+  left = 40
+  p.drawString(left, top, venta.condiciones)
+  p.drawString(left + 100, top, venta.orden_compra)
+  p.drawString(left + 200, top, venta.fecha_factura.strftime('%d/%m/%Y'))
+
+  # Direcciones.
+  top = 430
+  left = 70
   story = []
-  text = 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nulla voluptatibus dolorem ea tempora, recusandae autem explicabo modi tempore quod molestias sint consequuntur nesciunt nihil vero neque maxime unde tenetur, accusamus?'
-  story.append(Paragraph(text, style))
-  f = Frame(100, 100, 200, 200, showBoundary = 0)
+  story.append(Paragraph(venta.procedencia.upper(), style))
+  f = Frame(left, top, 260, 200, showBoundary = 0)
   f.addFromList(story, p)
+
+  story = []
+  story.append(Paragraph(venta.llegada.upper(), style))
+  f = Frame(left + 290, top, 240, 200, showBoundary = 0)
+  f.addFromList(story, p)
+
+  # Destino y Transporte.
+  top = 380
+  left = 70
+  story = []
+  story.append(Paragraph(unidecode(venta.cliente.razon_social.upper()), style))
+  f = Frame(left, top, 260, 200, showBoundary = 0)
+  f.addFromList(story, p)
+
+  top = 560
+  p.drawString(left, top - 15, venta.cliente.numero_documento)
+
+  left = 430
+  top = 570
+  p.drawString(left, top - 10, unidecode(venta.vehiculo.upper()))
+  p.drawString(left, top - 20, unidecode(venta.inscripcion.upper()))
+  p.drawString(left, top - 30, unidecode(venta.licencia.upper()))
+
+  # Detalles.
+  top = 500
+  left = 30
+  for detalle in venta.ventadetalle_set.all():
+    p.drawString(left, top, detalle.lote.producto.codigo)
+    p.drawRightString(left+30, top, str(detalle.cantidad))
+    p.drawString(left+70, top, detalle.lote.producto.unidad_medida.upper())
+    p.drawString(left+110, top, '%s - %s' % (unidecode(detalle.lote.producto.producto.upper()), unidecode(detalle.lote.producto.marca.upper())))
+    p.drawString(left+110, top-10, 'LOTE: %s' % detalle.lote.numero)
+    p.drawString(left+300, top-10, 'VCTO: %s' % detalle.lote.vencimiento.strftime('%d/%m/%Y'))
+
+    top -= 25
+
+  # Comprobates y transporte.
+  top = 110
+  left = 80
+  p.drawString(left, top, 'FACTURA')
+  p.drawString(left+140, top, venta.numero_factura)
+
+  top = 115
+  p.drawString(left+280, top, unidecode(venta.transportista.upper()))
+  p.drawString(left+280, top-15, venta.ruc_transportista)
 
 
   p.showPage()
