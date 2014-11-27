@@ -15,6 +15,15 @@ from django.contrib.auth.models import User
 
 from django_xhtml2pdf.utils import generate_pdf
 
+import reportlab.rl_config
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import A4
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+from unidecode import unidecode
+
+from numword.numword_es import cardinal
+
 from decimal import *
 from datetime import date
 
@@ -103,31 +112,140 @@ def venta_print(request, id):
   return result
 
 @login_required
-def venta_guia_print(request, id):
-  venta = Venta.objects.get(id = id)
-
-  resp = HttpResponse(content_type = 'application/pdf')
-  context = {'venta': venta}
-  result = generate_pdf('pdf/guia.html', file_object = resp, context = context)
-  return result
-
-@login_required
 def venta_factura_print(request, id):
   venta = Venta.objects.get(id = id)
 
-  resp = HttpResponse(content_type = 'application/pdf')
-  context = {'venta': venta}
-  if venta.tipo_venta == 'P':
-    amortizaciones = Amortizacion.objects.filter(deuda = venta.deuda.pk)
-    context['amortizaciones'] = amortizaciones
+  response = HttpResponse(content_type = 'application/pdf')
 
-  impuesto = (venta.total_venta * 18) / 100
-  subtotal = venta.total_venta - impuesto
-  context['impuesto'] = impuesto
-  context['subtotal'] = subtotal
+  reportlab.rl_config.warnOnMissingFontGlyphs = 0
 
-  result = generate_pdf('pdf/factura.html', file_object = resp, context = context)
-  return result
+  pdfmetrics.registerFont(TTFont('A1979', 'A1979.ttf'))
+  p = canvas.Canvas(response, pagesize = A4)
+  p.setFont('A1979', 8)
+
+  # Cliente.
+  top = 750
+  left = 30
+  p.drawString(left, top, unidecode(venta.cliente.razon_social.upper()))
+  p.drawString(left, top - 15, venta.cliente.numero_documento)
+  p.drawString(left, top - 30, '%s - %s - %s' % (venta.cliente.direccion.upper(), venta.cliente.ciudad.upper(), venta.cliente.distrito.upper()))
+
+  # Guía.
+  left = 450
+  p.drawString(left, top, venta.fecha_emision.strftime('%d/%m/%Y'))
+  p.drawString(left, top - 15, venta.numero_guia)
+
+  # Meta.
+  left = 30
+  top = 650
+  p.drawString(left, top, venta.cliente.codcliente.upper())
+  p.drawString(left + 100, top, venta.orden_compra.upper())
+  p.drawString(left + 200, top, venta.condiciones.upper())
+  p.drawString(left + 300, top, venta.vencimiento.strftime('%d/%m/%Y'))
+  p.drawString(left + 400, top, venta.vendedor.first_name.upper())
+  p.drawString(left + 500, top, venta.hora)
+  
+  # Detalles.
+  top = 600
+  left = 30
+  for detalle in venta.ventadetalle_set.all():
+    p.drawString(left, top, detalle.lote.producto.codigo)
+    p.drawString(left+100, top, str(detalle.cantidad))
+    p.drawString(left+200, top, unidecode(detalle.lote.producto.producto.upper()))
+    p.drawString(left+300, top, detalle.lote.numero)
+    p.drawString(left+400, top, detalle.lote.vencimiento.strftime('%d/%m/%Y'))
+    p.drawString(left+500, top, str(detalle.precio_unitario))
+    p.drawString(left+600, top, str(detalle.total))
+
+    top -= 10
+
+  # Cardinal.
+  top = 100
+  p.drawString(left, top, cardinal(float(venta.total_venta)).upper())
+
+  # IGV.
+  top = 50
+  left = 500
+
+  igv = float(venta.total_venta) * 0.18
+  subtotal = float(venta.total_venta) - igv
+
+  p.drawString(left, top, '%.2f' % subtotal)
+  p.drawString(left, top - 15, '%.2f' % igv)
+  p.drawString(left, top - 30, str(venta.total_venta))
+
+  p.showPage()
+  p.save()
+
+  return response
+
+@login_required
+def venta_guia_print(request, id):
+  venta = Venta.objects.get(id = id)
+
+  response = HttpResponse(content_type = 'application/pdf')
+
+  reportlab.rl_config.warnOnMissingFontGlyphs = 0
+
+  pdfmetrics.registerFont(TTFont('A1979', 'A1979.ttf'))
+  p = canvas.Canvas(response, pagesize = A4)
+  p.setFont('A1979', 8)
+
+  # Fechas.
+  top = 750
+  left = 30
+
+  p.drawString(left, top, venta.fecha_emision.strftime('%d/%m/%Y'))
+  p.drawString(left + 100, top, venta.fecha_traslado.strftime('%d/%m/%Y'))
+
+  # Meta.
+  top = 700
+  p.drawString(left, top, venta.condiciones)
+  p.drawString(left + 100, top, venta.orden_compra)
+  p.drawString(left + 200, top, venta.fecha_factura.strftime('%d/%m/%Y'))
+
+  # Direcciones.
+  top = 650
+  p.drawString(left, top, venta.procedencia.upper())
+  p.drawString(left + 300, top, venta.llegada.upper())
+
+  # Destino y Transporte.
+  top = 600
+  p.drawString(left, top, unidecode(venta.cliente.razon_social))
+  p.drawString(left, top - 15, venta.cliente.numero_documento)
+
+  left = 400
+  p.drawString(left, top, venta.vehiculo.upper())
+  p.drawString(left, top - 10, venta.inscripcion.upper())
+  p.drawString(left, top - 20, venta.licencia.upper())
+
+  # Detalles.
+  top = 550
+  left = 30
+  for detalle in venta.ventadetalle_set.all():
+    p.drawString(left, top, detalle.lote.producto.codigo)
+    p.drawString(left+100, top, str(detalle.cantidad))
+    p.drawString(left+200, top, unidecode(detalle.lote.producto.producto.upper()))
+    p.drawString(left+300, top, detalle.lote.numero)
+    p.drawString(left+400, top, detalle.lote.vencimiento.strftime('%d/%m/%Y'))
+    p.drawString(left+500, top, detalle.lote.producto.unidad_medida.upper())
+
+    top -= 10
+
+  # Comprobates y transporte.
+  top = 100
+  left = 30
+  p.drawString(left, top, 'FACTURA')
+  p.drawString(left+100, top-10, venta.numero_factura)
+
+  p.drawString(left+400, top, venta.transportista)
+  p.drawString(left+400, top-10, venta.ruc_transportista)
+
+
+  p.showPage()
+  p.save()
+
+  return response
 
 @login_required
 def deudas(request):
