@@ -186,10 +186,11 @@ def venta_guia_print(request, id):
   response = HttpResponse(content_type = 'application/pdf')
 
   reportlab.rl_config.warnOnMissingFontGlyphs = 0
+  fontsize = 5
 
   pdfmetrics.registerFont(TTFont('A1979', 'A1979.ttf'))
   p = canvas.Canvas(response, pagesize = A4)
-  p.setFont('A1979', 7)
+  p.setFont('A1979', fontsize)
 
   # Fechas.
   top = 750
@@ -249,7 +250,7 @@ def venta_guia_print(request, id):
   styles = getSampleStyleSheet()
   style = ParagraphStyle('A1979')
   style.fontName = 'A1979'
-  style.fontSize = 7
+  style.fontSize = fontsize
 
   story = []
   text = 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nulla voluptatibus dolorem ea tempora, recusandae autem explicabo modi tempore quod molestias sint consequuntur nesciunt nihil vero neque maxime unde tenetur, accusamus?'
