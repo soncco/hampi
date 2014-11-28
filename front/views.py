@@ -160,7 +160,7 @@ def venta_factura_print(request, id):
   # Meta.
   left = 50
   top = 570
-  p.drawString(left, top, venta.cliente.codcliente.upper())
+  p.drawString(left-5, top, venta.cliente.codcliente.upper())
   p.drawString(left + 110, top, venta.orden_compra.upper())
   p.drawString(left + 190, top, venta.condiciones.upper())
   p.drawString(left + 292, top, venta.vencimiento.strftime('%d/%m/%Y'))
@@ -174,7 +174,7 @@ def venta_factura_print(request, id):
     p.drawString(left, top, detalle.lote.producto.codigo)
     p.drawRightString(left+30, top, str(detalle.cantidad))
     p.drawString(left+50, top, detalle.lote.producto.unidad_medida.upper())
-    p.drawString(left+75, top, '%s - %s' % (unidecode(detalle.lote.producto.producto.upper()), unidecode(detalle.lote.producto.marca.upper())))
+    p.drawString(left+80, top, '%s - %s' % (unidecode(detalle.lote.producto.producto.upper()), unidecode(detalle.lote.producto.marca.upper())))
     p.drawString(left+90, top-10, 'LOTE: %s' % detalle.lote.numero)
     p.drawString(left+300, top-10, 'VCTO: %s' % detalle.lote.vencimiento.strftime('%d/%m/%Y'))
     p.drawRightString(left+470, top, '%.3f' % detalle.precio_unitario)
