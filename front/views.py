@@ -171,16 +171,34 @@ def venta_factura_print(request, id):
   top = 530
   left = 30
   for detalle in venta.ventadetalle_set.all():
+    tab = 25
     p.drawString(left, top, detalle.lote.producto.codigo)
     p.drawRightString(left+30, top, str(detalle.cantidad))
     p.drawString(left+50, top, detalle.lote.producto.unidad_medida.upper())
-    p.drawString(left+80, top, '%s - %s' % (unidecode(detalle.lote.producto.producto.upper()), unidecode(detalle.lote.producto.marca.upper())))
-    p.drawString(left+90, top-10, 'LOTE: %s' % detalle.lote.numero)
-    p.drawString(left+300, top-10, 'VCTO: %s' % detalle.lote.vencimiento.strftime('%d/%m/%Y'))
+
+    the_prod = '%s - %s' % (unidecode(detalle.lote.producto.producto.upper()), unidecode(detalle.lote.producto.marca.upper()))
+
+    if len(the_prod) > 58:
+      top = top - 186
+      story = []
+      story.append(Paragraph(the_prod, style))
+      f = Frame(left+80, top, 270, 200, showBoundary = 0)
+      f.addFromList(story, p)
+      top = top + 186
+
+      p.drawString(left+90, top-23, 'LOTE: %s' % detalle.lote.numero)
+      p.drawString(left+300, top-23, 'VCTO: %s' % detalle.lote.vencimiento.strftime('%d/%m/%Y'))
+      tab = 40
+    else:
+      p.drawString(left+80, top, the_prod)
+      p.drawString(left+90, top-10, 'LOTE: %s' % detalle.lote.numero)
+      p.drawString(left+300, top-10, 'VCTO: %s' % detalle.lote.vencimiento.strftime('%d/%m/%Y'))
+
+
     p.drawRightString(left+470, top, '%.3f' % detalle.precio_unitario)
     p.drawRightString(left+530, top, '%.3f' % detalle.total)
 
-    top -= 25
+    top -= tab
 
   # Cardinal.
   top = 138
@@ -222,14 +240,14 @@ def venta_guia_print(request, id):
   style.fontSize = fontsize
 
   # Fechas.
-  top = 675
+  top = 680
   left = 100
 
   p.drawString(left, top, venta.fecha_emision.strftime('%d/%m/%Y'))
   p.drawString(left + 150, top, venta.fecha_traslado.strftime('%d/%m/%Y'))
 
   # Meta.
-  top = 640
+  top = 645
   left = 40
   p.drawString(left, top, venta.condiciones)
   p.drawString(left + 100, top, venta.orden_compra)
