@@ -103,7 +103,8 @@ var intimpa = intimpa || {};
       $('#cliente-id').val(ui.item.data.id);
       llegada = ui.item.data.direccion + ' - '
         + ui.item.data.ciudad + ' - '
-        + ui.item.data.distrito;
+        + ui.item.data.distrito + ' - '
+        + ui.item.data.departamento;
       $('#llegada').val(llegada)
     },
   }

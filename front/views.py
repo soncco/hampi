@@ -133,21 +133,21 @@ def venta_factura_print(request, id):
 
   # Cliente.
 
-  top = 470
-  left = 84
+  top = 473
+  left = 87
   story = []
   story.append(Paragraph(unidecode(venta.cliente.razon_social.upper()), style))
   f = Frame(left, top, 300, 200, showBoundary = 0)
   f.addFromList(story, p)
 
-  top = 650
-  left = 60
+  top = 653
+  left = 63
   p.drawString(left, top - 15, venta.cliente.numero_documento)
 
-  top = 430
-  left = 78
+  top = 433
+  left = 80
   story = []
-  story.append(Paragraph('%s - %s - %s' % (venta.cliente.direccion.upper(), venta.cliente.ciudad.upper(), venta.cliente.distrito.upper()), style))
+  story.append(Paragraph('%s - %s - %s - %s' % (venta.cliente.direccion.upper(), venta.cliente.ciudad.upper(), venta.cliente.distrito.upper(), venta.cliente.departamento.upper()), style))
   f = Frame(left, top, 270, 200, showBoundary = 0)
   f.addFromList(story, p)
 
@@ -159,7 +159,7 @@ def venta_factura_print(request, id):
 
   # Meta.
   left = 50
-  top = 570
+  top = 573
   p.drawString(left-5, top, venta.cliente.codcliente.upper())
   p.drawString(left + 110, top, venta.orden_compra.upper())
   p.drawString(left + 190, top, venta.condiciones.upper())
@@ -240,22 +240,22 @@ def venta_guia_print(request, id):
   style.fontSize = fontsize
 
   # Fechas.
-  top = 680
+  top = 687
   left = 100
 
   p.drawString(left, top, venta.fecha_emision.strftime('%d/%m/%Y'))
   p.drawString(left + 150, top, venta.fecha_traslado.strftime('%d/%m/%Y'))
 
   # Meta.
-  top = 645
+  top = 655
   left = 40
   p.drawString(left, top, venta.condiciones)
   p.drawString(left + 100, top, venta.orden_compra)
   p.drawString(left + 200, top, venta.fecha_factura.strftime('%d/%m/%Y'))
 
   # Direcciones.
-  top = 425
-  left = 70
+  top = 440
+  left = 78
   story = []
   story.append(Paragraph(venta.procedencia.upper(), style))
   f = Frame(left, top, 260, 200, showBoundary = 0)
@@ -263,22 +263,22 @@ def venta_guia_print(request, id):
 
   story = []
   story.append(Paragraph(venta.llegada.upper(), style))
-  f = Frame(left + 290, top, 240, 200, showBoundary = 0)
+  f = Frame(left + 294, top, 230, 200, showBoundary = 0)
   f.addFromList(story, p)
 
   # Destino y Transporte.
-  top = 375
+  top = 384
   left = 70
   story = []
   story.append(Paragraph(unidecode(venta.cliente.razon_social.upper()), style))
   f = Frame(left, top, 260, 200, showBoundary = 0)
   f.addFromList(story, p)
 
-  top = 555
+  top = 565
   p.drawString(left, top - 15, venta.cliente.numero_documento)
 
   left = 430
-  top = 565
+  top = 570
   p.drawString(left, top - 10, unidecode(venta.vehiculo.upper()))
   p.drawString(left, top - 20, unidecode(venta.inscripcion.upper()))
   p.drawString(left, top - 30, unidecode(venta.licencia.upper()))
@@ -297,12 +297,12 @@ def venta_guia_print(request, id):
     top -= 25
 
   # Comprobates y transporte.
-  top = 105
+  top = 115
   left = 80
   p.drawString(left, top, 'FACTURA')
   p.drawString(left+140, top, venta.numero_factura)
 
-  top = 110
+  top = 128
   p.drawString(left+280, top, unidecode(venta.transportista.upper()))
   p.drawString(left+280, top-15, venta.ruc_transportista)
 

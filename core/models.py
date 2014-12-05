@@ -23,8 +23,8 @@ class Lote(models.Model):
   vencimiento = models.DateField()
   producto = models.ForeignKey(Producto)
 
-  #def __unicode__(self):
-  #  return '%s - Lote: %s %s' (self.producto, self.numero, self.vencimiento)
+  def __unicode__(self):
+    return '%s - Lote: %s' % (self.producto.producto, self.numero)
 
 class Segmento(models.Model):
   nombre = models.CharField(max_length = 100)
@@ -43,8 +43,9 @@ class Cliente(models.Model):
   tipo_documento = models.CharField(max_length = 1, choices = TIPOS, default = 'R')
   numero_documento  = models.CharField(max_length = 60)
   direccion = models.CharField(max_length = 255, blank = True)
-  ciudad = models.CharField(max_length = 100, blank = True)
-  distrito = models.CharField(max_length = 100, blank = True)
+  ciudad = models.CharField("Distrito", max_length = 100, blank = True)
+  distrito = models.CharField("Provincia", max_length = 100, blank = True)
+  departamento = models.CharField("Departamento", max_length = 100, blank = True)
   telefono = models.CharField(max_length = 50, blank = True)
 
   def __unicode__(self):

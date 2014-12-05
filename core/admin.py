@@ -13,8 +13,8 @@ class LoteAdmin(admin.ModelAdmin):
   search_fields = ['numero']
 
 class ClienteAdmin(admin.ModelAdmin):
-  list_display = ('razon_social', 'tipo_documento', 'numero_documento', 'ciudad', 'distrito',)
-  list_filter = ('ciudad', 'segmento',)
+  list_display = ('razon_social', 'codcliente', 'tipo_documento', 'numero_documento', 'ciudad', 'distrito', 'departamento',)
+  list_filter = ('ciudad', 'distrito', 'departamento', 'segmento',)
   search_fields = ['razon_social', 'numero_documento']
 
 class ProveedorAdmin(admin.ModelAdmin):

@@ -21,7 +21,7 @@ class LoteAlmacenSerializer(serializers.ModelSerializer):
 class ClienteSerializer(serializers.HyperlinkedModelSerializer):
   class Meta:
     model = Cliente
-    fields = ('url', 'id', 'razon_social', 'numero_documento', 'direccion', 'ciudad', 'distrito', 'telefono', 'codcliente',)
+    fields = ('url', 'id', 'razon_social', 'numero_documento', 'direccion', 'ciudad', 'distrito', 'departamento', 'telefono', 'codcliente',)
 
 class ProveedorSerializer(serializers.HyperlinkedModelSerializer):
   class Meta:

@@ -18,8 +18,9 @@
       <th>Número de Documento</th>
       <th>Dirección</th>
       <th>Teléfono</th>
-      <th class="filter-select filter-exact" data-placeholder="Ciudad">Ciudad</th>
       <th class="filter-select filter-exact" data-placeholder="Distrito">Distrito</th>
+      <th class="filter-select filter-exact" data-placeholder="Provincia">Provincia</th>
+      <th class="filter-select filter-exact" data-placeholder="Departamento">Departamento</th>
     </tr>
   </thead>
   <tbody>
@@ -33,16 +34,17 @@
       <td>{{ cliente.telefono }}</td>
       <td>{{ cliente.ciudad }}</td>
       <td>{{ cliente.distrito }}</td>
+      <td>{{ cliente.departamento }}</td>
     </tr>
     {% empty %}
     <tr>
-      <td colspan="8" class="text-center">No hay clientes registradps</td>
+      <td colspan="9" class="text-center">No hay clientes registradps</td>
     </tr>
     {% endfor %}
   </tbody>
   <tfoot>
     <tr>
-      <th colspan="8" class="ts-pager form-horizontal">
+      <th colspan="9" class="ts-pager form-horizontal">
         <button type="button" class="btn first"><i class="icon-step-backward glyphicon glyphicon-step-backward"></i></button>
         <button type="button" class="btn prev"><i class="icon-arrow-left glyphicon glyphicon-backward"></i></button>
         <span class="pagedisplay"></span> <!-- this can be any element, including an input -->
