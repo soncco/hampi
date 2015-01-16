@@ -19,8 +19,8 @@ class Producto(models.Model):
     return self.producto
 
 class Lote(models.Model):
-  numero = models.CharField(max_length = 255)
-  vencimiento = models.DateField()
+  numero = models.CharField(max_length = 255, blank = True)
+  vencimiento = models.DateField(blank = True, null = True)
   producto = models.ForeignKey(Producto)
 
   def __unicode__(self):

@@ -21,7 +21,7 @@ class Venta(models.Model):
   numero_factura = models.CharField(max_length = 60)
   fecha_factura = models.DateField()
   condiciones = models.CharField(max_length = 100, blank = True)
-  vencimiento = models.DateField()
+  vencimiento = models.DateField(blank = True, null = True)
   zona = models.CharField(max_length = 100, blank = True)
   hora = models.CharField(max_length = 100, blank = True)
 
