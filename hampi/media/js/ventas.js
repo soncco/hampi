@@ -57,7 +57,7 @@ var intimpa = intimpa || {};
     select: function(e, ui) {
       $('#producto-id').val(ui.item.data.lote.id);
       $('#numero').val(ui.item.data.lote.numero);
-      $('#vencimiento').val(ui.item.data.lote.vencimiento);
+      $('#vencimiento_p').val(ui.item.data.lote.vencimiento);
       $('.iunitario').val(ui.item.data.lote.producto.precio_unidad);
       cantidad = $('.cantidad').val();
       unitario = $('.iunitario').val();
@@ -115,7 +115,7 @@ var intimpa = intimpa || {};
     $iunitario = $('.iunitario');
     $itotal = $('.itotal');
     $numero = $('#numero');
-    $vencimiento = $('#vencimiento');
+    $vencimiento = $('#vencimiento_p');
 
     if($producto.val() !== '' &&
       $cantidad.val() !== '' &&
@@ -157,6 +157,7 @@ var intimpa = intimpa || {};
       $cantidad.val('').focus();
       $iunitario.val('');
       $itotal.val('');
+      $vencimiento.val('');
 
     } else {
       intimpa.betterAlert.warning('Completa los campos requeridos del detalle.');
