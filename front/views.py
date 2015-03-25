@@ -179,13 +179,22 @@ def venta_factura_print(request, id):
     p.drawRightString(left+30, top, str(detalle.cantidad))
     p.drawString(left+50, top, detalle.lote.producto.unidad_medida.upper())
 
-    the_prod = '%s - %s' % (unidecode(detalle.lote.producto.producto.upper()), unidecode(detalle.lote.producto.marca.upper()))
+    comercial = detalle.lote.producto.comercial.upper()
+    if comercial == '':
+      the_prod = '%s - %s' % (detalle.lote.producto.producto.upper(), unidecode(detalle.lote.producto.marca.upper()))
+    else:
+      the_prod = '%s  %s - %s' % (detalle.lote.producto.producto.upper(), comercial, unidecode(detalle.lote.producto.marca.upper()))
+
 
     if len(the_prod) > 58:
       top = top - 186
       story = []
       story.append(Paragraph(the_prod, style))
-      f = Frame(left+80, top, 270, 200, showBoundary = 0)
+      if len(the_prod) > 86:
+        f = Frame(left+80, top, 270, 210, showBoundary = 0)
+      else:
+        f = Frame(left+80, top, 270, 200, showBoundary = 0)
+
       f.addFromList(story, p)
       top = top + 186
       if detalle.lote.numero:
@@ -298,7 +307,11 @@ def venta_guia_print(request, id):
     p.drawString(left, top, detalle.lote.producto.codigo)
     p.drawRightString(left+30, top, str(detalle.cantidad))
     p.drawString(left+70, top, detalle.lote.producto.unidad_medida.upper())
-    p.drawString(left+110, top, '%s - %s' % (unidecode(detalle.lote.producto.producto.upper()), unidecode(detalle.lote.producto.marca.upper())))
+    comercial = detalle.lote.producto.comercial.upper()
+    if comercial == '':
+      p.drawString(left+110, top, '%s - %s' % (detalle.lote.producto.producto.upper(), unidecode(detalle.lote.producto.marca.upper())))
+    else:
+      p.drawString(left+110, top, '%s  %s - %s' % (detalle.lote.producto.producto.upper(), comercial, unidecode(detalle.lote.producto.marca.upper())))
     if detalle.lote.numero:
       p.drawString(left+110, top-10, 'LOTE: %s' % detalle.lote.numero)
     if detalle.lote.vencimiento:
