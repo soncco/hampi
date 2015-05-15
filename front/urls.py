@@ -23,6 +23,7 @@ urlpatterns = patterns('front.views',
   url(r'^entradas/$', 'entradas', name = 'entradas'),
   url(r'^entrada/print/(?P<id>.*)$', 'entrada_print', name = 'entrada_print'),
 
+
   url(r'^salida/$', 'salida', name = 'salida'),
   url(r'^salida/ver/(?P<id>.*)$', 'salida_view', name = 'salida_view'),
   url(r'^salidas/$', 'salidas', name = 'salidas'),

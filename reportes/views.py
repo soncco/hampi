@@ -770,3 +770,160 @@ def excel_cotizaciones(request):
   response['Content-Disposition'] = "attachment; filename=cotizaciones-%s.xlsx" % date.today()
 
   return response
+
+@login_required
+def anexo_print(request, id):
+  entrada = Entrada.objects.get(pk = id)
+
+  output = StringIO.StringIO()
+
+  book = Workbook(output)  
+  
+  bold = book.add_format({'bold': 1})
+  fecha = book.add_format({'num_format': 'dd/mm/yy'})
+
+  title = book.add_format({
+    'bold': 1,
+    'align': 'center',
+  })
+
+  fecha = book.add_format({
+    'num_format': 'd mmm yyyy',
+    'border': 1
+  })
+
+  borde = book.add_format({
+    'border': 1
+  })
+
+  cabecera = book.add_format({
+    'border': 1,
+    'bold': 1
+  })
+
+  border_top = book.add_format({
+    'top': 1,
+  })
+
+  # Anexo A
+
+  sheet = book.add_worksheet(u'Anexo A')
+  sheet.write('A3', 'Elaborado por:')
+  sheet.merge_range('A5:G5', u'Anexo Nro -A', title)
+  sheet.merge_range('A7:G7', u'Droguería Hampi Kallpa E.I.R.L.', title)
+  sheet.merge_range('A9:G9', u'Acta de Recepción y Conformidad', title)
+
+  sheet.write('A11', u'Fecha:', bold)
+  sheet.write('F11', u'Hora:', bold)
+  sheet.write('A12', u'Q.F. Director Técnico:', bold)
+  sheet.write('A13', u'Proveedor:', bold)
+  sheet.write('A14', u'Factura Nro:', bold)
+  sheet.write('F14', u'Fecha Factura:', bold)
+  sheet.write('A14', u'Guía de Remisión Nro:', bold)
+  sheet.write('F14', u'Fecha G/R:', bold)
+
+  #sheet.write('M1', datetime.datetime.strptime(fin, "%Y-%m-%d"), fecha2)
+
+  sheet.write('A17', u'Cantidad', cabecera)
+  sheet.write('B17', u'F.F.', cabecera)
+  sheet.write('C17', u'Descripción', cabecera)
+  sheet.write('D17', u'Fabricante', cabecera)
+  sheet.write('E17', u'F/V', cabecera)
+  sheet.write('F17', u'Lote', cabecera)
+
+  row = 18
+  for detalle in entrada.entradadetalle_set.all():
+
+    sheet.write('A%s' % row, detalle.cantidad, borde)
+    sheet.write('B%s' % row, '', borde)
+    sheet.write('C%s' % row, detalle.lote.producto.producto, borde)
+    sheet.write('D%s' % row, '', borde)
+    sheet.write('E%s' % row, detalle.lote.vencimiento, fecha)
+    sheet.write('F%s' % row, detalle.lote.numero, borde)
+    row += 1
+
+  row += 3
+  sheet.write('A%s' % row, u'Q.F. Director Técnico', border_top)
+
+  row += 2
+  sheet.write('A%s' % row, u'Elaborado por', cabecera)
+  sheet.write('B%s' % row, u'Revisado y Aprobado por:', cabecera)
+
+  row += 1
+  sheet.write('A%s' % row, '', borde)
+  sheet.write('B%s' % row, '', borde)
+
+
+  # Anexo B
+
+  sheet = book.add_worksheet(u'Anexo B')
+  sheet.write('A3', 'Elaborado por:')
+  sheet.merge_range('A5:M5', u'Anexo Nro -B', title)
+  sheet.merge_range('A7:M7', u'Acta de Recepción y Evaluación Organoléptica para el ingreso de productos farmaceuticos y afines al almacén de la', title)
+  sheet.merge_range('A9:M9', u'Droguería Hampi Kallpa E.I.R.L.', title)
+
+  sheet.write('A11', u'Fecha:', bold)
+  sheet.write('A13', u'Nro. Factura:', bold)
+  sheet.write('D13', u'Guía de Remisión:', bold)
+  sheet.write('G13', u'Proveedor:', bold)
+  sheet.write('H13', entrada.proveedor.razon_social, bold)
+
+  sheet.write('A15', '', cabecera)
+  sheet.merge_range('A15:D15', u'Producto', cabecera)
+  sheet.merge_range('E15:F15', u'Documentos', cabecera)
+  sheet.merge_range('G15:H15', u'Embalaje Adecuado', cabecera)
+  sheet.merge_range('I15:J15', u'Envaso Inmediato Adecuado', cabecera)
+  sheet.merge_range('K15:M15', u'Contenido', cabecera)
+
+  sheet.write('A16', u'Nro', cabecera)
+  sheet.write('B16', u'Descripción', cabecera)
+  sheet.write('C16', u'Lote', cabecera)
+  sheet.write('D16', u'FV', cabecera)
+  sheet.write('E16', u'RS', cabecera)
+  sheet.write('F16', u'Protocolo Análisis', cabecera)
+  sheet.write('G16', u'Si', cabecera)
+  sheet.write('H16', u'No', cabecera)
+  sheet.write('I16', u'Si', cabecera)
+  sheet.write('J16', u'No', cabecera)
+  sheet.write('K16', u'Color', cabecera)
+  sheet.write('L16', u'Aspecto', cabecera)
+  sheet.write('M16', u'No cuerpos extraños', cabecera)
+
+  row = 17
+  counter = 1
+  for detalle in entrada.entradadetalle_set.all():
+    sheet.write('A%s' % row, counter, borde)
+    sheet.write('B%s' % row, detalle.lote.producto.producto, borde)
+    sheet.write('C%s' % row, detalle.lote.numero, borde)
+    sheet.write('D%s' % row, detalle.lote.vencimiento, fecha)
+    sheet.write('E%s' % row, '', borde)
+    sheet.write('F%s' % row, '', borde)
+    sheet.write('G%s' % row, '', borde)
+    sheet.write('H%s' % row, '', borde)
+    sheet.write('I%s' % row, '', borde)
+    sheet.write('J%s' % row, '', borde)
+    sheet.write('K%s' % row, '', borde)
+    sheet.write('L%s' % row, '', borde)
+    sheet.write('M%s' % row, '', borde)
+    row += 1
+    counter += 1
+
+  row += 3
+  sheet.write('A%s' % row, u'Q.F. Director Técnico', border_top)
+
+  row += 2
+  sheet.write('A%s' % row, u'Elaborado por', cabecera)
+  sheet.write('B%s' % row, u'Revisado y Aprobado por:', cabecera)
+
+  row += 1
+  sheet.write('A%s' % row, '', borde)
+  sheet.write('B%s' % row, '', borde)
+
+  book.close()
+
+  # construct response
+  output.seek(0)
+  response = HttpResponse(output.read(), content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+  response['Content-Disposition'] = "attachment; filename=anexo-%s.xlsx" % entrada.pk
+
+  return response

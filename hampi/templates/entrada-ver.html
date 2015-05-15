@@ -7,6 +7,7 @@
       <a class="btn btn-success btn-sm" href="{% url 'entradas' %}"><i class="fa fa-table"></i> Ver todas las entradas</a>
       <a class="btn btn-success btn-sm" href="{% url 'entrada' %}"><i class="fa fa-book"></i> Registrar una entrada</a>
       <a class="btn btn-primary btn-sm" href="{% url 'entrada_print' entrada.id %}"><i class="fa fa-print"></i> Imprimir</a>
+      <a class="btn btn-info btn-sm" href="{% url 'anexo_print' entrada.id %}"><i class="fa fa-file-excel-o"></i> Anexos</a>
     </span>
   </h3>
 </div>
