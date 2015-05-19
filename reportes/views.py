@@ -817,6 +817,7 @@ def anexo_print(request, id):
   sheet.write('F11', u'Hora:', bold)
   sheet.write('A12', u'Q.F. Director Técnico:', bold)
   sheet.write('A13', u'Proveedor:', bold)
+  sheet.write('B13', entrada.proveedor.razon_social, bold)
   sheet.write('A14', u'Factura Nro:', bold)
   sheet.write('F14', u'Fecha Factura:', bold)
   sheet.write('A14', u'Guía de Remisión Nro:', bold)
@@ -835,9 +836,9 @@ def anexo_print(request, id):
   for detalle in entrada.entradadetalle_set.all():
 
     sheet.write('A%s' % row, detalle.cantidad, borde)
-    sheet.write('B%s' % row, '', borde)
+    sheet.write('B%s' % row, detalle.lote.producto.unidad_medida, borde)
     sheet.write('C%s' % row, detalle.lote.producto.producto, borde)
-    sheet.write('D%s' % row, '', borde)
+    sheet.write('D%s' % row, detalle.lote.producto.marca, borde)
     sheet.write('E%s' % row, detalle.lote.vencimiento, fecha)
     sheet.write('F%s' % row, detalle.lote.numero, borde)
     row += 1
