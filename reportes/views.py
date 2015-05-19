@@ -808,7 +808,7 @@ def anexo_print(request, id):
   # Anexo A
 
   sheet = book.add_worksheet(u'Anexo A')
-  sheet.write('A3', 'Elaborado por:')
+  #sheet.write('A3', 'Elaborado por:')
   sheet.merge_range('A5:G5', u'Anexo Nro -A', title)
   sheet.merge_range('A7:G7', u'Droguería Hampi Kallpa E.I.R.L.', title)
   sheet.merge_range('A9:G9', u'Acta de Recepción y Conformidad', title)
@@ -858,7 +858,7 @@ def anexo_print(request, id):
   # Anexo B
 
   sheet = book.add_worksheet(u'Anexo B')
-  sheet.write('A3', 'Elaborado por:')
+  #sheet.write('A3', 'Elaborado por:')
   sheet.merge_range('A5:M5', u'Anexo Nro -B', title)
   sheet.merge_range('A7:M7', u'Acta de Recepción y Evaluación Organoléptica para el ingreso de productos farmaceuticos y afines al almacén de la', title)
   sheet.merge_range('A9:M9', u'Droguería Hampi Kallpa E.I.R.L.', title)
