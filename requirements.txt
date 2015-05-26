@@ -11,6 +11,8 @@ django-mathfilters==0.2.1
 django-suit==0.2.8
 djangorestframework==2.3.14
 html5lib==0.999
+lxml==3.4.4
+python-docx==0.8.5
 reportlab==2.4
 six==1.7.2
 wsgiref==0.1.2
