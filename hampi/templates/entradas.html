@@ -36,7 +36,7 @@
       <td class="text-center">
         <a class="btn btn-xs btn-warning" href="{% url 'entrada_view' entrada.id %}" title="Ver detalles"><i class="fa fa-folder-open"></i></a>
         <a class="btn btn-xs btn-info" href="{% url 'entrada_print' entrada.id %}"><i class="fa fa-print"></i></a>
-        <a class="btn btn-xs btn-success" href="{% url 'anexo_print' entrada.id %}"><i class="fa fa-file-excel-o"></i></a>
+        <a class="btn btn-xs btn-primary" href="{% url 'anexo_print' entrada.id %}"><i class="fa fa-file-word-o"></i></a>
       </td>
     </tr>
     {% empty %}

@@ -22,6 +22,13 @@ from core.models import Producto, Gasto, Cliente, Proveedor
 
 from front.utils import diff_dates
 
+from docx import Document
+from docx.shared import Cm, Mm
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.enum.section import WD_ORIENT
+
+from cStringIO import StringIO
+
 @login_required
 def excel_deudas(request):
 
@@ -770,161 +777,175 @@ def excel_cotizaciones(request):
   response['Content-Disposition'] = "attachment; filename=cotizaciones-%s.xlsx" % date.today()
 
   return response
-
 @login_required
 def anexo_print(request, id):
   entrada = Entrada.objects.get(pk = id)
+  document = Document()
 
-  output = StringIO.StringIO()
+  section = document.sections[-1]
+  section.left_margin = Cm(2)
+  section.top_margin = Cm(2)
+  section.right_margin = Cm(2)
+  section.bottom_margin = Cm(2)
+  section.page_width = Mm(210)
+  section.page_height = Mm(297)
+  section.orientation = WD_ORIENT.PORTRAIT
 
-  book = Workbook(output)  
+  p = document.add_paragraph()
+  p.add_run(u'Anexo N° -A').bold = True
+  p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+
+  p = document.add_paragraph()
+  p.add_run(u'DROGUERÍA HAMPI KALLPA E.I.R.L.').bold = True
+  p.alignment = WD_ALIGN_PARAGRAPH.CENTER
   
-  bold = book.add_format({'bold': 1})
-  fecha = book.add_format({'num_format': 'dd/mm/yy'})
+  p = document.add_paragraph()
+  p.add_run(u'ACTA DE RECEPCIÓN Y CONFORMIDAD').bold = True
+  p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+  document.add_paragraph()
 
-  title = book.add_format({
-    'bold': 1,
-    'align': 'center',
-  })
+  p = document.add_paragraph()
+  p.add_run(u'Fecha:                        Hora:').bold = True
 
-  fecha = book.add_format({
-    'num_format': 'd mmm yyyy',
-    'border': 1
-  })
+  p = document.add_paragraph()
+  p.add_run(u'Q.F. Director Técnico:').bold = True
 
-  borde = book.add_format({
-    'border': 1
-  })
+  p = document.add_paragraph()
+  p.add_run(u'Proveedor: ').bold = True
+  p.add_run(entrada.proveedor.razon_social)
 
-  cabecera = book.add_format({
-    'border': 1,
-    'bold': 1
-  })
+  p = document.add_paragraph()
+  p.add_run(u'Factura Nro: ').bold = True
+  p.add_run(entrada.numero_factura)
+  p.add_run('                         ')
+  p.add_run(u'Fecha Factura: ').bold = True
+  p.add_run(entrada.fecha_factura.strftime('%d %b %Y'))
 
-  border_top = book.add_format({
-    'top': 1,
-  })
+  p = document.add_paragraph()
+  p.add_run(u'Guía de Remisión Nro: ').bold = True
+  p.add_run(entrada.numero_guia)
+  p.add_run('                         ')
+  p.add_run(u'Fecha G/R: ').bold = True
+  p.add_run(entrada.fecha_guia.strftime('%d %b %Y'))
+  document.add_paragraph()
 
-  # Anexo A
-
-  sheet = book.add_worksheet(u'Anexo A')
-  #sheet.write('A3', 'Elaborado por:')
-  sheet.merge_range('A5:G5', u'Anexo Nro -A', title)
-  sheet.merge_range('A7:G7', u'Droguería Hampi Kallpa E.I.R.L.', title)
-  sheet.merge_range('A9:G9', u'Acta de Recepción y Conformidad', title)
-
-  sheet.write('A11', u'Fecha:', bold)
-  sheet.write('F11', u'Hora:', bold)
-  sheet.write('A12', u'Q.F. Director Técnico:', bold)
-  sheet.write('A13', u'Proveedor:', bold)
-  sheet.write('B13', entrada.proveedor.razon_social, bold)
-  sheet.write('A14', u'Factura Nro:', bold)
-  sheet.write('F14', u'Fecha Factura:', bold)
-  sheet.write('A14', u'Guía de Remisión Nro:', bold)
-  sheet.write('F14', u'Fecha G/R:', bold)
-
-  #sheet.write('M1', datetime.datetime.strptime(fin, "%Y-%m-%d"), fecha2)
-
-  sheet.write('A17', u'Cantidad', cabecera)
-  sheet.write('B17', u'F.F.', cabecera)
-  sheet.write('C17', u'Descripción', cabecera)
-  sheet.write('D17', u'Fabricante', cabecera)
-  sheet.write('E17', u'F/V', cabecera)
-  sheet.write('F17', u'Lote', cabecera)
-
-  row = 18
+  table = document.add_table(rows=1, cols=6)
+  table.style = 'TableGrid'
+  hdr_cells = table.rows[0].cells
+  hdr_cells[0].text = u'CANT'
+  hdr_cells[1].text = u'F.F.'
+  hdr_cells[2].text = u'DESCRIPCIÓN'
+  hdr_cells[3].text = u'FABRICANTE'
+  hdr_cells[4].text = u'F/V'
+  hdr_cells[5].text = u'LOTE'
+  hdr_cells[2].width = Cm(12)
   for detalle in entrada.entradadetalle_set.all():
-
-    sheet.write('A%s' % row, detalle.cantidad, borde)
-    sheet.write('B%s' % row, detalle.lote.producto.unidad_medida, borde)
-    sheet.write('C%s' % row, detalle.lote.producto.producto, borde)
-    sheet.write('D%s' % row, detalle.lote.producto.marca, borde)
-    sheet.write('E%s' % row, detalle.lote.vencimiento, fecha)
-    sheet.write('F%s' % row, detalle.lote.numero, borde)
-    row += 1
-
-  row += 3
-  sheet.write('A%s' % row, u'Q.F. Director Técnico', border_top)
-
-  row += 2
-  sheet.write('A%s' % row, u'Elaborado por', cabecera)
-  sheet.write('B%s' % row, u'Revisado y Aprobado por:', cabecera)
-
-  row += 1
-  sheet.write('A%s' % row, '', borde)
-  sheet.write('B%s' % row, '', borde)
+      row_cells = table.add_row().cells
+      row_cells[0].text = str(detalle.cantidad)
+      row_cells[1].text = detalle.lote.producto.unidad_medida
+      row_cells[2].text = detalle.lote.producto.producto
+      row_cells[3].text = detalle.lote.producto.marca
+      row_cells[4].text = detalle.lote.vencimiento.strftime('%d/%m/%Y')
+      row_cells[5].text = detalle.lote.numero
+      row_cells[2].width = Cm(12)
 
 
-  # Anexo B
+  document.add_paragraph()
+  document.add_paragraph()
+  p = document.add_paragraph('____________________________')
+  p = document.add_paragraph(u'Q.F. Director Técnico')
 
-  sheet = book.add_worksheet(u'Anexo B')
-  #sheet.write('A3', 'Elaborado por:')
-  sheet.merge_range('A5:M5', u'Anexo Nro -B', title)
-  sheet.merge_range('A7:M7', u'Acta de Recepción y Evaluación Organoléptica para el ingreso de productos farmaceuticos y afines al almacén de la', title)
-  sheet.merge_range('A9:M9', u'Droguería Hampi Kallpa E.I.R.L.', title)
 
-  sheet.write('A11', u'Fecha:', bold)
-  sheet.write('A13', u'Nro. Factura:', bold)
-  sheet.write('D13', u'Guía de Remisión:', bold)
-  sheet.write('G13', u'Proveedor:', bold)
-  sheet.write('H13', entrada.proveedor.razon_social, bold)
+  # Anexo 2.
+  section = document.add_section()
+  section.left_margin = Cm(2)
+  section.top_margin = Cm(2)
+  section.right_margin = Cm(2)
+  section.bottom_margin = Cm(2)
+  section.page_width = Mm(297)
+  section.page_height = Mm(210)
+  section.orientation = WD_ORIENT.LANDSCAPE
 
-  sheet.write('A15', '', cabecera)
-  sheet.merge_range('A15:D15', u'Producto', cabecera)
-  sheet.merge_range('E15:F15', u'Documentos', cabecera)
-  sheet.merge_range('G15:H15', u'Embalaje Adecuado', cabecera)
-  sheet.merge_range('I15:J15', u'Envaso Inmediato Adecuado', cabecera)
-  sheet.merge_range('K15:M15', u'Contenido', cabecera)
+  p = document.add_paragraph()
+  p.add_run(u'Anexo N° -B').bold = True
+  p.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
-  sheet.write('A16', u'Nro', cabecera)
-  sheet.write('B16', u'Descripción', cabecera)
-  sheet.write('C16', u'Lote', cabecera)
-  sheet.write('D16', u'FV', cabecera)
-  sheet.write('E16', u'RS', cabecera)
-  sheet.write('F16', u'Protocolo Análisis', cabecera)
-  sheet.write('G16', u'Si', cabecera)
-  sheet.write('H16', u'No', cabecera)
-  sheet.write('I16', u'Si', cabecera)
-  sheet.write('J16', u'No', cabecera)
-  sheet.write('K16', u'Color', cabecera)
-  sheet.write('L16', u'Aspecto', cabecera)
-  sheet.write('M16', u'No cuerpos extraños', cabecera)
+  p = document.add_paragraph()
+  p.add_run(u'ACTA DE RECEPCIÓN Y EVALUACIÓN ORGANOLÉPTICA PARA EL INGRESO DE PRODUCTOS FARMACÉUTICOS Y AFINES AL ALMACEN DE LA DROGUERIA "HAMPI KALLPA E.I.R.L."').bold = True
+  p.alignment = WD_ALIGN_PARAGRAPH.CENTER
 
-  row = 17
+  p = document.add_paragraph()
+  p.add_run(u'Fecha:').bold = True
+
+  p = document.add_paragraph()
+  p.add_run(u'Factura Nro: ').bold = True
+  p.add_run(entrada.numero_factura)
+  p.add_run(u'                   ')
+  p.add_run(u'Guía de Remisión Nro: ').bold = True
+  p.add_run(entrada.numero_guia)
+  p.add_run(u'                   ')
+  p.add_run(u'Proveedor: ').bold = True
+  p.add_run(entrada.proveedor.razon_social)
+  document.add_paragraph()
+
+  table = document.add_table(rows=2, cols=13)
+  table.style = 'TableGrid'
+  
+  hdr_cells = table.rows[0].cells
+  hdr_cells[0].text = u''
+  hdr_cells[1].text = u'Producto'
+  hdr_cells[4].text = u'Documentos'
+  hdr_cells[6].text = u'Embalaje Adecuado'
+  hdr_cells[8].text = u'Envase inmediato adecuado'
+  hdr_cells[10].text = u'Envase inmediato adecuado'
+
+  #hdr_cells[1].merge(hdr_cells[2])
+  hdr_cells[1].merge(hdr_cells[3])
+  hdr_cells[4].merge(hdr_cells[5])
+  hdr_cells[6].merge(hdr_cells[7])
+  hdr_cells[8].merge(hdr_cells[9])
+  hdr_cells[10].merge(hdr_cells[12])
+
+
+  hdr_cells = table.rows[1].cells
+  hdr_cells[0].text = u'N°'
+  hdr_cells[1].text = u'Descripción'
+  hdr_cells[2].text = u'Lote'
+  hdr_cells[3].text = u'FV'
+  hdr_cells[4].text = u'RS'
+  hdr_cells[5].text = u'Protocolo Análisis'
+  hdr_cells[6].text = u'Si'
+  hdr_cells[7].text = u'No'
+  hdr_cells[8].text = u'Si'
+  hdr_cells[9].text = u'No'
+  hdr_cells[10].text = u'Color'
+  hdr_cells[11].text = u'Aspecto'
+  hdr_cells[12].text = u'No cuerpos extraños'
+  hdr_cells[1].width = Cm(9)
+
   counter = 1
   for detalle in entrada.entradadetalle_set.all():
-    sheet.write('A%s' % row, counter, borde)
-    sheet.write('B%s' % row, detalle.lote.producto.producto, borde)
-    sheet.write('C%s' % row, detalle.lote.numero, borde)
-    sheet.write('D%s' % row, detalle.lote.vencimiento, fecha)
-    sheet.write('E%s' % row, '', borde)
-    sheet.write('F%s' % row, '', borde)
-    sheet.write('G%s' % row, '', borde)
-    sheet.write('H%s' % row, '', borde)
-    sheet.write('I%s' % row, '', borde)
-    sheet.write('J%s' % row, '', borde)
-    sheet.write('K%s' % row, '', borde)
-    sheet.write('L%s' % row, '', borde)
-    sheet.write('M%s' % row, '', borde)
-    row += 1
-    counter += 1
+      row_cells = table.add_row().cells
+      row_cells[0].text = str(counter)
+      row_cells[1].text = detalle.lote.producto.producto
+      row_cells[2].text = detalle.lote.numero
+      row_cells[3].text = detalle.lote.vencimiento.strftime('%d/%m/%Y')
+      counter += counter
 
-  row += 3
-  sheet.write('A%s' % row, u'Q.F. Director Técnico', border_top)
+  document.add_paragraph()
+  document.add_paragraph()
+  p = document.add_paragraph('____________________________')
+  p = document.add_paragraph(u'Q.F. Director Técnico')
+  
 
-  row += 2
-  sheet.write('A%s' % row, u'Elaborado por', cabecera)
-  sheet.write('B%s' % row, u'Revisado y Aprobado por:', cabecera)
-
-  row += 1
-  sheet.write('A%s' % row, '', borde)
-  sheet.write('B%s' % row, '', borde)
-
-  book.close()
-
-  # construct response
-  output.seek(0)
-  response = HttpResponse(output.read(), content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-  response['Content-Disposition'] = "attachment; filename=anexo-%s.xlsx" % entrada.pk
-
+  f = StringIO()
+  document.save(f)
+  length = f.tell()
+  f.seek(0)
+  response = HttpResponse(
+      f.getvalue(),
+      content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+  )
+  response['Content-Disposition'] = 'attachment; filename=anexo%s.docx' % entrada.pk
+  response['Content-Length'] = length
   return response
