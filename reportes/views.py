@@ -27,8 +27,6 @@ from docx.shared import Cm, Mm
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.section import WD_ORIENT
 
-#from cStringIO import StringIO
-
 from operator import itemgetter
 
 @login_required
@@ -945,7 +943,7 @@ def anexo_print(request, id):
   p = document.add_paragraph('____________________________')
   p = document.add_paragraph(u'Q.F. Director Técnico')
   
-
+  from cStringIO import StringIO
   f = StringIO()
   document.save(f)
   length = f.tell()
