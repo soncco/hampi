@@ -29,8 +29,8 @@ class Entrada(models.Model):
   notas = models.TextField(blank = True)
   proveedor = models.ForeignKey('core.Proveedor', blank = True, null = True)
   quien = models.ForeignKey(User)
-  fecha_entrada = models.DateField()
-  hora_entrada = models.CharField(max_length = 20, blank = True)
+  fecha_entrada = models.DateField(null = True, blank = True)
+  hora_entrada = models.CharField(max_length = 20, blank = True, null = True)
 
 class EntradaDetalle(models.Model):
   entrada_padre = models.ForeignKey(Entrada)
