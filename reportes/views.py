@@ -906,7 +906,7 @@ def anexo_print(request, id):
   hdr_cells[4].text = u'Documentos'
   hdr_cells[6].text = u'Embalaje Adecuado'
   hdr_cells[8].text = u'Envase inmediato adecuado'
-  hdr_cells[10].text = u'Envase inmediato adecuado'
+  hdr_cells[10].text = u'Contenido'
 
   #hdr_cells[1].merge(hdr_cells[2])
   hdr_cells[1].merge(hdr_cells[3])
