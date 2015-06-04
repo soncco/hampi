@@ -1046,7 +1046,7 @@ def kardex_excel(request, id):
     if row == 8:
       sheet.write('I%s' % row, item['ingreso'])
     else:
-      sheet.write_formula('I%s' % row, '{=I%s+C%s-D%s}' % (row-1, row, row))
+      sheet.write_formula('I%s' % row, '=I%s+C%s-D%s' % (row-1, row, row))
     row += 1
 
   sheet.autofilter(('A7:I%s' % row))
