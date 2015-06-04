@@ -18,7 +18,7 @@ from ventas.utils import total_amortizaciones, saldo_deuda
 
 from almacen.models import Entrada, EntradaDetalle, Salida, SalidaDetalle, Stock, Almacen
 
-from core.models import Producto, Gasto, Cliente, Proveedor
+from core.models import Producto, Gasto, Cliente, Proveedor, Lote
 
 from front.utils import diff_dates
 
@@ -27,7 +27,9 @@ from docx.shared import Cm, Mm
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.section import WD_ORIENT
 
-from cStringIO import StringIO
+#from cStringIO import StringIO
+
+from operator import itemgetter
 
 @login_required
 def excel_deudas(request):
@@ -777,6 +779,7 @@ def excel_cotizaciones(request):
   response['Content-Disposition'] = "attachment; filename=cotizaciones-%s.xlsx" % date.today()
 
   return response
+
 @login_required
 def anexo_print(request, id):
   entrada = Entrada.objects.get(pk = id)
@@ -953,4 +956,104 @@ def anexo_print(request, id):
   )
   response['Content-Disposition'] = 'attachment; filename=anexo%s.docx' % entrada.pk
   response['Content-Length'] = length
+  return response
+
+@login_required
+def kardex_excel(request, id):
+  lote = Lote.objects.get(pk = id)
+  entradas = lote.entradadetalle_set.all()
+  ventas = lote.ventadetalle_set.all()
+  historia = []
+  for entrada in entradas:
+    fila = {}
+    fila['fecha'] = entrada.entrada_padre.fecha_guia
+    fila['guia'] = entrada.entrada_padre.numero_guia
+    fila['ingreso'] = entrada.cantidad
+    fila['egreso'] = ''
+    fila['cliente'] = ''
+    fila['mi_guia'] = ''
+    fila['lote'] = entrada.lote.numero
+    fila['vencimiento'] = entrada.lote.vencimiento
+
+    historia.append(fila)
+
+  for venta in ventas:
+    fila = {}
+    fila['fecha'] = venta.registro_padre.fecha_traslado
+    fila['guia'] = ''
+    fila['ingreso'] = ''
+    fila['egreso'] = venta.cantidad
+    fila['cliente'] = venta.registro_padre.cliente.razon_social
+    fila['mi_guia'] = venta.registro_padre.numero_guia
+    fila['lote'] = venta.lote.numero
+    fila['vencimiento'] = venta.lote.vencimiento
+
+    historia.append(fila)
+
+  nueva_historia = sorted(historia, key=itemgetter('fecha')) 
+  
+  output = StringIO.StringIO()
+
+  book = Workbook(output)  
+  sheet = book.add_worksheet(u'Kardex')
+
+  bold = book.add_format({'bold': 1})
+  fecha = book.add_format({'num_format': 'dd/mm/yy'})
+  money = book.add_format({'num_format': '0.00'})
+
+  title = book.add_format({
+    'bold': 1,
+    'align': 'center',
+    'font_color': 'white',
+    'fg_color': '#18bc9c',
+  })
+
+  fecha2 = book.add_format({
+    'bold': 1,
+    'align': 'center',
+    'font_color': 'white',
+    'fg_color': '#2ecc71',
+    'num_format': 'd mmm yyyy'
+  })
+
+  sheet.merge_range('A1:I1', u'REGISTRO DE PRODUCTOS FARMACEUTICOS - KARDEX INFORMÁTICO', title)
+  sheet.merge_range('A2:I2', u'DROGUERÍA HAMPI KALLPA E.I.R.L.', title)
+
+  sheet.write('A4', u'PRODUCTO: %s' % lote.producto.producto, bold)
+  sheet.write('A5', u'PRESENTACIÓN: %s' % lote.producto.unidad_medida, bold)
+
+  sheet.write('A7', u'Fecha', bold)
+  sheet.write('B7', u'Guía de Remisión N° Proveedor', bold)
+  sheet.write('C7', u'Ingreso', bold)
+  sheet.write('D7', u'Egreso', bold)
+  sheet.write('E7', u'Cliente', bold)
+  sheet.write('F7', u'Guía de Remisión N°', bold)
+  sheet.write('G7', u'Lote', bold)
+  sheet.write('H7', u'FV', bold)
+  sheet.write('I7', u'Saldo', bold)
+
+  row = 8
+  for item in nueva_historia:
+    sheet.write('A%s' % row, item['fecha'].strftime('%Y-%m-%d'), fecha)
+    sheet.write('B%s' % row, item['guia'])
+    sheet.write('C%s' % row, item['ingreso'])
+    sheet.write('D%s' % row, item['egreso'])
+    sheet.write('E%s' % row, item['cliente'])
+    sheet.write('F%s' % row, item['mi_guia'])
+    sheet.write('G%s' % row, item['lote'])
+    sheet.write('H%s' % row, item['vencimiento'].strftime('%Y-%m-%d'), fecha)
+    if row == 8:
+      sheet.write('I%s' % row, item['ingreso'])
+    else:
+      sheet.write_formula('I%s' % row, '{=I%s+C%s-D%s}' % (row-1, row, row))
+    row += 1
+
+  sheet.autofilter(('A7:I%s' % row))
+  book.close()
+
+  # construct response
+  output.seek(0)
+  response = HttpResponse(output.read(), content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+  response['Content-Disposition'] = "attachment; filename=kardex-%s.xlsx" % lote.pk
+
   return response
