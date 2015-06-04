@@ -807,10 +807,12 @@ def anexo_print(request, id):
 
   p = document.add_paragraph()
   p.add_run(u'Fecha: ').bold = True
-  p.add_run(entrada.fecha_entrada.strftime('%d %b %Y'))
+  if entrada.fecha_entrada is not None:
+    p.add_run(entrada.fecha_entrada.strftime('%d %b %Y'))
   p.add_run('                           ')
   p.add_run(u'Hora: ').bold = True
-  p.add_run(entrada.hora_entrada)
+  if entrada.hora_entrada is not None:
+    p.add_run(entrada.hora_entrada)
 
   p = document.add_paragraph()
   p.add_run(u'Q.F. Director Técnico:').bold = True
