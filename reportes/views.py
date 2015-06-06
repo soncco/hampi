@@ -972,7 +972,7 @@ def kardex_excel(request, id):
     fila['mi_guia'] = ''
     fila['lote'] = entrada.lote.numero
     fila['vencimiento'] = entrada.lote.vencimiento
-    fila['nro'] = entrada.pk
+    fila['nro'] = entrada.entrada_padre.pk
 
     historia.append(fila)
 
@@ -987,7 +987,7 @@ def kardex_excel(request, id):
     fila['mi_guia'] = venta.registro_padre.numero_guia
     fila['lote'] = venta.lote.numero
     fila['vencimiento'] = venta.lote.vencimiento
-    fila['nro'] = venta.pk
+    fila['nro'] = venta.registro_padre.pk
 
     historia.append(fila)
 
