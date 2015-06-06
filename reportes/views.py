@@ -563,10 +563,8 @@ def excel_inventario(request):
   sheet.write('D3', u'Vencimiento', bold)
   sheet.write('E3', u'Cantidad', bold)
   sheet.write('F3', u'Unitario', bold)
-  sheet.write('G3', u'Precio Crédito', bold)
-  sheet.write('H3', u'Total Venta', bold)
-  sheet.write('I3', u'Total Real', bold)
-  sheet.write('J3', u'Almacén', bold)
+  sheet.write('G3', u'Total Venta', bold)
+  sheet.write('H3', u'Almacén', bold)
 
   row = 4
   for st in stock:
@@ -574,17 +572,15 @@ def excel_inventario(request):
     sheet.write('A%s' % row, st.lote.producto.codigo)
     sheet.write('B%s' % row, st.lote.producto.producto)
     sheet.write('C%s' % row, st.lote.numero)
-    sheet.write('D%s' % row, st.lote.fecha)
+    sheet.write('D%s' % row, st.lote.vencimiento)
     sheet.write('E%s' % row, st.unidades)
-    sheet.write('F%s' % row, st.producto.precio_unidad, money)
-    sheet.write('G%s' % row, (st.producto.precio_credito / st.producto.unidad_caja), money)
-    sheet.write_formula('H%s' % row, '{=E%s*F%s}' % (row, row))
-    sheet.write_formula('I%s' % row, '{=E%s*G%s}' % (row, row))
-    sheet.write('J%s' % row, st.en_almacen.nombre)
+    sheet.write('F%s' % row, st.lote.producto.precio_unidad, money)
+    sheet.write_formula('G%s' % row, '{=E%s*F%s}' % (row, row))
+    sheet.write('H%s' % row, st.en_almacen.nombre)
 
     row += 1
 
-  sheet.autofilter(('A3:J%s' % row))
+  sheet.autofilter(('A3:H%s' % row))
   book.close()
 
   # construct response
