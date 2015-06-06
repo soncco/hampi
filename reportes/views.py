@@ -972,6 +972,7 @@ def kardex_excel(request, id):
     fila['mi_guia'] = ''
     fila['lote'] = entrada.lote.numero
     fila['vencimiento'] = entrada.lote.vencimiento
+    fila['nro'] = entrada.pk
 
     historia.append(fila)
 
@@ -986,6 +987,7 @@ def kardex_excel(request, id):
     fila['mi_guia'] = venta.registro_padre.numero_guia
     fila['lote'] = venta.lote.numero
     fila['vencimiento'] = venta.lote.vencimiento
+    fila['nro'] = venta.pk
 
     historia.append(fila)
 
@@ -1015,8 +1017,8 @@ def kardex_excel(request, id):
     'num_format': 'd mmm yyyy'
   })
 
-  sheet.merge_range('A1:J1', u'REGISTRO DE PRODUCTOS FARMACEUTICOS - KARDEX INFORMÁTICO', title)
-  sheet.merge_range('A2:J2', u'DROGUERÍA HAMPI KALLPA E.I.R.L.', title)
+  sheet.merge_range('A1:K1', u'REGISTRO DE PRODUCTOS FARMACEUTICOS - KARDEX INFORMÁTICO', title)
+  sheet.merge_range('A2:K2', u'DROGUERÍA HAMPI KALLPA E.I.R.L.', title)
 
   sheet.write('A4', u'PRODUCTO: %s' % lote.producto.producto, bold)
   sheet.write('A5', u'PRESENTACIÓN: %s' % lote.producto.unidad_medida, bold)
@@ -1031,6 +1033,7 @@ def kardex_excel(request, id):
   sheet.write('H7', u'Lote', bold)
   sheet.write('I7', u'FV', bold)
   sheet.write('J7', u'Saldo', bold)
+  sheet.write('K7', u'NRO', bold)
 
   row = 8
   for item in nueva_historia:
@@ -1047,9 +1050,10 @@ def kardex_excel(request, id):
       sheet.write('J%s' % row, item['ingreso'])
     else:
       sheet.write_formula('J%s' % row, '=J%s+C%s-D%s' % (row-1, row, row))
+    sheet.write('K%s' % row, item['nro'])
     row += 1
 
-  sheet.autofilter(('A7:J%s' % row))
+  sheet.autofilter(('A7:K%s' % row))
   book.close()
 
   # construct response
