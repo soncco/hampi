@@ -20,7 +20,7 @@ class SalidaDetalleInline(admin.TabularInline):
   model = SalidaDetalle
 
 class EntradaAdmin(admin.ModelAdmin):
-  list_display = ('fecha', 'numero_factura', 'numero_guia', 'quien', 'almacen',)
+  list_display = ('id', 'fecha', 'numero_factura', 'numero_guia', 'quien', 'almacen',)
   list_filter = ('quien__first_name', 'fecha', 'almacen',)
   inlines = [EntradaDetalleInline,]
 
