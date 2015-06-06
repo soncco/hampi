@@ -972,6 +972,7 @@ def kardex_excel(request, id):
     fila['ingreso'] = entrada.cantidad
     fila['egreso'] = ''
     fila['cliente'] = ''
+    fila['proveedor'] = entrada.entrada_padre.proveedor.razon_social
     fila['mi_guia'] = ''
     fila['lote'] = entrada.lote.numero
     fila['vencimiento'] = entrada.lote.vencimiento
@@ -985,6 +986,7 @@ def kardex_excel(request, id):
     fila['ingreso'] = ''
     fila['egreso'] = venta.cantidad
     fila['cliente'] = venta.registro_padre.cliente.razon_social
+    fila['proveedor'] = ''
     fila['mi_guia'] = venta.registro_padre.numero_guia
     fila['lote'] = venta.lote.numero
     fila['vencimiento'] = venta.lote.vencimiento
@@ -1017,8 +1019,8 @@ def kardex_excel(request, id):
     'num_format': 'd mmm yyyy'
   })
 
-  sheet.merge_range('A1:I1', u'REGISTRO DE PRODUCTOS FARMACEUTICOS - KARDEX INFORMÁTICO', title)
-  sheet.merge_range('A2:I2', u'DROGUERÍA HAMPI KALLPA E.I.R.L.', title)
+  sheet.merge_range('A1:J1', u'REGISTRO DE PRODUCTOS FARMACEUTICOS - KARDEX INFORMÁTICO', title)
+  sheet.merge_range('A2:J2', u'DROGUERÍA HAMPI KALLPA E.I.R.L.', title)
 
   sheet.write('A4', u'PRODUCTO: %s' % lote.producto.producto, bold)
   sheet.write('A5', u'PRESENTACIÓN: %s' % lote.producto.unidad_medida, bold)
@@ -1028,10 +1030,11 @@ def kardex_excel(request, id):
   sheet.write('C7', u'Ingreso', bold)
   sheet.write('D7', u'Egreso', bold)
   sheet.write('E7', u'Cliente', bold)
-  sheet.write('F7', u'Guía de Remisión N°', bold)
-  sheet.write('G7', u'Lote', bold)
-  sheet.write('H7', u'FV', bold)
-  sheet.write('I7', u'Saldo', bold)
+  sheet.write('F7', u'Proveedor', bold)
+  sheet.write('G7', u'Guía de Remisión N°', bold)
+  sheet.write('H7', u'Lote', bold)
+  sheet.write('I7', u'FV', bold)
+  sheet.write('J7', u'Saldo', bold)
 
   row = 8
   for item in nueva_historia:
@@ -1040,16 +1043,17 @@ def kardex_excel(request, id):
     sheet.write('C%s' % row, item['ingreso'])
     sheet.write('D%s' % row, item['egreso'])
     sheet.write('E%s' % row, item['cliente'])
-    sheet.write('F%s' % row, item['mi_guia'])
-    sheet.write('G%s' % row, item['lote'])
-    sheet.write('H%s' % row, item['vencimiento'].strftime('%Y-%m-%d'), fecha)
+    sheet.write('F%s' % row, item['proveedor'])
+    sheet.write('G%s' % row, item['mi_guia'])
+    sheet.write('H%s' % row, item['lote'])
+    sheet.write('I%s' % row, item['vencimiento'].strftime('%Y-%m-%d'), fecha)
     if row == 8:
-      sheet.write('I%s' % row, item['ingreso'])
+      sheet.write('J%s' % row, item['ingreso'])
     else:
-      sheet.write_formula('I%s' % row, '=I%s+C%s-D%s' % (row-1, row, row))
+      sheet.write_formula('J%s' % row, '=J%s+C%s-D%s' % (row-1, row, row))
     row += 1
 
-  sheet.autofilter(('A7:I%s' % row))
+  sheet.autofilter(('A7:J%s' % row))
   book.close()
 
   # construct response
