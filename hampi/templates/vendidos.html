@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="page-header">
+  <h3><i class="fa fa-file icon-"></i> Productos Vendidos
+    <span class="small pull-right">
+      <button class="btn btn-default btn-sm reset"><i class="fa fa-filter"></i> Quitar Filtros</button>
+      <a class="btn btn-success btn-sm" href="{% url 'excel_vendidos' %}"><i class="fa fa-file-excel-o"></i> Exportar a Excel</a>
+    </span>
+  </h3>
+</div>
+
+<table class="table table-striped table-bordered table-hover small" id="table">
+  <thead>
+    <tr>
+      <th>Producto</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for producto in productos %}
+    <tr>
+      <td>{{ producto.producto }}</td>
+    </tr>
+    {% empty %}
+    <tr>
+      <tdclass="text-center">No hay ningún producto vendido.</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+  <tfoot>
+    <tr>
+      <th class="ts-pager form-horizontal">
+        <button type="button" class="btn first"><i class="icon-step-backward glyphicon glyphicon-step-backward"></i></button>
+        <button type="button" class="btn prev"><i class="icon-arrow-left glyphicon glyphicon-backward"></i></button>
+        <span class="pagedisplay"></span> <!-- this can be any element, including an input -->
+        <button type="button" class="btn next"><i class="icon-arrow-right glyphicon glyphicon-forward"></i></button>
+        <button type="button" class="btn last"><i class="icon-step-forward glyphicon glyphicon-step-forward"></i></button>
+        <select class="pagesize input-mini" title="Select page size">
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="30">30</option>
+          <option value="40">40</option>
+          <option value="9999" selected="selected">Todos</option>
+        </select>
+        <select class="pagenum input-mini" title="Número de página"></select>
+      </th>
+    </tr>
+  </tfoot>
+</table>
+{% endblock %}
+
+{% block title %}Productos Vendidos{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" media="screen" href="/media/bower_components/jquery.tablesorter/css/theme.bootstrap.css">
+{% endblock %}
+{% block js %}
+<script src="/media/bower_components/jquery.tablesorter/js/jquery.tablesorter.min.js"></script>
+<script src="/media/bower_components/jquery.tablesorter/js/jquery.tablesorter.widgets.min.js"></script>
+<script src="/media/bower_components/jquery.tablesorter/js/jquery.tablesorter.widgets-filter-formatter.min.js"></script>
+<script src="/media/bower_components/jquery.tablesorter/addons/pager/jquery.tablesorter.pager.min.js"></script>
+<script src="/media/js/table-sorter.js"></script>
+{% endblock %}

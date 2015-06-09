@@ -18,4 +18,7 @@ urlpatterns = patterns('reportes.views',
 
   url(r'^anexo/print/(?P<id>.*)$', 'anexo_print', name = 'anexo_print'),
   url(r'^kardex/(?P<id>.*)$', 'kardex_excel', name = 'kardex_excel'),
+
+  url(r'^vendidos/$', 'vendidos', name = 'vendidos'),
+  url(r'^excel/vendidos/$', 'excel_vendidos', name = 'excel_vendidos'),
 )

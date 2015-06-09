@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from django.shortcuts import render
+from django.shortcuts import render_to_response
+from django.template import RequestContext
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 
@@ -1060,5 +1062,67 @@ def kardex_excel(request, id):
   output.seek(0)
   response = HttpResponse(output.read(), content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
   response['Content-Disposition'] = "attachment; filename=kardex-%s.xlsx" % lote.pk
+
+  return response
+
+
+def vendidos(request):
+  vendidos = VentaDetalle.objects.values('lote__producto').distinct()
+
+  productos = []
+
+  for vendido in vendidos:
+    p = Producto.objects.get(pk = vendido['lote__producto'])
+    productos.append(p)
+
+  context = {'productos': productos}
+  return render_to_response('vendidos.html', context, context_instance = RequestContext(request))
+
+
+@login_required
+def excel_vendidos(request):
+
+  output = StringIO.StringIO()
+
+  book = Workbook(output)  
+  sheet = book.add_worksheet(u'Productos Vendidos')
+
+  bold = book.add_format({'bold': 1})
+  fecha = book.add_format({'num_format': 'dd/mm/yy'})
+  
+  title = book.add_format({
+    'bold': 1,
+    'align': 'center',
+    'font_color': 'white',
+    'fg_color': '#18bc9c',
+  })
+
+  vendidos = VentaDetalle.objects.values('lote__producto').distinct()
+
+  productos = []
+
+  for vendido in vendidos:
+    p = Producto.objects.get(pk = vendido['lote__producto'])
+    productos.append(p)
+  
+
+  sheet.merge_range('A1:K1', u'Reporte de Productos Vendidos', title)
+
+  sheet.merge_range('A3:K3', u'Producto', bold)
+
+  row = 4
+  for producto in productos:
+
+    sheet.merge_range('A%s:K%s' % (row, row), producto.producto)
+    
+    row += 1
+
+  sheet.autofilter(('A3:K%s' % row))
+  book.close()
+
+  # construct response
+  output.seek(0)
+  response = HttpResponse(output.read(), content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+  response['Content-Disposition'] = "attachment; filename=productos-vendidos-%s.xlsx" % date.today()
 
   return response
