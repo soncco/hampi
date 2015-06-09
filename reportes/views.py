@@ -1106,18 +1106,18 @@ def excel_vendidos(request):
     productos.append(p)
   
 
-  sheet.merge_range('A1:K1', u'Reporte de Productos Vendidos', title)
+  sheet.merge_range('A1:F1', u'Relación de Productos Hampi Kallpa', title)
 
-  sheet.merge_range('A3:K3', u'Producto', bold)
+  sheet.merge_range('A3:F3', u'Producto', bold)
 
   row = 4
   for producto in productos:
 
-    sheet.merge_range('A%s:K%s' % (row, row), producto.producto)
+    sheet.merge_range('A%s:F%s' % (row, row), producto.producto)
     
     row += 1
 
-  sheet.autofilter(('A3:K%s' % row))
+  sheet.autofilter(('A3:F%s' % row))
   book.close()
 
   # construct response
