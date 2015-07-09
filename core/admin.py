@@ -5,12 +5,12 @@ from models import Producto, Segmento, Cliente, Proveedor, Gasto, TipoGasto, Lot
 class ProductoAdmin(admin.ModelAdmin):
   list_display = ('producto', 'marca', 'procedencia', 'precio_costo', 'precio_unidad', 'activo',)
   list_filter = ('activo', 'marca', 'procedencia',)
-  search_fields = ['codigo', 'producto__producto', 'marca', 'procedencia']
+  search_fields = ['codigo', 'producto', 'marca', 'procedencia']
 
 class LoteAdmin(admin.ModelAdmin):
   list_display = ('numero', 'vencimiento', 'producto',)
   list_filter = ('vencimiento',)
-  search_fields = ['numero']
+  search_fields = ['numero', 'producto__producto']
 
 class ClienteAdmin(admin.ModelAdmin):
   list_display = ('razon_social', 'codcliente', 'tipo_documento', 'numero_documento', 'ciudad', 'distrito', 'departamento',)

@@ -850,7 +850,10 @@ def anexo_print(request, id):
       row_cells[1].text = detalle.lote.producto.unidad_medida
       row_cells[2].text = detalle.lote.producto.producto
       row_cells[3].text = detalle.lote.producto.marca
-      row_cells[4].text = detalle.lote.vencimiento.strftime('%d/%m/%Y')
+      try:
+        row_cells[4].text = detalle.lote.vencimiento.strftime('%d/%m/%Y')
+      except:
+        row_cells[4].text = ''
       row_cells[5].text = detalle.lote.numero
       row_cells[2].width = Cm(12)
 
@@ -937,7 +940,7 @@ def anexo_print(request, id):
       row_cells[1].text = detalle.lote.producto.producto
       row_cells[2].text = detalle.lote.numero
       row_cells[3].text = detalle.lote.vencimiento.strftime('%d/%m/%Y')
-      counter += counter
+      counter += 1
 
   document.add_paragraph()
   document.add_paragraph()
