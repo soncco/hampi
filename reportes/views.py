@@ -786,9 +786,9 @@ def anexo_print(request, id):
   section.top_margin = Cm(2)
   section.right_margin = Cm(2)
   section.bottom_margin = Cm(2)
-  section.page_width = Mm(210)
-  section.page_height = Mm(297)
-  section.orientation = WD_ORIENT.PORTRAIT
+  section.page_width = Mm(297)
+  section.page_height = Mm(210)
+  section.orientation = WD_ORIENT.LANDSCAPE
 
   p = document.add_paragraph()
   p.add_run(u'Anexo N° -A').bold = True
@@ -834,7 +834,7 @@ def anexo_print(request, id):
   p.add_run(entrada.fecha_guia.strftime('%d %b %Y'))
   document.add_paragraph()
 
-  table = document.add_table(rows=1, cols=6)
+  table = document.add_table(rows=1, cols=8)
   table.style = 'TableGrid'
   hdr_cells = table.rows[0].cells
   hdr_cells[0].text = u'CANT'
@@ -843,6 +843,8 @@ def anexo_print(request, id):
   hdr_cells[3].text = u'FABRICANTE'
   hdr_cells[4].text = u'F/V'
   hdr_cells[5].text = u'LOTE'
+  hdr_cells[6].text = u'N de R.S'
+  hdr_cells[7].text = u'Vencimiento R.S.'
   hdr_cells[2].width = Cm(12)
   for detalle in entrada.entradadetalle_set.all():
       row_cells = table.add_row().cells
@@ -855,6 +857,8 @@ def anexo_print(request, id):
       except:
         row_cells[4].text = ''
       row_cells[5].text = detalle.lote.numero
+      row_cells[6].text = detalle.lote.nrs if detalle.lote.nrs is not None else ''
+      row_cells[7].text = detalle.lote.vrs if detalle.lote.vrs is not None else ''
       row_cells[2].width = Cm(12)
 
 

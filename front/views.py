@@ -690,9 +690,9 @@ def producto(request):
     instance.save()
 
     if request.POST.get('vencimiento') == '':
-      lote = Lote(producto = instance, numero = request.POST.get('numero'))
+      lote = Lote(producto = instance, numero = request.POST.get('numero'), nrs = request.POST.get('nrs'), vrs = request.POST.get('vrs'))
     else:
-      lote = Lote(producto = instance, numero = request.POST.get('numero'), vencimiento = request.POST.get('vencimiento'))
+      lote = Lote(producto = instance, numero = request.POST.get('numero'), vencimiento = request.POST.get('vencimiento'), nrs = request.POST.get('nrs'), vrs = request.POST.get('vrs'))
     lote.save()
     
     return HttpResponse('1')
@@ -702,9 +702,9 @@ def producto(request):
 def producto_lote(request):
   instance = Producto.objects.get(pk = request.POST.get('producto-id'))
   if request.POST.get('vencimiento') == '':
-    lote = Lote(producto = instance, numero = request.POST.get('numero'))
+    lote = Lote(producto = instance, numero = request.POST.get('numero'), nrs = request.POST.get('nrs'), vrs = request.POST.get('vrs'))
   else:
-    lote = Lote(producto = instance, numero = request.POST.get('numero'), vencimiento = request.POST.get('vencimiento'))
+    lote = Lote(producto = instance, numero = request.POST.get('numero'), vencimiento = request.POST.get('vencimiento'), nrs = request.POST.get('nrs'), vrs = request.POST.get('vrs'))
   lote.save()
   
   return HttpResponse('1')

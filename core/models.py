@@ -22,6 +22,8 @@ class Lote(models.Model):
   numero = models.CharField(max_length = 255, blank = True)
   vencimiento = models.DateField(blank = True, null = True)
   producto = models.ForeignKey(Producto)
+  nrs = models.CharField(max_length = 255, blank = True, null = True)
+  vrs = models.CharField(max_length = 255, blank = True, null = True)
 
   def __unicode__(self):
     return '%s - Lote: %s' % (self.producto.producto, self.numero)
