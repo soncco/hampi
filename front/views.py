@@ -120,7 +120,7 @@ def venta_factura_print(request, id):
   response = HttpResponse(content_type = 'application/pdf')
 
   reportlab.rl_config.warnOnMissingFontGlyphs = 0
-  fontsize = 8
+  fontsize = 7
 
   pdfmetrics.registerFont(TTFont('A1979', 'A1979.ttf'))
   p = canvas.Canvas(response, pagesize = A4)
@@ -134,18 +134,18 @@ def venta_factura_print(request, id):
   # Cliente.
 
   top = 473
-  left = 87
+  left = 87 - 10
   story = []
   story.append(Paragraph(unidecode(venta.cliente.razon_social.upper()), style))
   f = Frame(left, top, 300, 200, showBoundary = 0)
   f.addFromList(story, p)
 
   top = 653
-  left = 63
+  left = 63 - 10
   p.drawString(left, top - 15, venta.cliente.numero_documento)
 
   top = 433
-  left = 80
+  left = 80 - 10
   story = []
   story.append(Paragraph('%s - %s - %s - %s' % (venta.cliente.direccion.upper(), venta.cliente.ciudad.upper(), venta.cliente.distrito.upper(), venta.cliente.departamento.upper()), style))
   f = Frame(left, top, 270, 200, showBoundary = 0)
@@ -153,12 +153,12 @@ def venta_factura_print(request, id):
 
   # Guía.
   top = 660
-  left = 490
+  left = 490 - 10
   p.drawString(left, top, venta.fecha_emision.strftime('%d/%m/%Y'))
   p.drawString(left, top - 45, venta.numero_guia)
 
   # Meta.
-  left = 50
+  left = 50 - 10
   top = 573
   p.drawString(left-5, top, venta.cliente.codcliente.upper())
   p.drawString(left + 110, top, venta.orden_compra.upper())
@@ -172,7 +172,7 @@ def venta_factura_print(request, id):
   
   # Detalles.
   top = 530
-  left = 30
+  left = 30 - 10
   for detalle in venta.ventadetalle_set.all():
     tab = 25
     p.drawString(left, top, detalle.lote.producto.codigo)
@@ -223,8 +223,8 @@ def venta_factura_print(request, id):
   p.drawString(left+30, top, cardinal(float(venta.total_venta)).upper())
 
   # IGV.
-  top = 115
-  left = 550
+  top = 115 - 10
+  left = 550 - 10
 
   #igv = float(venta.total_venta) * 0.18
   subtotal = float(venta.total_venta) / 1.18
@@ -248,7 +248,7 @@ def venta_guia_print(request, id):
   response = HttpResponse(content_type = 'application/pdf')
 
   reportlab.rl_config.warnOnMissingFontGlyphs = 0
-  fontsize = 8
+  fontsize = 7
 
   pdfmetrics.registerFont(TTFont('A1979', 'A1979.ttf'))
   p = canvas.Canvas(response, pagesize = A4)
@@ -260,21 +260,21 @@ def venta_guia_print(request, id):
   style.fontSize = fontsize
 
   # Fechas.
-  top = 687
+  top = 687 - 20
   left = 100
 
   p.drawString(left, top, venta.fecha_emision.strftime('%d/%m/%Y'))
   p.drawString(left + 150, top, venta.fecha_traslado.strftime('%d/%m/%Y'))
 
   # Meta.
-  top = 655
+  top = 655 - 20
   left = 40
   p.drawString(left, top, venta.condiciones)
   p.drawString(left + 100, top, venta.orden_compra)
   p.drawString(left + 200, top, venta.fecha_factura.strftime('%d/%m/%Y'))
 
   # Direcciones.
-  top = 440
+  top = 440 - 20
   left = 78
   story = []
   story.append(Paragraph(venta.procedencia.upper(), style))
@@ -287,24 +287,24 @@ def venta_guia_print(request, id):
   f.addFromList(story, p)
 
   # Destino y Transporte.
-  top = 384
+  top = 384 - 20
   left = 70
   story = []
   story.append(Paragraph(unidecode(venta.cliente.razon_social.upper()), style))
   f = Frame(left, top, 260, 200, showBoundary = 0)
   f.addFromList(story, p)
 
-  top = 565
+  top = 565 - 20
   p.drawString(left, top - 15, venta.cliente.numero_documento)
 
   left = 430
-  top = 570
+  top = 570 - 20
   p.drawString(left, top - 10, unidecode(venta.vehiculo.upper()))
   p.drawString(left, top - 20, unidecode(venta.inscripcion.upper()))
   p.drawString(left, top - 30, unidecode(venta.licencia.upper()))
 
   # Detalles.
-  top = 495
+  top = 495 - 20
   left = 30
   for detalle in venta.ventadetalle_set.all():
     p.drawString(left, top, detalle.lote.producto.codigo)
@@ -323,12 +323,12 @@ def venta_guia_print(request, id):
     top -= 25
 
   # Comprobates y transporte.
-  top = 100
+  top = 100 - 20
   left = 80
   p.drawString(left, top, 'FACTURA')
   p.drawString(left+140, top, venta.numero_factura)
 
-  top = 115
+  top = 115 - 20
   p.drawString(left+280, top, unidecode(venta.transportista.upper()))
   p.drawString(left+280, top-15, venta.ruc_transportista)
 
