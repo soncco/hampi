@@ -154,7 +154,7 @@ def venta_factura_print(request, id):
   # Guía.
   top = 660
   left = 490 - 10
-  p.drawString(left, top, venta.fecha_emision.strftime('%d/%m/%Y'))
+  p.drawString(left, top, venta.fecha_factura.strftime('%d/%m/%Y'))
   p.drawString(left, top - 45, venta.numero_guia)
 
   # Meta.
@@ -187,7 +187,24 @@ def venta_factura_print(request, id):
 
 
     extra = 0
-    if len(the_prod) > 58:
+    if len(the_prod) > 122:
+      top = top - 186
+      story = []
+      story.append(Paragraph(the_prod, style))
+      if len(the_prod) > 86:
+        extra = -30
+        f = Frame(left+80, top - 10, 270, 210, showBoundary = 0)
+      else:
+        f = Frame(left+80, top, 270, 200, showBoundary = 0)
+
+      f.addFromList(story, p)
+      top = top + 186
+      if detalle.lote.numero:
+        p.drawString(left+90, top-23+extra, 'LOTE: %s' % detalle.lote.numero)
+      if detalle.lote.vencimiento:
+        p.drawString(left+300, top-23+extra, 'VCTO: %s' % detalle.lote.vencimiento.strftime('%d/%m/%Y'))
+      tab = 40
+    elif len(the_prod) > 58:
       top = top - 186
       story = []
       story.append(Paragraph(the_prod, style))
@@ -218,7 +235,7 @@ def venta_factura_print(request, id):
     top -= tab
 
   # Cardinal.
-  top = 134 + extra
+  top = 134 + extra - 20
   print cardinal(float(venta.total_venta))
   p.drawString(left+30, top, cardinal(float(venta.total_venta)).upper())
 
@@ -231,7 +248,7 @@ def venta_factura_print(request, id):
   igv = float(venta.total_venta) -  subtotal
   #subtotal = float(venta.total_venta) - igv
 
-  top = 105
+  top = 105 - 20
   p.drawRightString(left, top, '%.2f' % subtotal)
   p.drawRightString(left, top - 15, '%.2f' % igv)
   p.drawRightString(left, top - 30, '%.2f' % venta.total_venta)
@@ -328,7 +345,7 @@ def venta_guia_print(request, id):
   p.drawString(left, top, 'FACTURA')
   p.drawString(left+140, top, venta.numero_factura)
 
-  top = 115 - 20
+  top = 115 - 20 - 10
   p.drawString(left+280, top, unidecode(venta.transportista.upper()))
   p.drawString(left+280, top-15, venta.ruc_transportista)
 

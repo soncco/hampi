@@ -943,7 +943,10 @@ def anexo_print(request, id):
       row_cells[0].text = str(counter)
       row_cells[1].text = detalle.lote.producto.producto
       row_cells[2].text = detalle.lote.numero
-      row_cells[3].text = detalle.lote.vencimiento.strftime('%d/%m/%Y')
+      try:
+        row_cells[3].text = detalle.lote.vencimiento.strftime('%d/%m/%Y')
+      except:
+        row_cells[3].text = ''
       counter += 1
 
   document.add_paragraph()
