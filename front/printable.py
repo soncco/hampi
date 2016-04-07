@@ -30,6 +30,8 @@ def tabla_requerimiento_estilo_ref():
         ('ALIGNMENT', (3,-1), (-1,-1), 'RIGHT'),
         ('ALIGNMENT', (4,-1), (-1,-1), 'RIGHT'),
         ('FONTNAME', (0,0), (-1,-1), 'Helvetica-Bold'),
+        ('TOPPADDING', (0,0), (-1,-1), 0),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 0),
       ]
     )
 
@@ -58,9 +60,17 @@ class ImpresionFactura:
     styler.fontSize = 7
     styler.alignment = TA_RIGHT
 
+    razon_social = venta.cliente.razon_social
+    if len(razon_social) <= 52:
+      top = 26
+    else:
+      top = 30
+
+    print top
+
     header = Paragraph(unidecode(venta.cliente.razon_social.upper()), style)
     w, h = header.wrap(doc.width - 88 * mm, doc.topMargin)
-    header.drawOn(canvas, doc.leftMargin + 19.5 * mm, doc.height + doc.topMargin - 30 * mm)
+    header.drawOn(canvas, doc.leftMargin + 19.5 * mm, doc.height + doc.topMargin - top * mm)
 
     header = Paragraph(venta.cliente.numero_documento, style)
     w, h = header.wrap(doc.width - 88 * mm, doc.topMargin)
@@ -145,6 +155,11 @@ class ImpresionFactura:
     styler.fontSize = 7
     styler.alignment = TA_RIGHT
 
+    stylep = ParagraphStyle('A1979P')
+    stylep.fontName = 'A1979'
+    stylep.fontSize = 7
+    stylep.leftIndent = 5
+
     elements = []
 
     tabla = []
@@ -175,8 +190,9 @@ class ImpresionFactura:
         if detalle.lote.numero:
           string += 'LOTE: %s          ' % detalle.lote.numero
         if detalle.lote.vencimiento:
-          string += '         VCTO: %s' % detalle.lote.numero
-        fila.append(Paragraph(string, style))
+          string += ' / VCTO: %s' % detalle.lote.numero
+        fila.append(Paragraph(string, stylep))
+        fila.append(Spacer(0, 6 *mm))
         tabla.append(fila)
 
 
