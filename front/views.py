@@ -42,6 +42,8 @@ from core.forms import ProductoForm
 
 from .utils import total_gastos, total_contados, total_amortizacion, total_liquidacion, diff_dates
 
+from io import BytesIO
+
 # Ventas
 @login_required
 def venta(request):
@@ -738,3 +740,18 @@ def venta_editar(request):
   venta.save()
 
   return HttpResponse('1')
+
+from printable import ImpresionFactura
+@login_required
+def venta_factura_print2(request, id):
+  venta = Venta.objects.get(id = id)
+
+  response = HttpResponse(content_type='application/pdf')
+
+  buffer = BytesIO()
+
+  report = ImpresionFactura(buffer, 'A4')
+  pdf = report.imprimir(venta)
+
+  response.write(pdf)
+  return response
