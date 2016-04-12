@@ -118,7 +118,7 @@ class ImpresionFactura:
 
     footer = Paragraph(cardinal(float(venta.total_venta)).upper(), style)
     w, h = footer.wrap(doc.width, doc.bottomMargin)
-    footer.drawOn(canvas, doc.leftMargin + 7.8 * mm, 35 * mm)
+    footer.drawOn(canvas, doc.leftMargin + 7.8 * mm, 28.23 * mm)
 
     subtotal = float(venta.total_venta) / 1.18
     igv = float(venta.total_venta) -  subtotal
