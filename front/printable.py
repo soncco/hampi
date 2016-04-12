@@ -50,6 +50,8 @@ class ImpresionFactura:
 
     pdfmetrics.registerFont(TTFont('A1979', 'A1979.ttf'))
 
+    subir = 1.2 * cm
+
     styles = getSampleStyleSheet()
     style = ParagraphStyle('A1979')
     style.fontName = 'A1979'
@@ -70,70 +72,71 @@ class ImpresionFactura:
 
     header = Paragraph(unidecode(venta.cliente.razon_social.upper()), style)
     w, h = header.wrap(doc.width - 88 * mm, doc.topMargin)
-    header.drawOn(canvas, doc.leftMargin + 19.5 * mm, doc.height + doc.topMargin - top * mm)
+    header.drawOn(canvas, doc.leftMargin + 19.5 * mm, doc.height + doc.topMargin - top * mm + subir)
 
     header = Paragraph(venta.cliente.numero_documento, style)
     w, h = header.wrap(doc.width - 88 * mm, doc.topMargin)
-    header.drawOn(canvas, doc.leftMargin + 9.3 * mm, doc.height + doc.topMargin - 34 * mm)
+    header.drawOn(canvas, doc.leftMargin + 9.3 * mm, doc.height + doc.topMargin - 34 * mm + subir)
 
     header = Paragraph(venta.cliente.numero_documento, style)
     w, h = header.wrap(doc.width - 88 * mm, doc.topMargin)
-    header.drawOn(canvas, doc.leftMargin + 9.3 * mm, doc.height + doc.topMargin - 34 * mm)
+    header.drawOn(canvas, doc.leftMargin + 9.3 * mm, doc.height + doc.topMargin - 34 * mm + subir)
 
     header = Paragraph('%s - %s - %s - %s' % (venta.cliente.direccion.upper(), venta.cliente.ciudad.upper(), venta.cliente.distrito.upper(), venta.cliente.departamento.upper()), style)
     w, h = header.wrap(doc.width - 100 * mm, doc.topMargin)
-    header.drawOn(canvas, doc.leftMargin + 17 * mm, doc.height + doc.topMargin - 44 * mm)
+    header.drawOn(canvas, doc.leftMargin + 17 * mm, doc.height + doc.topMargin - 40 * mm + subir)
 
     header = Paragraph(venta.fecha_factura.strftime('%d/%m/%Y'), style)
     w, h = header.wrap(doc.width - 88 * mm, doc.topMargin)
-    header.drawOn(canvas, doc.leftMargin + 159.5 * mm, doc.height + doc.topMargin - 26 * mm)
+    header.drawOn(canvas, doc.leftMargin + 159.5 * mm, doc.height + doc.topMargin - 26 * mm + subir)
 
     header = Paragraph(venta.numero_guia, style)
     w, h = header.wrap(doc.width - 88 * mm, doc.topMargin)
-    header.drawOn(canvas, doc.leftMargin + 159.5 * mm, doc.height + doc.topMargin - 42 * mm)
+    header.drawOn(canvas, doc.leftMargin + 159.5 * mm, doc.height + doc.topMargin - 42 * mm + subir)
 
     header = Paragraph(venta.cliente.codcliente.upper(), style)
     w, h = header.wrap(doc.width, doc.topMargin)
-    header.drawOn(canvas, doc.leftMargin + 2.5 * mm, doc.height + doc.topMargin - 56.5 * mm)
+    header.drawOn(canvas, doc.leftMargin + 2.5 * mm, doc.height + doc.topMargin - 56.5 * mm + subir)
 
     header = Paragraph(venta.orden_compra.upper(), style)
     w, h = header.wrap(doc.width, doc.topMargin)
-    header.drawOn(canvas, doc.leftMargin + 43 * mm, doc.height + doc.topMargin - 56.5 * mm)
+    header.drawOn(canvas, doc.leftMargin + 43 * mm, doc.height + doc.topMargin - 56.5 * mm + subir)
 
     header = Paragraph(venta.condiciones.upper(), style)
     w, h = header.wrap(doc.width, doc.topMargin)
-    header.drawOn(canvas, doc.leftMargin + 71 * mm, doc.height + doc.topMargin - 56.5 * mm)
+    header.drawOn(canvas, doc.leftMargin + 71 * mm, doc.height + doc.topMargin - 56.5 * mm + subir)
 
     try:
       header = Paragraph(venta.vencimiento.strftime('%d/%m/%Y'), style)
       w, h = header.wrap(doc.width, doc.topMargin)
-      header.drawOn(canvas, doc.leftMargin + 107 * mm, doc.height + doc.topMargin - 56.5 * mm)
+      header.drawOn(canvas, doc.leftMargin + 107 * mm, doc.height + doc.topMargin - 56.5 * mm + subir)
     except:
       print 'NoneType'
 
     header = Paragraph(venta.hora, style)
     w, h = header.wrap(doc.width, doc.topMargin)
-    header.drawOn(canvas, doc.leftMargin + 137 * mm, doc.height + doc.topMargin - 86.5 * mm)
+    header.drawOn(canvas, doc.leftMargin + 137 * mm, doc.height + doc.topMargin - 86.5 * mm + subir)
 
 
+    subir = 1.2 * cm
     footer = Paragraph(cardinal(float(venta.total_venta)).upper(), style)
     w, h = footer.wrap(doc.width, doc.bottomMargin)
-    footer.drawOn(canvas, doc.leftMargin + 7.8 * mm, 28.23 * mm)
+    footer.drawOn(canvas, doc.leftMargin + 7.8 * mm, 28.23 * mm + subir)
 
     subtotal = float(venta.total_venta) / 1.18
     igv = float(venta.total_venta) -  subtotal
 
     footer = Paragraph('%.2f' % subtotal, styler)
     w, h = footer.wrap(doc.width, doc.bottomMargin)
-    footer.drawOn(canvas, doc.leftMargin - 9 * mm, 28 * mm)
+    footer.drawOn(canvas, doc.leftMargin - 9 * mm, 30 * mm)
 
     footer = Paragraph('%.2f' % igv, styler)
     w, h = footer.wrap(doc.width, doc.bottomMargin)
-    footer.drawOn(canvas, doc.leftMargin - 9 * mm, 22.5 * mm)
+    footer.drawOn(canvas, doc.leftMargin - 9 * mm, 24.5 * mm)
 
     footer = Paragraph('%.2f' % venta.total_venta, styler)
     w, h = footer.wrap(doc.width, doc.bottomMargin)
-    footer.drawOn(canvas, doc.leftMargin - 9 * mm, 17.5 * mm)
+    footer.drawOn(canvas, doc.leftMargin - 9 * mm, 19.5 * mm)
 
 
     canvas.restoreState()
@@ -141,7 +144,7 @@ class ImpresionFactura:
   def imprimir(self, venta):
 
     buffer = self.buffer
-    doc = SimpleDocTemplate(buffer, pagesize = self.pagesize, topMargin = 10.5 * cm, leftMargin = 1 * cm, rightMargin = 1 * cm, bottomMargin = 4 * cm, showBoundary = 0)
+    doc = SimpleDocTemplate(buffer, pagesize = self.pagesize, topMargin = 10.5 * cm, leftMargin = 1 * cm, rightMargin = 1 * cm, bottomMargin = 4 * cm + 1.2 * cm, showBoundary = 0)
 
     pdfmetrics.registerFont(TTFont('A1979', 'A1979.ttf'))
 
