@@ -178,7 +178,7 @@ class ImpresionFactura:
 
       fila.append(Paragraph(the_prod, style))
 
-      if detalle.precio_unitario == 0:
+      if detalle.precio_unitario != 0:
 
         fila.append(Paragraph('%.3f' % detalle.precio_unitario, styler))
         fila.append(Paragraph('%.3f' % detalle.total, styler))
