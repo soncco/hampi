@@ -1136,3 +1136,55 @@ def excel_vendidos(request):
   response['Content-Disposition'] = "attachment; filename=productos-vendidos-%s.xlsx" % date.today()
 
   return response
+
+@login_required
+def excel_vendidos_fecha(request):
+
+  output = StringIO.StringIO()
+
+  book = Workbook(output)  
+  sheet = book.add_worksheet(u'Productos Vendidos por fecha')
+
+  inicial = request.GET.get('inicial')
+  final = request.GET.get('final')
+
+  inicial = datetime.datetime.strptime(inicial, "%Y-%m-%d")
+  final = datetime.datetime.strptime(final, "%Y-%m-%d")
+
+  bold = book.add_format({'bold': 1})
+  fecha = book.add_format({'num_format': 'dd/mm/yy'})
+  
+  title = book.add_format({
+    'bold': 1,
+    'align': 'center',
+    'font_color': 'white',
+    'fg_color': '#18bc9c',
+  })
+
+  vendidos = VentaDetalle.objects.filter(registro_padre__fecha_factura__range = (inicial, final))
+
+  sheet.merge_range('A1:B1', u'Relación de Productos Vendidos Hampi Kallpa', title)
+  sheet.merge_range('A2:B2', u'Desde %s hasta %s' % (inicial.strftime('%d/%m/%Y'), final.strftime('%d/%m/%Y')), title)
+
+  sheet.write('A3', u'Producto', bold)
+  sheet.write('B3', u'Lote', bold)
+
+  row = 4
+  for vendido in vendidos:
+
+    print vendido
+
+    sheet.write('A%s' % row, vendido.lote.producto.producto)
+    sheet.write('B%s' % row, vendido.lote.numero)
+    
+    row += 1
+
+  sheet.autofilter(('A3:B%s' % row))
+  book.close()
+
+  # construct response
+  output.seek(0)
+  response = HttpResponse(output.read(), content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+  response['Content-Disposition'] = "attachment; filename=productos-vendidos-fecha-%s.xlsx" % date.today()
+
+  return response

@@ -21,4 +21,5 @@ urlpatterns = patterns('reportes.views',
 
   url(r'^vendidos/$', 'vendidos', name = 'vendidos'),
   url(r'^excel/vendidos/$', 'excel_vendidos', name = 'excel_vendidos'),
+  url(r'^excel/vendidos/fecha/$', 'excel_vendidos_fecha', name = 'excel_vendidos_fecha'),
 )

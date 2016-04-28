@@ -18,4 +18,16 @@ var intimpa = intimpa || {};
 
   $('[data-toggle="tooltip"]').tooltip();
 
+
+  $('.exportar').click(function(e) {
+    var inicial = $('#inicial').val();
+    var _final = $('#final').val();
+
+    if(inicial == '' || _final == '') {
+      alert('Ingresa las fechas');
+    } else {
+      location.href = '/excel/vendidos/fecha/?inicial=' + inicial + '&final=' + _final;
+    }
+  });
+
 })(jQuery)

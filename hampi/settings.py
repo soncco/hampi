@@ -23,9 +23,9 @@ print BASE_DIR
 SECRET_KEY = 'o*9z@6*&u%wyvc3=nmela&@cku&618q9ur@ff(62$8-9gkw#&o'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-TEMPLATE_DEBUG = False
+TEMPLATE_DEBUG = DEBUG
 
 ALLOWED_HOSTS = ['localhost']
 

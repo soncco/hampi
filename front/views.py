@@ -116,7 +116,7 @@ def venta_print(request, id):
   return result
 
 @login_required
-def venta_factura_print(request, id):
+def venta_factura_print_antiguo(request, id):
   venta = Venta.objects.get(id = id)
 
   response = HttpResponse(content_type = 'application/pdf')
@@ -261,7 +261,7 @@ def venta_factura_print(request, id):
   return response
 
 @login_required
-def venta_guia_print(request, id):
+def venta_guia_print_antiguo(request, id):
   venta = Venta.objects.get(id = id)
 
   response = HttpResponse(content_type = 'application/pdf')
@@ -743,7 +743,7 @@ def venta_editar(request):
 
 from printable import ImpresionFactura
 @login_required
-def venta_factura_print2(request, id):
+def venta_factura_print(request, id):
   venta = Venta.objects.get(id = id)
 
   response = HttpResponse(content_type='application/pdf')
@@ -751,6 +751,21 @@ def venta_factura_print2(request, id):
   buffer = BytesIO()
 
   report = ImpresionFactura(buffer, 'A4')
+  pdf = report.imprimir(venta)
+
+  response.write(pdf)
+  return response
+
+from printable import ImpresionGuia
+@login_required
+def venta_guia_print(request, id):
+  venta = Venta.objects.get(id = id)
+
+  response = HttpResponse(content_type='application/pdf')
+
+  buffer = BytesIO()
+
+  report = ImpresionGuia(buffer, 'A4')
   pdf = report.imprimir(venta)
 
   response.write(pdf)

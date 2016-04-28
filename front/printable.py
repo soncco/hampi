@@ -68,8 +68,6 @@ class ImpresionFactura:
     else:
       top = 30
 
-    print top
-
     header = Paragraph(unidecode(venta.cliente.razon_social.upper()), style)
     w, h = header.wrap(doc.width - 88 * mm, doc.topMargin)
     header.drawOn(canvas, doc.leftMargin + 19.5 * mm, doc.height + doc.topMargin - top * mm + subir)
@@ -82,9 +80,16 @@ class ImpresionFactura:
     w, h = header.wrap(doc.width - 88 * mm, doc.topMargin)
     header.drawOn(canvas, doc.leftMargin + 9.3 * mm, doc.height + doc.topMargin - 34 * mm + subir)
 
-    header = Paragraph('%s - %s - %s - %s' % (venta.cliente.direccion.upper(), venta.cliente.ciudad.upper(), venta.cliente.distrito.upper(), venta.cliente.departamento.upper()), style)
+    direccion = '%s - %s - %s - %s' % (venta.cliente.direccion.upper(), venta.cliente.ciudad.upper(), venta.cliente.distrito.upper(), venta.cliente.departamento.upper())
+
+    if len(direccion) <= 52:
+      top = 40
+    else:
+      top = 44
+
+    header = Paragraph(direccion, style)
     w, h = header.wrap(doc.width - 100 * mm, doc.topMargin)
-    header.drawOn(canvas, doc.leftMargin + 17 * mm, doc.height + doc.topMargin - 40 * mm + subir)
+    header.drawOn(canvas, doc.leftMargin + 17 * mm, doc.height + doc.topMargin - top * mm + subir)
 
     header = Paragraph(venta.fecha_factura.strftime('%d/%m/%Y'), style)
     w, h = header.wrap(doc.width - 88 * mm, doc.topMargin)
@@ -207,6 +212,170 @@ class ImpresionFactura:
 
 
     detalles_tabla = Table(tabla, colWidths = [10 * mm, 12 * mm, 125 *mm, None], style = tabla_requerimiento_estilo_ref(),
+        repeatRows = 1)
+
+    elements.append(detalles_tabla)
+
+    doc.build(elements, onFirstPage = partial(self._header_footer, venta = venta),
+      onLaterPages = partial(self._header_footer, venta = venta))
+
+    pdf = buffer.getvalue()
+    buffer.close()
+    return pdf
+
+
+class ImpresionGuia:
+  def __init__(self, buffer, pagesize):
+    self.buffer = buffer
+    if pagesize == 'A4':
+      self.pagesize = A4
+    elif pagesize == 'Letter':
+      self.pagesize = letter
+      self.width, self.height = self.pagesize
+
+  @staticmethod
+  def _header_footer(canvas, doc, venta):
+    canvas.saveState()
+
+    pdfmetrics.registerFont(TTFont('A1979', 'A1979.ttf'))
+
+    subir = 1.2 * cm
+
+    styles = getSampleStyleSheet()
+    style = ParagraphStyle('A1979')
+    style.fontName = 'A1979'
+    style.fontSize = 7
+
+    styler = ParagraphStyle('A1979R')
+    styler.fontName = 'A1979'
+    styler.fontSize = 7
+    styler.alignment = TA_RIGHT
+
+    razon_social = venta.cliente.razon_social
+    if len(razon_social) <= 52:
+      top = 26
+    else:
+      top = 30
+
+    header = Paragraph(venta.fecha_emision.strftime('%d/%m/%Y'), style)
+    w, h = header.wrap(doc.width - 88 * mm, doc.topMargin)
+    header.drawOn(canvas, doc.leftMargin + 25.2 * mm, doc.height + doc.topMargin - 28.5 * mm)
+
+    header = Paragraph(venta.fecha_traslado.strftime('%d/%m/%Y'), style)
+    w, h = header.wrap(doc.width - 88 * mm, doc.topMargin)
+    header.drawOn(canvas, doc.leftMargin + 78.2 * mm, doc.height + doc.topMargin - 28.5 * mm)
+
+
+    header = Paragraph(venta.condiciones, style)
+    w, h = header.wrap(doc.width - 88 * mm, doc.topMargin)
+    header.drawOn(canvas, doc.leftMargin + 4.1 * mm, doc.height + doc.topMargin - 39.8 * mm)
+
+    header = Paragraph(venta.orden_compra, style)
+    w, h = header.wrap(doc.width - 88 * mm, doc.topMargin)
+    header.drawOn(canvas, doc.leftMargin + 39.2 * mm, doc.height + doc.topMargin - 39.8 * mm)
+
+    header = Paragraph(venta.fecha_factura.strftime('%d/%m/%Y'), style)
+    w, h = header.wrap(doc.width - 88 * mm, doc.topMargin)
+    header.drawOn(canvas, doc.leftMargin + 74.8 * mm, doc.height + doc.topMargin - 39.8 * mm)
+
+
+    header = Paragraph(venta.procedencia.upper(), style)
+    w, h = header.wrap(doc.width - 110 * mm, doc.topMargin)
+    header.drawOn(canvas, doc.leftMargin + 19.6 * mm, doc.height + doc.topMargin - 53.8 * mm)
+
+    header = Paragraph(venta.llegada.upper(), style)
+    w, h = header.wrap(doc.width - 120 * mm, doc.topMargin)
+    header.drawOn(canvas, doc.leftMargin + 123.4 * mm, doc.height + doc.topMargin - 53.8 * mm)
+
+
+    header = Paragraph(venta.cliente.razon_social.upper(), style)
+    w, h = header.wrap(doc.width - 110 * mm, doc.topMargin)
+    header.drawOn(canvas, doc.leftMargin + 16.8 * mm, doc.height + doc.topMargin - 69.6 * mm)
+
+    header = Paragraph(venta.cliente.numero_documento, style)
+    w, h = header.wrap(doc.width - 110 * mm, doc.topMargin)
+    header.drawOn(canvas, doc.leftMargin + 14.7 * mm, doc.height + doc.topMargin - 76.9 * mm)
+
+
+    # p.drawString(left, top - 10, unidecode(venta.vehiculo.upper()))
+    # p.drawString(left, top - 20, unidecode(venta.inscripcion.upper()))
+    # p.drawString(left, top - 30, unidecode(venta.licencia.upper()))
+
+
+    footer = Paragraph('FACTURA', style)
+    w, h = footer.wrap(doc.width, doc.bottomMargin)
+    footer.drawOn(canvas, doc.leftMargin + 18.2 * mm, 26.5 * mm)
+
+    footer = Paragraph(venta.numero_factura, style)
+    w, h = footer.wrap(doc.width, doc.bottomMargin)
+    footer.drawOn(canvas, doc.leftMargin + 67.6 * mm, 26.5 * mm)
+
+    footer = Paragraph(unidecode(venta.transportista.upper()), style)
+    w, h = footer.wrap(doc.width, doc.bottomMargin)
+    footer.drawOn(canvas, doc.leftMargin + 116.79 * mm, 28.2 * mm)
+
+    footer = Paragraph(venta.ruc_transportista, style)
+    w, h = footer.wrap(doc.width, doc.bottomMargin)
+    footer.drawOn(canvas, doc.leftMargin + 116.79 * mm, 22.5 * mm)
+
+
+    canvas.restoreState()
+
+  def imprimir(self, venta):
+
+    buffer = self.buffer
+    doc = SimpleDocTemplate(buffer, pagesize = self.pagesize, topMargin = 12.5 * cm, leftMargin = 1 * cm, rightMargin = 1 * cm, bottomMargin = 3.5 * cm , showBoundary = 0)
+
+    pdfmetrics.registerFont(TTFont('A1979', 'A1979.ttf'))
+
+    styles = getSampleStyleSheet()
+    style = ParagraphStyle('A1979')
+    style.fontName = 'A1979'
+    style.fontSize = 7
+
+    styler = ParagraphStyle('A1979R')
+    styler.fontName = 'A1979'
+    styler.fontSize = 7
+    styler.alignment = TA_RIGHT
+
+    stylep = ParagraphStyle('A1979P')
+    stylep.fontName = 'A1979'
+    stylep.fontSize = 7
+    stylep.leftIndent = 5
+
+    elements = []
+
+    tabla = []
+
+    for detalle in venta.ventadetalle_set.all():
+      fila = []
+      fila.append(Paragraph(str(detalle.cantidad), style))
+      fila.append(Paragraph(detalle.lote.producto.unidad_medida.upper(), style))
+
+      comercial = detalle.lote.producto.comercial.upper()
+      if comercial == '':
+        the_prod = '%s - %s' % (detalle.lote.producto.producto.upper(), unidecode(detalle.lote.producto.marca.upper()))
+      else:
+        the_prod = '%s  %s - %s' % (detalle.lote.producto.producto.upper(), comercial, unidecode(detalle.lote.producto.marca.upper()))
+
+      fila.append(Paragraph(the_prod, style))
+
+      tabla.append(fila)
+
+      if detalle.lote.numero or detalle.lote.vencimiento:
+        string = ''
+        fila = ['']
+        fila.append(Spacer(0, 6 *mm))
+        if detalle.lote.numero:
+          string += 'LOTE: %s          ' % detalle.lote.numero
+        if detalle.lote.vencimiento:
+          string += ' / VCTO: %s' % detalle.lote.numero
+
+        fila.append(Paragraph(string, stylep))
+        tabla.append(fila)
+
+
+    detalles_tabla = Table(tabla, colWidths = [10 * mm, 12 * mm, None], style = tabla_requerimiento_estilo_ref(),
         repeatRows = 1)
 
     elements.append(detalles_tabla)
