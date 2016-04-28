@@ -786,9 +786,9 @@ def anexo_print(request, id):
   section.top_margin = Cm(2)
   section.right_margin = Cm(2)
   section.bottom_margin = Cm(2)
-  section.page_width = Mm(297)
-  section.page_height = Mm(210)
-  section.orientation = WD_ORIENT.LANDSCAPE
+  section.page_width = Mm(210)
+  section.page_height = Mm(297)
+  section.orientation = WD_ORIENT.PORTRAIT
 
   p = document.add_paragraph()
   p.add_run(u'Anexo N° -A').bold = True
@@ -845,7 +845,7 @@ def anexo_print(request, id):
   hdr_cells[5].text = u'LOTE'
   hdr_cells[6].text = u'N de R.S'
   hdr_cells[7].text = u'Vencimiento R.S.'
-  hdr_cells[2].width = Cm(12)
+  hdr_cells[2].width = Cm(8)
   for detalle in entrada.entradadetalle_set.all():
       row_cells = table.add_row().cells
       row_cells[0].text = str(detalle.cantidad)
@@ -874,9 +874,9 @@ def anexo_print(request, id):
   section.top_margin = Cm(2)
   section.right_margin = Cm(2)
   section.bottom_margin = Cm(2)
-  section.page_width = Mm(297)
-  section.page_height = Mm(210)
-  section.orientation = WD_ORIENT.LANDSCAPE
+  section.page_width = Mm(210)
+  section.page_height = Mm(297)
+  section.orientation = WD_ORIENT.PORTRAIT
 
   p = document.add_paragraph()
   p.add_run(u'Anexo N° -B').bold = True
@@ -935,7 +935,7 @@ def anexo_print(request, id):
   hdr_cells[10].text = u'Color'
   hdr_cells[11].text = u'Aspecto'
   hdr_cells[12].text = u'No cuerpos extraños'
-  hdr_cells[1].width = Cm(9)
+  hdr_cells[1].width = Cm(7)
 
   counter = 1
   for detalle in entrada.entradadetalle_set.all():
