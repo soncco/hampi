@@ -25,7 +25,7 @@ from core.models import Producto, Gasto, Cliente, Proveedor, Lote
 from front.utils import diff_dates
 
 from docx import Document
-from docx.shared import Cm, Mm
+from docx.shared import Cm, Mm, Pt
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.section import WD_ORIENT
 
@@ -789,6 +789,12 @@ def anexo_print(request, id):
   section.page_width = Mm(210)
   section.page_height = Mm(297)
   section.orientation = WD_ORIENT.PORTRAIT
+
+  style = document.styles['Normal']
+  font = style.font
+  font.name = 'Calibri'
+  font.size = Pt(10)
+
 
   p = document.add_paragraph()
   p.add_run(u'Anexo N° -A').bold = True
