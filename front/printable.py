@@ -82,7 +82,7 @@ class ImpresionFactura:
 
     direccion = '%s - %s - %s - %s' % (venta.cliente.direccion.upper(), venta.cliente.ciudad.upper(), venta.cliente.distrito.upper(), venta.cliente.departamento.upper())
 
-    if len(direccion) <= 52:
+    if len(direccion) <= 50:
       top = 40
     else:
       top = 44
