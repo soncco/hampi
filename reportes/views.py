@@ -793,7 +793,7 @@ def anexo_print(request, id):
   style = document.styles['Normal']
   font = style.font
   font.name = 'Calibri'
-  font.size = Pt(10)
+  font.size = Pt(8)
 
 
   p = document.add_paragraph()
