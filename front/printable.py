@@ -205,13 +205,13 @@ class ImpresionFactura:
         if detalle.lote.numero:
           string += 'LOTE: %s          ' % detalle.lote.numero
         if detalle.lote.vencimiento:
-          string += ' / VCTO: %s' % detalle.lote.numero
+          string += ' / VCTO: %s' % detalle.lote.vencimiento.strftime('%d/%m/%Y')
         fila.append(Paragraph(string, stylep))
-        fila.append(Spacer(0, 6 *mm))
+        fila.append(Spacer(0, 1 *mm))
         tabla.append(fila)
 
 
-    detalles_tabla = Table(tabla, colWidths = [10 * mm, 12 * mm, 125 *mm, None], style = tabla_requerimiento_estilo_ref(),
+    detalles_tabla = Table(tabla, colWidths = [10 * mm, 13 * mm, 125 *mm, None], style = tabla_requerimiento_estilo_ref(),
         repeatRows = 1)
 
     elements.append(detalles_tabla)
@@ -239,7 +239,7 @@ class ImpresionGuia:
 
     pdfmetrics.registerFont(TTFont('A1979', 'A1979.ttf'))
 
-    subir = 1.2 * cm
+    subir = 2 * mm
 
     styles = getSampleStyleSheet()
     style = ParagraphStyle('A1979')
@@ -259,42 +259,42 @@ class ImpresionGuia:
 
     header = Paragraph(venta.fecha_emision.strftime('%d/%m/%Y'), style)
     w, h = header.wrap(doc.width - 88 * mm, doc.topMargin)
-    header.drawOn(canvas, doc.leftMargin + 25.2 * mm, doc.height + doc.topMargin - 28.5 * mm)
+    header.drawOn(canvas, doc.leftMargin + 25.2 * mm, doc.height + doc.topMargin - 28.5 * mm + subir)
 
     header = Paragraph(venta.fecha_traslado.strftime('%d/%m/%Y'), style)
     w, h = header.wrap(doc.width - 88 * mm, doc.topMargin)
-    header.drawOn(canvas, doc.leftMargin + 78.2 * mm, doc.height + doc.topMargin - 28.5 * mm)
+    header.drawOn(canvas, doc.leftMargin + 78.2 * mm, doc.height + doc.topMargin - 28.5 * mm + subir)
 
 
     header = Paragraph(venta.condiciones, style)
     w, h = header.wrap(doc.width - 88 * mm, doc.topMargin)
-    header.drawOn(canvas, doc.leftMargin + 4.1 * mm, doc.height + doc.topMargin - 39.8 * mm)
+    header.drawOn(canvas, doc.leftMargin + 4.1 * mm, doc.height + doc.topMargin - 39.8 * mm + subir)
 
     header = Paragraph(venta.orden_compra, style)
     w, h = header.wrap(doc.width - 88 * mm, doc.topMargin)
-    header.drawOn(canvas, doc.leftMargin + 39.2 * mm, doc.height + doc.topMargin - 39.8 * mm)
+    header.drawOn(canvas, doc.leftMargin + 39.2 * mm, doc.height + doc.topMargin - 39.8 * mm + subir)
 
     header = Paragraph(venta.fecha_factura.strftime('%d/%m/%Y'), style)
     w, h = header.wrap(doc.width - 88 * mm, doc.topMargin)
-    header.drawOn(canvas, doc.leftMargin + 74.8 * mm, doc.height + doc.topMargin - 39.8 * mm)
+    header.drawOn(canvas, doc.leftMargin + 74.8 * mm, doc.height + doc.topMargin - 39.8 * mm + subir)
 
 
     header = Paragraph(venta.procedencia.upper(), style)
     w, h = header.wrap(doc.width - 110 * mm, doc.topMargin)
-    header.drawOn(canvas, doc.leftMargin + 19.6 * mm, doc.height + doc.topMargin - 53.8 * mm)
+    header.drawOn(canvas, doc.leftMargin + 19.6 * mm, doc.height + doc.topMargin - 55.8 * mm)
 
     header = Paragraph(venta.llegada.upper(), style)
     w, h = header.wrap(doc.width - 120 * mm, doc.topMargin)
-    header.drawOn(canvas, doc.leftMargin + 123.4 * mm, doc.height + doc.topMargin - 53.8 * mm)
+    header.drawOn(canvas, doc.leftMargin + 123.4 * mm, doc.height + doc.topMargin - 55.8 * mm)
 
 
     header = Paragraph(venta.cliente.razon_social.upper(), style)
     w, h = header.wrap(doc.width - 110 * mm, doc.topMargin)
-    header.drawOn(canvas, doc.leftMargin + 16.8 * mm, doc.height + doc.topMargin - 69.6 * mm)
+    header.drawOn(canvas, doc.leftMargin + 16.8 * mm, doc.height + doc.topMargin - 69.6 * mm + subir)
 
     header = Paragraph(venta.cliente.numero_documento, style)
     w, h = header.wrap(doc.width - 110 * mm, doc.topMargin)
-    header.drawOn(canvas, doc.leftMargin + 14.7 * mm, doc.height + doc.topMargin - 76.9 * mm)
+    header.drawOn(canvas, doc.leftMargin + 14.7 * mm, doc.height + doc.topMargin - 76.9 * mm + subir)
 
 
     # p.drawString(left, top - 10, unidecode(venta.vehiculo.upper()))
@@ -304,19 +304,19 @@ class ImpresionGuia:
 
     footer = Paragraph('FACTURA', style)
     w, h = footer.wrap(doc.width, doc.bottomMargin)
-    footer.drawOn(canvas, doc.leftMargin + 18.2 * mm, 26.5 * mm)
+    footer.drawOn(canvas, doc.leftMargin + 18.2 * mm, 26.5 * mm + subir)
 
     footer = Paragraph(venta.numero_factura, style)
     w, h = footer.wrap(doc.width, doc.bottomMargin)
-    footer.drawOn(canvas, doc.leftMargin + 67.6 * mm, 26.5 * mm)
+    footer.drawOn(canvas, doc.leftMargin + 67.6 * mm, 26.5 * mm + subir)
 
     footer = Paragraph(unidecode(venta.transportista.upper()), style)
     w, h = footer.wrap(doc.width, doc.bottomMargin)
-    footer.drawOn(canvas, doc.leftMargin + 116.79 * mm, 28.2 * mm)
+    footer.drawOn(canvas, doc.leftMargin + 116.79 * mm, 28.2 * mm + subir)
 
     footer = Paragraph(venta.ruc_transportista, style)
     w, h = footer.wrap(doc.width, doc.bottomMargin)
-    footer.drawOn(canvas, doc.leftMargin + 116.79 * mm, 22.5 * mm)
+    footer.drawOn(canvas, doc.leftMargin + 116.79 * mm, 22.5 * mm + subir)
 
 
     canvas.restoreState()
@@ -365,17 +365,17 @@ class ImpresionGuia:
       if detalle.lote.numero or detalle.lote.vencimiento:
         string = ''
         fila = ['']
-        fila.append(Spacer(0, 6 *mm))
+        fila.append(Spacer(0, 1 *mm))
         if detalle.lote.numero:
           string += 'LOTE: %s          ' % detalle.lote.numero
         if detalle.lote.vencimiento:
-          string += ' / VCTO: %s' % detalle.lote.numero
+          string += ' / VCTO: %s' % detalle.lote.vencimiento.strftime('%d/%m/%Y')
 
         fila.append(Paragraph(string, stylep))
         tabla.append(fila)
 
 
-    detalles_tabla = Table(tabla, colWidths = [10 * mm, 12 * mm, None], style = tabla_requerimiento_estilo_ref(),
+    detalles_tabla = Table(tabla, colWidths = [10 * mm, 13 * mm, None], style = tabla_requerimiento_estilo_ref(),
         repeatRows = 1)
 
     elements.append(detalles_tabla)
