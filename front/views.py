@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from django.shortcuts import render_to_response
-from django.template import RequestContext
+from django.shortcuts import render
+
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.contrib import messages
@@ -81,7 +81,7 @@ def venta(request):
 
   almacenes = Almacen.objects.all()
   context = {'detalle_form': DetalleFormSet, 'almacenes': almacenes}
-  return render_to_response('venta-nuevo.html', context, context_instance = RequestContext(request))
+  return render(request, 'front/venta-nuevo.html', context)
 
 @login_required
 def ventas(request):
@@ -92,7 +92,7 @@ def ventas(request):
     except:
       venta.saldo = 'Sin deuda'
   context = {'ventas': ventas}
-  return render_to_response('ventas.html', context, context_instance = RequestContext(request))
+  return render(request, 'front/ventas.html', context)
 
 @login_required
 def venta_view(request, id):
@@ -101,7 +101,7 @@ def venta_view(request, id):
   if venta.tipo_venta == 'P':
     amortizaciones = Amortizacion.objects.filter(deuda = venta.deuda.pk)
     context['amortizaciones'] = amortizaciones
-  return render_to_response('venta-ver.html', context, context_instance = RequestContext(request))
+  return render(request, 'front/venta-ver.html', context)
 
 @login_required
 def venta_print(request, id):
@@ -112,7 +112,7 @@ def venta_print(request, id):
   if venta.tipo_venta == 'P':
     amortizaciones = Amortizacion.objects.filter(deuda = venta.deuda.pk)
     context['amortizaciones'] = amortizaciones
-  result = generate_pdf('pdf/venta.html', file_object = resp, context = context)
+  result = generate_pdf('front/pdf/venta.html', file_object = resp, context = context)
   return result
 
 @login_required
@@ -365,7 +365,7 @@ def deudas(request):
     deuda.saldo = saldo_deuda(deuda)
 
   context = {'deudas': deudas}
-  return render_to_response('deudas.html', context, context_instance = RequestContext(request))
+  return render(request, 'front/deudas.html', context)
 
 @login_required
 def amortizacion(request, id):
@@ -388,14 +388,14 @@ def amortizacion(request, id):
 
   saldo = deuda.registro_padre.total_venta - total_amortizaciones(deuda)
   context = {'deuda': deuda, 'saldo': saldo}
-  return render_to_response('amortizacion.html', context, context_instance = RequestContext(request))
+  return render(request, 'front/amortizacion.html', context)
 
 # Entradas
 @login_required
 def entradas(request):
   entradas = Entrada.objects.all().order_by('-id')
   context = {'entradas': entradas}
-  return render_to_response('entradas.html', context, context_instance = RequestContext(request))
+  return render(request, 'front/entradas.html', context)
 
 def entrada(request):
   if request.method == 'POST':
@@ -414,13 +414,13 @@ def entrada(request):
 
   almacenes = Almacen.objects.all()
   context = {'detalle_form': EntradaDetalleFormSet, 'almacenes': almacenes}
-  return render_to_response('entrada-nuevo.html', context, context_instance = RequestContext(request))
+  return render(request, 'front/entrada-nuevo.html', context)
 
 @login_required
 def entrada_view(request, id):
   entrada = Entrada.objects.get(pk = id)
   context = {'entrada': entrada}
-  return render_to_response('entrada-ver.html', context, context_instance = RequestContext(request))
+  return render(request, 'front/entrada-ver.html', context)
 
 @login_required
 def entrada_print(request, id):
@@ -428,7 +428,7 @@ def entrada_print(request, id):
 
   resp = HttpResponse(content_type = 'application/pdf')
   context = {'entrada': entrada}
-  result = generate_pdf('pdf/entrada.html', file_object = resp, context = context)
+  result = generate_pdf('front/pdf/entrada.html', file_object = resp, context = context)
   return result
 
 # Salidas
@@ -436,7 +436,7 @@ def entrada_print(request, id):
 def salidas(request):
   salidas = Salida.objects.all().order_by('-id')
   context = {'salidas': salidas}
-  return render_to_response('salidas.html', context, context_instance = RequestContext(request))
+  return render(request, 'front/salidas.html', context)
 
 def salida(request):
   if request.method == 'POST':
@@ -459,13 +459,13 @@ def salida(request):
 
   almacenes = Almacen.objects.all()
   context = {'detalle_form': SalidaDetalleFormSet, 'almacenes': almacenes}
-  return render_to_response('salida-nuevo.html', context, context_instance = RequestContext(request))
+  return render(request, 'front/salida-nuevo.html', context)
 
 @login_required
 def salida_view(request, id):
   salida = Salida.objects.get(pk = id)
   context = {'salida': salida}
-  return render_to_response('salida-ver.html', context, context_instance = RequestContext(request))
+  return render(request, 'front/salida-ver.html', context)
 
 @login_required
 def salida_print(request, id):
@@ -473,7 +473,7 @@ def salida_print(request, id):
 
   resp = HttpResponse(content_type = 'application/pdf')
   context = {'salida': salida}
-  result = generate_pdf('pdf/salida.html', file_object = resp, context = context)
+  result = generate_pdf('front/pdf/salida.html', file_object = resp, context = context)
   return result
 
 # Gastos
@@ -481,7 +481,7 @@ def salida_print(request, id):
 def gastos(request):
   gastos = Gasto.objects.all().order_by('-id')
   context = {'gastos': gastos}
-  return render_to_response('gastos.html', context, context_instance = RequestContext(request))
+  return render(request, 'front/gastos.html', context)
 
 @login_required
 def gasto(request):
@@ -502,33 +502,33 @@ def gasto(request):
   almacenes = Almacen.objects.all()
   gastos = TipoGasto.objects.all()
   context = {'almacenes': almacenes, 'tipos': gastos}
-  return render_to_response('gasto-nuevo.html', context, context_instance = RequestContext(request))
+  return render(request, 'front/gasto-nuevo.html', context)
 
 @login_required
 def gasto_view(request, id):
   gasto = Gasto.objects.get(pk = id)
   context = {'gasto': gasto}
-  return render_to_response('gasto-ver.html', context, context_instance = RequestContext(request))
+  return render(request, 'front/gasto-ver.html', context)
 
 # Core
 @login_required
 def clientes(request):
   clientes = Cliente.objects.all()
   context = {'clientes': clientes}
-  return render_to_response('clientes.html', context, context_instance = RequestContext(request))
+  return render(request, 'front/clientes.html', context)
 
 @login_required
 def proveedores(request):
   proveedores = Proveedor.objects.all()
   context = {'proveedores': proveedores}
-  return render_to_response('proveedores.html', context, context_instance = RequestContext(request))
+  return render(request, 'front/proveedores.html', context)
 
 @login_required
 def inventario(request):
   stock = Stock.objects.all()
   almacenes = Almacen.objects.all()
   context = {'stock': stock, 'almacenes': almacenes}
-  return render_to_response('inventario.html', context, context_instance = RequestContext(request))
+  return render(request, 'front/inventario.html', context)
 
 @login_required
 def inventario_print(request, id):
@@ -536,7 +536,7 @@ def inventario_print(request, id):
   stock = Stock.objects.filter(en_almacen = almacen)
   resp = HttpResponse(content_type = 'application/pdf')
   context = {'stock': stock, 'almacen': almacen, 'total': total_monto_stock(almacen), 'total_real': total_monto_stock_real(almacen)}
-  result = generate_pdf('pdf/inventario.html', file_object = resp, context = context)
+  result = generate_pdf('front/pdf/inventario.html', file_object = resp, context = context)
   return result
 
 # Liquidación
@@ -581,7 +581,7 @@ def liquidacion(request):
   almacenes = Almacen.objects.all()
   context['almacenes'] = almacenes
   context['users'] = User.objects.filter(id__gt = 1)
-  return render_to_response('liquidacion.html', context, context_instance = RequestContext(request))
+  return render(request, 'front/liquidacion.html', context)
 
 @login_required
 def liquidacion_print(request, fecha, id, user):
@@ -619,12 +619,12 @@ def liquidacion_print(request, fecha, id, user):
   context['almacenes'] = almacenes
 
   resp = HttpResponse(content_type = 'application/pdf')
-  result = generate_pdf('pdf/liquidacion.html', file_object = resp, context = context)
+  result = generate_pdf('front/pdf/liquidacion.html', file_object = resp, context = context)
   return result
 
 @login_required
 def index(request):
-  return render_to_response('index.html', context_instance = RequestContext(request))
+  return render(request, 'front/index.html')
 
 def the_login(request):
   if(request.user.is_authenticated()):
@@ -647,7 +647,7 @@ def the_login(request):
     usuarios = User.objects.filter(is_active = True)
     context = {'usuarios': usuarios}
   
-  return render_to_response('login.html', context, context_instance = RequestContext(request))
+  return render(request, 'front/login.html', context)
 
 def the_logout(request):
   messages.success(request, 'Hasta pronto')
@@ -673,19 +673,19 @@ def cotizacion(request):
 
   almacenes = Almacen.objects.all()
   context = {'detalle_form': CotizacionDetalleFormSet, 'almacenes': almacenes}
-  return render_to_response('cotizacion-nuevo.html', context, context_instance = RequestContext(request))
+  return render(request, 'front/cotizacion-nuevo.html', context)
 
 @login_required
 def cotizaciones(request):
   cotizaciones = Cotizacion.objects.all().order_by('-id')
   context = {'cotizaciones': cotizaciones}
-  return render_to_response('cotizaciones.html', context, context_instance = RequestContext(request))
+  return render(request, 'front/cotizaciones.html', context)
 
 @login_required
 def cotizacion_view(request, id):
   cotizacion = Cotizacion.objects.get(pk = id)
   context = {'cotizacion': cotizacion}
-  return render_to_response('cotizacion-ver.html', context, context_instance = RequestContext(request))
+  return render(request, 'front/cotizacion-ver.html', context)
 
 @login_required
 def cotizacion_print(request, id):
@@ -693,7 +693,7 @@ def cotizacion_print(request, id):
 
   resp = HttpResponse(content_type = 'application/pdf')
   context = {'cotizacion': cotizacion}
-  result = generate_pdf('pdf/cotizacion.html', file_object = resp, context = context)
+  result = generate_pdf('front/pdf/cotizacion.html', file_object = resp, context = context)
   return result
 
 from django.views.decorators.csrf import csrf_exempt

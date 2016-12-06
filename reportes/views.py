@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from django.shortcuts import render
-from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
@@ -1092,7 +1091,7 @@ def vendidos(request):
     productos.append(p)
 
   context = {'productos': productos}
-  return render_to_response('vendidos.html', context, context_instance = RequestContext(request))
+  return render(request, 'front/vendidos.html', context)
 
 
 @login_required

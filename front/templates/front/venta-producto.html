@@ -1,0 +1,98 @@
+{% extends 'front/base.html' %}
+{% block content %}{% load static %}
+<div class="page-header">
+  <h3><i class="fa fa-file icon-new"></i> Ventas por producto
+    {% if method == 'post' %}
+    <span class="small pull-right">
+      <button class="btn btn-default btn-sm reset"><i class="fa fa-filter"></i> Quitar Filtros</button>
+      <!--button class="btn btn-default btn-sm print"><i class="fa fa-print"></i> Imprimir tabla</button-->
+    </span>
+    {% endif %}
+  </h3>
+</div>
+<form class="form form-inline" method="post" action="{% url 'venta_producto' %}">
+  <div class="form-group">
+    {{almacen}}
+    <select name="almacen" id="almacen" class="form-control" required>
+      <option value="">Almacén</option>
+      {% for a in almacenes %}
+      <option value="{{ a.pk }}"{% if a.pk == almacen.pk %}selected{% endif %}>{{ a.nombre }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  <div class="form-group">
+    <input type="text" class="form-control datepicker" name="fecha" id="fecha" required autocomplete="off" placeholder="Fecha" value="{{ fecha }}">
+  </div>
+  <button type="submit" class="btn btn-info"><i class="fa fa-cubes"></i> Ver productos vendidos</button>
+  {% csrf_token %}
+</form>
+{% if method == 'post' %}
+<hr>
+<table class="table table-hover table-striped" id="table">
+  <thead>
+    <tr>
+      <td>Producto</td>
+      <td>Cantidad vendido</td>
+      <td>Detalles</td>
+    </tr>
+  </thead>
+  <tbody>
+    {% for d in data %}
+    <tr>
+      <td>{{d.producto.codigo}} {{d.producto.producto}}</td>
+      <td>{% if d.total == None %}0{% else %}{{d.total}}{% endif %}</td>
+      <td>
+        <ul class="list-unstyled">
+          {% for i in d.ventas %}
+          <li>
+            <a href="{% url 'venta_view' i.registro_padre.pk %}">Venta {{i.registro_padre.pk}}</a>
+            (Cliente: {{i.registro_padre.cliente}})
+            (Fecha: {{i.registro_padre.fecha_documento}})
+          </li>
+          {% empty %}
+          <li>Sin ventas</li>
+          {% endfor %}
+        </ul>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+  <tfoot>
+    <tr>
+      <th colspan="3" class="ts-pager form-horizontal">
+        <button type="button" class="btn first"><i class="icon-step-backward glyphicon glyphicon-step-backward"></i></button>
+        <button type="button" class="btn prev"><i class="icon-arrow-left glyphicon glyphicon-backward"></i></button>
+        <span class="pagedisplay"></span> <!-- this can be any element, including an input -->
+        <button type="button" class="btn next"><i class="icon-arrow-right glyphicon glyphicon-forward"></i></button>
+        <button type="button" class="btn last"><i class="icon-step-forward glyphicon glyphicon-step-forward"></i></button>
+        <select class="pagesize input-mini" title="Select page size">
+          <option value="10">10</option>
+          <option value="20">20</option>
+          <option value="30">30</option>
+          <option value="40">40</option>
+          <option selected="selected" value="50">50</option>
+          <option value="9999">Todos</option>
+        </select>
+        <select class="pagenum input-mini" title="Número de página"></select>
+      </th>
+    </tr>
+  </tfoot>
+</table>
+<input type="hidden" id="idalmacen" value="{{ almacen.pk }}">
+<input type="hidden" id="fechapost" value="{{ fecha }}">
+{% endif %}
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" media="screen" href="{% static "front/bower_components/jquery.tablesorter/css/theme.bootstrap.css" %}">
+{% endblock %}
+{% block js %}
+<script src="{% static "front/js/main.js" %}"></script>
+<script src="{% static "front/bower_components/jquery.tablesorter/js/jquery.tablesorter.min.js" %}"></script>
+<script src="{% static "front/bower_components/jquery.tablesorter/js/jquery.tablesorter.widgets.min.js" %}"></script>
+<script src="{% static "front/bower_components/jquery.tablesorter/js/jquery.tablesorter.widgets-filter-formatter.min.js" %}"></script>
+<script src="{% static "front/bower_components/jquery.tablesorter/addons/pager/jquery.tablesorter.pager.min.js" %}"></script>
+<script src="{% static "front/js/table-sorter.js" %}"></script>
+{% endblock %}
+
+{% block title %}Reporte de ventas por producto{% endblock %}

@@ -19,7 +19,7 @@ class ProductoFilterList(generics.ListAPIView):
 
   def get_queryset(self):
     queryset = Producto.objects.filter(activo = True)
-    term = self.request.QUERY_PARAMS.get('term', None)
+    term = self.request.query_params.get('term', None)
 
     if term is not None:
       queryset = queryset.filter(producto__icontains = term) | queryset.filter(codigo__icontains = term) | queryset.filter(marca__icontains = term) | queryset.filter(comercial__icontains = term)
@@ -31,7 +31,7 @@ class LoteFilterList(generics.ListAPIView):
 
   def get_queryset(self):
     queryset = Lote.objects.filter(producto__activo = True)
-    term = self.request.QUERY_PARAMS.get('term', None)
+    term = self.request.query_params.get('term', None)
 
     if term is not None:
       queryset = queryset.filter(producto__producto__icontains = term) | queryset.filter(producto__codigo__icontains = term) | queryset.filter(numero__icontains = term) | queryset.filter(producto__codigo__icontains = term) |  queryset.filter(producto__marca__icontains = term) |  queryset.filter(producto__comercial__icontains = term)
@@ -47,7 +47,7 @@ class ClienteFilterList(generics.ListAPIView):
 
   def get_queryset(self):
     queryset = Cliente.objects.all()
-    term = self.request.QUERY_PARAMS.get('term', None)
+    term = self.request.query_params.get('term', None)
 
     if term is not None:
       queryset = queryset.filter(razon_social__icontains = term) | queryset.filter(numero_documento__icontains = term) | queryset.filter(codcliente__icontains = term)
@@ -63,7 +63,7 @@ class ProveedorFilterList(generics.ListAPIView):
 
   def get_queryset(self):
     queryset = Proveedor.objects.all()
-    term = self.request.QUERY_PARAMS.get('term', None)
+    term = self.request.query_params.get('term', None)
 
     if term is not None:
       queryset = queryset.filter(razon_social__icontains = term) | queryset.filter(ruc__icontains = term)

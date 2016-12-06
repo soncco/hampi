@@ -1,25 +1,27 @@
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 
-urlpatterns = patterns('reportes.views',
-  url(r'^excel/deudas/$', 'excel_deudas', name = 'excel_deudas'),
-  url(r'^excel/ventas/$', 'excel_ventas', name = 'excel_ventas'),
-  url(r'^excel/ranking/$', 'excel_ranking', name = 'excel_ranking'),
+from . import views
 
-  url(r'^excel/entradas/$', 'excel_entradas', name = 'excel_entradas'),
-  url(r'^excel/salidas/$', 'excel_salidas', name = 'excel_salidas'),
+urlpatterns = [
+  url(r'^excel/deudas/$', views.excel_deudas, name = 'excel_deudas'),
+  url(r'^excel/ventas/$', views.excel_ventas, name = 'excel_ventas'),
+  url(r'^excel/ranking/$', views.excel_ranking, name = 'excel_ranking'),
 
-  url(r'^excel/gastos/$', 'excel_gastos', name = 'excel_gastos'),
+  url(r'^excel/entradas/$', views.excel_entradas, name = 'excel_entradas'),
+  url(r'^excel/salidas/$', views.excel_salidas, name = 'excel_salidas'),
 
-  url(r'^excel/inventario/$', 'excel_inventario', name = 'excel_inventario'),
-  url(r'^excel/clientes/$', 'excel_clientes', name = 'excel_clientes'),
-  url(r'^excel/proveedores/$', 'excel_proveedores', name = 'excel_proveedores'),
+  url(r'^excel/gastos/$', views.excel_gastos, name = 'excel_gastos'),
 
-  url(r'^excel/cotizaciones/$', 'excel_cotizaciones', name = 'excel_cotizaciones'),
+  url(r'^excel/inventario/$', views.excel_inventario, name = 'excel_inventario'),
+  url(r'^excel/clientes/$', views.excel_clientes, name = 'excel_clientes'),
+  url(r'^excel/proveedores/$', views.excel_proveedores, name = 'excel_proveedores'),
 
-  url(r'^anexo/print/(?P<id>.*)$', 'anexo_print', name = 'anexo_print'),
-  url(r'^kardex/(?P<id>.*)$', 'kardex_excel', name = 'kardex_excel'),
+  url(r'^excel/cotizaciones/$', views.excel_cotizaciones, name = 'excel_cotizaciones'),
 
-  url(r'^vendidos/$', 'vendidos', name = 'vendidos'),
-  url(r'^excel/vendidos/$', 'excel_vendidos', name = 'excel_vendidos'),
-  url(r'^excel/vendidos/fecha/$', 'excel_vendidos_fecha', name = 'excel_vendidos_fecha'),
-)
+  url(r'^anexo/print/(?P<id>.*)$', views.anexo_print, name = 'anexo_print'),
+  url(r'^kardex/(?P<id>.*)$', views.kardex_excel, name = 'kardex_excel'),
+
+  url(r'^vendidos/$', views.vendidos, name = 'vendidos'),
+  url(r'^excel/vendidos/$', views.excel_vendidos, name = 'excel_vendidos'),
+  url(r'^excel/vendidos/fecha/$', views.excel_vendidos_fecha, name = 'excel_vendidos_fecha'),
+]

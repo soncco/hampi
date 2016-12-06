@@ -1,0 +1,96 @@
+{% extends 'front/base.html' %}
+{% load mathfilters %}
+{% block content %}{% load static %}
+<div class="page-header">
+  <h3><i class="fa fa-file icon-new"></i> Detalles de la Salida
+    <span class="small pull-right">
+      <a class="btn btn-success btn-sm" href="{% url 'salidas' %}"><i class="fa fa-table"></i> Ver todas las salidas</a>
+      <a class="btn btn-success btn-sm" href="{% url 'salida' %}"><i class="fa fa-book"></i> Registrar una salida</a>
+      <a class="btn btn-primary btn-sm" href="{% url 'salida_print' salida.id %}"><i class="fa fa-print"></i> Imprimir</a>
+    </span>
+  </h3>
+</div>
+<div class="row">
+  <div class="col-md-4">
+    <div class="page-header mini">
+      <h5>Información</h5>
+    </div>
+    <div class="form-group">
+      <label>Almacén:</label>
+      {{ salida.almacen }}
+    </div>
+    <div class="form-group">
+      <label>Fecha:</label>
+      {{ salida.fecha }}
+    </div>
+    <div class="form-group">
+      <label>Número de factura:</label>
+      {{ salida.numero_factura }}
+    </div>
+    <div class="form-group">
+      <label>Fecha del factura:</label>
+      {{ salida.fecha_factura }}
+    </div>
+    <div class="form-group">
+      <label>Número de guía:</label>
+      {{ salida.numero_guia }}
+    </div>
+    <div class="form-group">
+      <label>Fecha del guía:</label>
+      {{ salida.fecha_guia }}
+    </div>
+    <div class="form-group">
+      <label>Quien:</label>
+      {{ salida.quien }}
+    </div>
+    {% if salida.venta %}
+    <div class="form-group">
+      <label>Venta:</label>
+      <a href="{% url 'venta_view' salida.venta.pk %}">Nro {{salida.venta.pk}}</a>
+    </div>
+    {% endif %}
+    <div class="form-group">
+      <label>Notas:</label>
+      {{ salida.notas }}
+    </div>
+  </div>
+  <div class="col-md-8 line-left">
+    <div class="page-header mini">
+      <h5>Detalles</h5>
+    </div>
+    <table class="table table-striped able-condensed table-bordered small">
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Producto</th>
+          <th>Lote Nro</th>
+          <th>Vencimiento</th>
+          <th>Cantidad</th>
+          <th>Unitario</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody class="detalles">
+        {% for detalle in salida.salidadetalle_set.all %}
+        <tr>
+          <td>{{ detalle.lote.producto.codigo }}</td>
+          <td>{{ detalle.lote.producto }}</td>
+          <td>{{ detalle.lote.numero }}</td>
+          <td>{{ detalle.lote.vencimiento }}</td>
+          <td>{{ detalle.cantidad }}</td>
+          <td>{{ detalle.precio_unitario }}</td>
+          <td>{{ detalle.cantidad|mul:detalle.precio_unitario }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>  
+{% endblock %}
+
+{% block js%}
+<script src="{% static "front/js/main.js" %}"></script>
+{% endblock %}
+
+{% block title %}Detalles de la salida{% endblock %}
+

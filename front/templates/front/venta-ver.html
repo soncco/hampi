@@ -1,0 +1,242 @@
+{% extends 'front/base.html' %}
+{% load mathfilters %}
+{% block content %}{% load static %}
+<div class="page-header">
+  <h3><i class="fa fa-file icon-new"></i> Detalles de la venta
+    <span class="small pull-right">
+      <a class="btn btn-success btn-sm" href="{% url 'ventas' %}"><i class="fa fa-table"></i> Ver todas las ventas</a>
+      <a class="btn btn-success btn-sm" href="{% url 'venta' %}"><i class="fa fa-book"></i> Registrar una venta</a>
+      <div class="btn-group">
+        <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown">
+          <i class="fa fa-print"></i> Imprimir <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu" role="menu">
+          <li><a href="{% url 'venta_factura_print' venta.id %}">Factura</a></li>
+          <li><a href="{% url 'venta_guia_print' venta.id %}">Guía de remisión</a></li>
+          <li class="divider"></li>
+          <li><a href="{% url 'venta_print' venta.id %}">Reporte de venta</a></li>
+        </ul>
+      </div>
+    </span>
+  </h3>
+</div>
+<div class="row">
+  <div class="col-md-3">
+    <div class="page-header mini">
+      <h5 class="green">Información</h5>
+    </div>
+    <div class="form-group">
+      <label>Nro:</label>
+      {{ venta.pk }}
+    </div>
+    <div class="form-group">
+      <label>Almacén:</label>
+      {{ venta.almacen }}
+    </div>
+    <div class="form-group">
+      <label>Cliente:</label>
+      {{ venta.cliente }} ({{ venta.cliente.numero_documento }})
+    </div>
+    <div class="form-group">
+      <label>Tipo de Venta:</label>
+      {{ venta.get_tipo_venta_display }}
+    </div>
+    {% if venta.tipo_venta == 'P' %}
+    <div class="form-group">
+      <label>Estado:</label>
+      {% if venta.deuda.estado == 'D' %}
+      <strong class="text-danger  ">{{ venta.deuda.get_estado_display }}</strong>
+      {% else %}
+      <strong class="text-success">{{ venta.deuda.get_estado_display }}</strong>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    <div class="page-header mini">
+      <h5 class="green">Información de Factura</h5>
+    </div>
+    <div class="form-group">
+      <label>Número Factura:</label>
+      <a href="" class="editable" id="numero_factura">{{ venta.numero_factura }}</a>
+    </div>
+    <div class="form-group">
+      <label>Fecha Factura:</label>
+      <a href="" class="editable-date" id="fecha_factura">{{ venta.fecha_factura }}</a>
+    </div>
+    <div class="form-group">
+      <label>Orden de Compra:</label>
+      <a href="" class="editable" id="orden_compra">{{ venta.orden_compra }}</a>
+    </div>
+    <div class="form-group">
+      <label>Condiciones:</label>
+      <a href="" class="editable" id="condiciones">{{ venta.condiciones }}</a>
+    </div>
+    <div class="form-group">
+      <label>Fecha de vencimiento:</label>
+      <a href="" class="editable-date" id="vencimiento">{{ venta.vencimiento }}</a>
+    </div>
+    <div class="form-group">
+      <label>Zona:</label>
+      <a href="" class="editable" id="zona">{{ venta.zona }}</a>
+    </div>
+    <div class="form-group">
+      <label>Hora:</label>
+      <a href="" class="editable" id="hora">{{ venta.hora }}</a>
+    </div>
+  </div>
+  <div class="col-md-3 line-left">
+    <div class="page-header mini">
+      <h5 class="green">Información de Guía</h5>
+    </div>
+    <div class="form-group">
+      <label>Número de Guía:</label>
+      <a href="" class="editable" id="numero_guia">{{ venta.numero_guia }}</a>
+    </div>
+    <div class="form-group">
+      <label>Fecha de Emisión:</label>
+      <a href="" class="editable-date" id="fecha_emision">{{ venta.fecha_emision }}</a>
+    </div>
+    <div class="form-group">
+      <label>Fecha de Traslado:</label>
+      <a href="" class="editable-date" id="fecha_traslado">{{ venta.fecha_traslado }}</a>
+    </div>
+    <div class="form-group">
+      <label>Procedencia:</label>
+      <a href="" class="editable" id="procedencia">{{ venta.procedencia }}</a>
+    </div>
+    <div class="form-group">
+      <label>Llegada:</label>
+      <a href="" class="editable" id="llegada">{{ venta.llegada }}</a>
+    </div>
+    <div class="form-group">
+      <label>Vehículo:</label>
+      <a href="" class="editable" id="vehiculo">{{ venta.vehiculo }}</a>
+    </div>
+    <div class="form-group">
+      <label>Inscripción:</label>
+      <a href="" class="editable" id="inscripcion">{{ venta.inscripcion }}</a>
+    </div>
+    <div class="form-group">
+      <label>Licencia:</label>
+      <a href="" class="editable" id="licencia">{{ venta.licencia }}</a>
+    </div>
+    <div class="form-group">
+      <label>Costo de transporte:</label>
+      <a href="" class="editable" id="costo">{{ venta.costo }}</a>
+    </div>
+    <div class="form-group">
+      <label>Transportista:</label>
+      <a href="" class="editable" id="transportista">{{ venta.transportista }}</a>
+    </div>
+    <div class="form-group">
+      <label>RUC Transportista:</label>
+      <a href="" class="editable" id="ruc_transportista">{{ venta.ruc_transportista }}</a>
+    </div>
+    <div class="form-group">
+      <label>Bultos:</label>
+      <a href="" class="editable" id="bultos">{{ venta.bultos }}</a>
+    </div>
+    <div class="form-group">
+      <label>Despachador:</label>
+      <a href="" class="editable" id="despachador">{{ venta.despachador }}</a>
+    </div>
+    <div class="form-group">
+      <label>Jefe de Almacén:</label>
+      <a href="" class="editable" id="jefe_almacen">{{ venta.jefe_almacen }}</a>
+    </div>
+    <div class="form-group">
+      <label>V°B°:</label>
+      <a href="" class="editable" id="vb">{{ venta.vb }}</a>
+    </div>
+  </div>
+  <div class="col-md-6 line-left">
+    <div class="page-header mini">
+      <h5>Detalles</h5>
+    </div>
+    <table class="table table-striped table-condensed table-bordered small">
+      <tfoot>
+        <tr>
+          <td colspan="6" class="text-right"><strong>Venta Total:</strong></td>
+          <td colspan="1" class="text-right warning">
+            {{ venta.total_venta|floatformat:2 }}
+          </td>
+        </tr>
+      </tfoot>
+      <thead>
+        <tr>
+          <th>Código</th>
+          <th>Producto</th>
+          <th>Lote Nro</th>
+          <th>Vencimiento</th>
+          <th>Cantidad</th>
+          <th>Unitario</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody class="detalles">
+        {% for detalle in venta.ventadetalle_set.all %}
+        <tr>
+          <td>{{ detalle.lote.producto.codigo }}</td>
+          <td>{{ detalle.lote.producto }}</td>
+          <td>{{ detalle.lote.numero }}</td>
+          <td>{{ detalle.lote.vencimiento }}</td>
+          <td>{{ detalle.cantidad }}</td>
+          <td>{{ detalle.precio_unitario }}</td>
+          <td>{{ detalle.total }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% if venta.tipo_venta == 'P' %}
+    <div class="page-header mini">
+      <h5>Amortizaciones</h5>
+    </div>
+    <table class="table table-striped table-condensed table-bordered small">
+      {% if venta.deuda.estado == 'D' %}
+      <tfoot>
+        <tr>
+          <td colspan="4">
+            <a href="{% url 'amortizacion' venta.deuda.id %}" class="btn btn-info btn-sm btn-block no-line"><i class="fa fa-check-square"></i> Agregar amortización</a>
+          </td>
+        </tr>
+      </tfoot>
+      {% endif %}
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Recibido por</th>
+          <th>Monto</th>
+          <th>Saldo</th>
+        </tr>
+      </thead>
+      <tbody class="detalles">
+        {% for amortizacion in amortizaciones %}
+        <tr>
+          <td>{{ amortizacion.fecha }}</td>
+          <td>{{ amortizacion.recibido_por.first_name }}</td>
+          <td class="text-right">{{ amortizacion.monto }}</td>
+          <td class="text-right">{{ amortizacion.saldo }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block css %}
+<link rel="stylesheet" href="{% static "front/bower_components/x-editable/dist/bootstrap3-editable/css/bootstrap-editable.css" %}">
+{% endblock %}
+
+{% block js%}
+<script>
+  var the_pk = {{venta.pk}};
+</script>
+<script src="{% static "front/bower_components/x-editable/dist/bootstrap3-editable/js/bootstrap-editable.min.js" %}"></script>
+<script src="{% static "front/js/editable.js" %}"></script>
+<script src="{% static "front/js/main.js" %}"></script>
+{% endblock %}
+
+{% block title %}Detalles de la venta{% endblock %}
+

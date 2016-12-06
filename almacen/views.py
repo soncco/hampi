@@ -18,8 +18,8 @@ class StockAlmacenFilterList(generics.ListAPIView):
   serializer_class = StockSerializer
 
   def get_queryset(self):
-    almacen = self.request.QUERY_PARAMS.get('almacen', None)
-    term = self.request.QUERY_PARAMS.get('term', None)
+    almacen = self.request.query_params.get('almacen', None)
+    term = self.request.query_params.get('term', None)
     queryset = Stock.objects.filter(en_almacen = almacen, unidades__gt = 0)
 
     if term is not None:

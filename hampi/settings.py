@@ -13,7 +13,6 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
-print BASE_DIR
 
 
 # Quick-start development settings - unsuitable for production
@@ -25,7 +24,7 @@ SECRET_KEY = 'o*9z@6*&u%wyvc3=nmela&@cku&618q9ur@ff(62$8-9gkw#&o'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-TEMPLATE_DEBUG = DEBUG
+#TEMPLATE_DEBUG = DEBUG
 
 ALLOWED_HOSTS = ['localhost']
 
@@ -33,7 +32,7 @@ ALLOWED_HOSTS = ['localhost']
 # Application definition
 
 INSTALLED_APPS = (
-    'suit',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -45,7 +44,6 @@ INSTALLED_APPS = (
     'ventas',
     'front',
     'reportes',
-    'south',
     'rest_framework',
     'mathfilters',
     'django_extensions',
@@ -100,24 +98,23 @@ STATIC_ROOT = ''
 
 STATIC_URL = '/static/'
 
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-)
 
-TEMPLATE_DIRS = (
-    os.path.join(os.path.dirname(__file__), 'templates'),
-)
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
 
-from django.conf.global_settings import TEMPLATE_CONTEXT_PROCESSORS as TCP
-
-TEMPLATE_CONTEXT_PROCESSORS = TCP + (
-    'django.core.context_processors.request',
-)
-
-SUIT_CONFIG = {
-    'ADMIN_NAME': 'Administración de Sistema'
-}
 
 LOGIN_URL = '/login/'
 LOGOUT_URL = '/logout/'

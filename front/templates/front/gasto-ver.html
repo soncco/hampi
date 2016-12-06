@@ -1,0 +1,59 @@
+{% extends 'front/base.html' %}
+{% block content %}{% load static %}
+<div class="page-header">
+  <h3><i class="fa fa-file icon-new"></i> Detalle de Gasto
+    <span class="small pull-right">
+      <a class="btn btn-success btn-sm" href="{% url 'gasto' %}"><i class="fa fa-dollar"></i> Registrar Gasto</a>
+      <a class="btn btn-success btn-sm" href="{% url 'gastos' %}"><i class="fa fa-table"></i> Ver todos los gastos</a>
+    </span>
+  </h3>
+</div>
+<form action="{% url 'gasto' %}" role="form" method="post" id="the-form">
+<div class="row">
+  <div class="col-md-6">
+    <div class="page-header mini">
+      <h5>Información</h5>
+    </div>
+    <div class="form-group">
+      <label for="">Almacén:</label>
+      {{ gasto.almacen }}
+    </div>
+    <div class="form-group">
+      <label for="">Quién:</label>
+      {{ gasto.quien.first_name }}
+    </div>
+    <div class="form-group">
+      <label for="">Tipo de Gasto:</label>
+      {% if not gasto.tipo %}
+        Ninguno
+      {% else %}
+        {{ gasto.tipo }}
+      {% endif %}
+    </div>
+    <div class="form-group">
+      <label for="">Fecha:</label>
+      {{ gasto.fecha }}
+    </div>
+    <div class="form-group">
+      <label for="">Monto:</label>
+      {{ gasto.monto|floatformat:2 }}
+    </div>
+  </div>
+  <div class="col-md-6 line-left">
+    <div class="page-header mini">
+      <h5>Detalles</h5>
+    </div>
+    <div class="form-group">
+      <label for="">Razón:</label>
+      {{ gasto.razon }}
+    </div>
+  </div>
+</div>  
+</form>
+{% endblock %}
+
+{% block js %}
+<script src="{% static "front/js/main.js" %}"></script>
+{% endblock %}
+
+{% block title %}Detalle de Gasto{% endblock %}
