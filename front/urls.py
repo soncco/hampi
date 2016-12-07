@@ -12,9 +12,7 @@ urlpatterns = [
   url(r'^venta/ver/(?P<id>.*)$', views.venta_view, name = 'venta_view'),
   url(r'^ventas/$', views.ventas, name = 'ventas'),
   url(r'^venta/print/(?P<id>.*)$', views.venta_print, name = 'venta_print'),
-  url(r'^venta/guia/printx/(?P<id>.*)$', views.venta_guia_print_antiguo, name = 'venta_guia_print_antiguo'),
   url(r'^venta/guia/print/(?P<id>.*)$', views.venta_guia_print, name = 'venta_guia_print'),
-  url(r'^venta/factura/printx/(?P<id>.*)$', views.venta_factura_print_antiguo, name = 'venta_factura_print_antiguo'),
   url(r'^venta/factura/print/(?P<id>.*)$', views.venta_factura_print, name = 'venta_factura_print'),
   url(r'^venta/editar/$', views.venta_editar, name = 'venta_editar'),
 
@@ -55,5 +53,6 @@ urlpatterns = [
   url(r'^producto/lote/agregar$', views.producto_lote, name = 'producto_lote'),
 
   url(r'^informes/varios$', views.varios, name = 'varios'),
+  url(r'^historial/(?P<id>.*)$', views.historial, name = 'historial'),
 
 ]

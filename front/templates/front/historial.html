@@ -1,0 +1,70 @@
+{% extends 'front/base.html' %}
+{% block content %}{% load static %}
+<div class="page-header">
+  <h3><i class="fa fa-history icon-new"></i> Historial de Producto
+  </h3>
+</div>
+
+<div class="well">
+  <p class="text-center"><i class="fa fa-file text-warning" ></i> {{ producto.producto }}</p>
+</div>
+
+<table class="table table-bordered table-striped table-hover">
+  <caption>Detalles de Compra</caption>
+  <thead>
+    <tr>
+      <th>Lote</th>
+      <th>Proveedor</th>
+      <th>Precio Compra</th>
+      <th>Fecha</th>
+      <th>Ver detalles</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for producto in productos %}
+      {% for lote in producto.lote_set.all %}
+        {% for entrada in lote.entradadetalle_set.all %}
+          <tr>
+            <td>{{ lote.numero }}</td>
+            <td>{{ entrada.entrada_padre.proveedor.razon_social }}</td>
+            <td>{{ entrada.precio_unitario|floatformat:"2" }}</td>
+            <td>{{ entrada.entrada_padre.fecha_factura|date:"d b Y" }}</td>
+            <td><a href="{% url 'entrada_view' entrada.entrada_padre.pk %}" class="btn btn-sm btn-warning"><i class="fa fa-edit"></i></a></td>
+          </tr>      
+        {% endfor %}
+      {% endfor %}
+    {% endfor %}
+  </tbody>
+</table>
+
+<table class="table table-bordered table-striped table-hover">
+  <caption>Detalles de Venta</caption>
+  <thead>
+    <tr>
+      <th>Lote</th>
+      <th>Cliente</th>
+      <th>Precio Venta</th>
+      <th>Fecha</th>
+      <th>Documento</th>
+      <th>Ver detalles</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for producto in productos %}
+      {% for lote in producto.lote_set.all %}
+        {% for venta in lote.ventadetalle_set.all %}
+          <tr>
+            <td>{{ lote.numero }}</td>
+            <td>{{ venta.registro_padre.cliente.razon_social }}</td>
+            <td>{{ venta.precio_unitario|floatformat:"2" }}</td>
+            <td>{{ venta.registro_padre.fecha_factura|date:"d b Y" }}</td>
+            <td>{{ venta.registro_padre.numero_factura }}</td>
+            <td><a href="{% url 'venta_view' venta.registro_padre.pk %}" class="btn btn-sm btn-warning"><i class="fa fa-edit"></i></a></td>
+          </tr>      
+        {% endfor %}
+      {% endfor %}
+    {% endfor %}
+  </tbody>
+</table>
+ 
+{% endblock content %}

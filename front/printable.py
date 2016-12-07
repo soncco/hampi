@@ -182,7 +182,7 @@ class ImpresionFactura:
       if comercial == '':
         the_prod = '%s - %s' % (detalle.lote.producto.producto.upper(), unidecode(detalle.lote.producto.marca.upper()))
       else:
-        the_prod = '%s  %s - %s' % (detalle.lote.producto.producto.upper(), comercial, unidecode(detalle.lote.producto.marca.upper()))
+        the_prod = '%s / %s - %s' % (detalle.lote.producto.producto.upper(), comercial, unidecode(detalle.lote.producto.marca.upper()))
 
       fila.append(Paragraph(the_prod, style))
 
@@ -356,7 +356,7 @@ class ImpresionGuia:
       if comercial == '':
         the_prod = '%s - %s' % (detalle.lote.producto.producto.upper(), unidecode(detalle.lote.producto.marca.upper()))
       else:
-        the_prod = '%s  %s - %s' % (detalle.lote.producto.producto.upper(), comercial, unidecode(detalle.lote.producto.marca.upper()))
+        the_prod = '%s / %s - %s' % (detalle.lote.producto.producto.upper(), comercial, unidecode(detalle.lote.producto.marca.upper()))
 
       fila.append(Paragraph(the_prod, style))
 

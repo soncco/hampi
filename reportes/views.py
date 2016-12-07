@@ -852,10 +852,15 @@ def anexo_print(request, id):
   hdr_cells[7].text = u'Vencimiento R.S.'
   hdr_cells[2].width = Cm(8)
   for detalle in entrada.entradadetalle_set.all():
+      comercial = detalle.lote.producto.comercial.upper()
+      if comercial == '':
+        the_prod = '%s' % (detalle.lote.producto.producto)
+      else:
+        the_prod = '%s / %s' % (detalle.lote.producto.producto, comercial)
       row_cells = table.add_row().cells
       row_cells[0].text = str(detalle.cantidad)
       row_cells[1].text = detalle.lote.producto.unidad_medida
-      row_cells[2].text = detalle.lote.producto.producto
+      row_cells[2].text = the_prod
       row_cells[3].text = detalle.lote.producto.marca
       try:
         row_cells[4].text = detalle.lote.vencimiento.strftime('%d/%m/%Y')
@@ -944,9 +949,14 @@ def anexo_print(request, id):
 
   counter = 1
   for detalle in entrada.entradadetalle_set.all():
+      comercial = detalle.lote.producto.comercial.upper()
+      if comercial == '':
+        the_prod = '%s' % (detalle.lote.producto.producto)
+      else:
+        the_prod = '%s / %s' % (detalle.lote.producto.producto, comercial)
       row_cells = table.add_row().cells
       row_cells[0].text = str(counter)
-      row_cells[1].text = detalle.lote.producto.producto
+      row_cells[1].text = the_prod
       row_cells[2].text = detalle.lote.numero
       try:
         row_cells[3].text = detalle.lote.vencimiento.strftime('%d/%m/%Y')
