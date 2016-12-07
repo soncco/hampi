@@ -20,6 +20,7 @@ urlpatterns = [
 
   url(r'^anexo/print/(?P<id>.*)$', views.anexo_print, name = 'anexo_print'),
   url(r'^kardex/(?P<id>.*)$', views.kardex_excel, name = 'kardex_excel'),
+  url(r'^kardex2/(?P<id>.*)$', views.kardex2_excel, name = 'kardex2_excel'),
 
   url(r'^vendidos/$', views.vendidos, name = 'vendidos'),
   url(r'^excel/vendidos/$', views.excel_vendidos, name = 'excel_vendidos'),

@@ -52,6 +52,8 @@ urlpatterns = [
   url(r'^cotizacion/print/(?P<id>.*)$', views.cotizacion_print, name = 'cotizacion_print'),
 
   url(r'^producto/agregar$', views.producto, name = 'producto'),
-  url(r'^producto/lote/agregar$', views.producto_lote, name = 'producto_lote'),  
+  url(r'^producto/lote/agregar$', views.producto_lote, name = 'producto_lote'),
+
+  url(r'^informes/varios$', views.varios, name = 'varios'),
 
 ]

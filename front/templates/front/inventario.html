@@ -42,7 +42,10 @@
       <td>{{ producto.lote.vencimiento }}</td>
       <td>{{ producto.en_almacen }}</td>
       <td>{{ producto.unidades }}</td>
-      <td><a href="{% url 'kardex_excel' producto.lote.pk %}" class="btn btn-xs btn-success"><i class="fa fa-file-excel-o"></i></a></td>
+      <td>
+        <a href="{% url 'kardex_excel' producto.lote.pk %}" class="btn btn-xs btn-success" title="Exportar Kardex de Lote"><i class="fa fa-file-excel-o"></i></a>
+        <a href="{% url 'kardex2_excel' producto.pk %}" class="btn btn-xs btn-info" title="Exportar Kardex de Producto"><i class="fa fa-file-excel-o"></i></a>
+      </td>
     </tr>
     {% empty %}
     <tr>
@@ -59,11 +62,11 @@
         <button type="button" class="btn next"><i class="icon-arrow-right glyphicon glyphicon-forward"></i></button>
         <button type="button" class="btn last"><i class="icon-step-forward glyphicon glyphicon-step-forward"></i></button>
         <select class="pagesize input-mini" title="Select page size">
-          <option value="10">10</option>
+          <option value="10" selected="selected">10</option>
           <option value="20">20</option>
           <option value="30">30</option>
           <option value="40">40</option>
-          <option value="9999" selected="selected">Todos</option>
+          <option value="9999">Todos</option>
         </select>
         <select class="pagenum input-mini" title="Número de página"></select>
       </th>

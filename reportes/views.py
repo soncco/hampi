@@ -983,7 +983,7 @@ def kardex_excel(request, id):
     fila['fecha'] = entrada.entrada_padre.fecha_guia
     fila['guia'] = entrada.entrada_padre.numero_guia
     fila['ingreso'] = entrada.cantidad
-    fila['egreso'] = ''
+    fila['egreso'] = 0
     fila['cliente'] = ''
     fila['proveedor'] = entrada.entrada_padre.proveedor.razon_social
     fila['mi_guia'] = ''
@@ -997,7 +997,7 @@ def kardex_excel(request, id):
     fila = {}
     fila['fecha'] = venta.registro_padre.fecha_traslado
     fila['guia'] = ''
-    fila['ingreso'] = ''
+    fila['ingreso'] = 0
     fila['egreso'] = venta.cantidad
     fila['cliente'] = venta.registro_padre.cliente.razon_social
     fila['proveedor'] = ''
@@ -1013,7 +1013,119 @@ def kardex_excel(request, id):
   output = StringIO.StringIO()
 
   book = Workbook(output)  
-  sheet = book.add_worksheet(u'Kardex')
+  sheet = book.add_worksheet(u'Kardex Lote')
+
+  bold = book.add_format({'bold': 1})
+  fecha = book.add_format({'num_format': 'dd/mm/yy'})
+  money = book.add_format({'num_format': '0.00'})
+
+  title = book.add_format({
+    'bold': 1,
+    'align': 'center',
+    'font_color': 'white',
+    'fg_color': '#18bc9c',
+  })
+
+  fecha2 = book.add_format({
+    'bold': 1,
+    'align': 'center',
+    'font_color': 'white',
+    'fg_color': '#2ecc71',
+    'num_format': 'd mmm yyyy'
+  })
+
+  sheet.merge_range('A1:K1', u'REGISTRO DE PRODUCTOS FARMACEUTICOS - KARDEX INFORMÁTICO', title)
+  sheet.merge_range('A2:K2', u'DROGUERÍA HAMPI KALLPA E.I.R.L.', title)
+
+  sheet.write('A4', u'PRODUCTO: %s' % lote.producto.producto, bold)
+  sheet.write('A5', u'PRESENTACIÓN: %s' % lote.producto.unidad_medida, bold)
+
+  sheet.write('A7', u'Fecha', bold)
+  sheet.write('B7', u'Guía de Remisión N° Proveedor', bold)
+  sheet.write('C7', u'Ingreso', bold)
+  sheet.write('D7', u'Egreso', bold)
+  sheet.write('E7', u'Cliente', bold)
+  sheet.write('F7', u'Proveedor', bold)
+  sheet.write('G7', u'Guía de Remisión N°', bold)
+  sheet.write('H7', u'Lote', bold)
+  sheet.write('I7', u'FV', bold)
+  sheet.write('J7', u'Saldo', bold)
+  sheet.write('K7', u'NRO', bold)
+
+  row = 8
+  for item in nueva_historia:
+    sheet.write('A%s' % row, item['fecha'].strftime('%Y-%m-%d'), fecha)
+    sheet.write('B%s' % row, item['guia'])
+    sheet.write('C%s' % row, item['ingreso'])
+    sheet.write('D%s' % row, item['egreso'])
+    sheet.write('E%s' % row, item['cliente'])
+    sheet.write('F%s' % row, item['proveedor'])
+    sheet.write('G%s' % row, item['mi_guia'])
+    sheet.write('H%s' % row, item['lote'])
+    sheet.write('I%s' % row, item['vencimiento'].strftime('%Y-%m-%d'), fecha)
+    if row == 8:
+      sheet.write('J%s' % row, item['ingreso'])
+    else:
+      sheet.write_formula('J%s' % row, '=J%s+C%s-D%s' % (row-1, row, row))
+    sheet.write('K%s' % row, item['nro'])
+    row += 1
+
+  sheet.autofilter(('A7:K%s' % row))
+  book.close()
+
+  # construct response
+  output.seek(0)
+  response = HttpResponse(output.read(), content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+  response['Content-Disposition'] = "attachment; filename=kardex-%s.xlsx" % lote.pk
+
+  return response
+
+@login_required
+def kardex2_excel(request, id):
+  p = Producto.objects.get(pk = id)
+  productos = Producto.objects.filter(producto = p.producto)
+  historia = []
+  for producto in productos:
+    lotes = producto.lote_set.all()
+    for lote in lotes:
+      entradas = lote.entradadetalle_set.all()
+      ventas = lote.ventadetalle_set.all()
+      for entrada in entradas:
+        fila = {}
+        fila['fecha'] = entrada.entrada_padre.fecha_guia
+        fila['guia'] = entrada.entrada_padre.numero_guia
+        fila['ingreso'] = entrada.cantidad
+        fila['egreso'] = 0
+        fila['cliente'] = ''
+        fila['proveedor'] = entrada.entrada_padre.proveedor.razon_social
+        fila['mi_guia'] = ''
+        fila['lote'] = entrada.lote.numero
+        fila['vencimiento'] = entrada.lote.vencimiento
+        fila['nro'] = entrada.entrada_padre.pk
+
+        historia.append(fila)
+
+      for venta in ventas:
+        fila = {}
+        fila['fecha'] = venta.registro_padre.fecha_traslado
+        fila['guia'] = ''
+        fila['ingreso'] = 0
+        fila['egreso'] = venta.cantidad
+        fila['cliente'] = venta.registro_padre.cliente.razon_social
+        fila['proveedor'] = ''
+        fila['mi_guia'] = venta.registro_padre.numero_guia
+        fila['lote'] = venta.lote.numero
+        fila['vencimiento'] = venta.lote.vencimiento
+        fila['nro'] = venta.registro_padre.pk
+
+        historia.append(fila)
+
+  nueva_historia = sorted(historia, key=itemgetter('fecha')) 
+  
+  output = StringIO.StringIO()
+
+  book = Workbook(output)  
+  sheet = book.add_worksheet(u'Kardex Producto')
 
   bold = book.add_format({'bold': 1})
   fecha = book.add_format({'num_format': 'dd/mm/yy'})
@@ -1145,13 +1257,14 @@ def excel_vendidos(request):
 @login_required
 def excel_vendidos_fecha(request):
 
+
   output = StringIO.StringIO()
 
   book = Workbook(output)  
   sheet = book.add_worksheet(u'Productos Vendidos por fecha')
 
-  inicial = request.GET.get('inicial')
-  final = request.GET.get('final')
+  inicial = request.POST.get('inicial')
+  final = request.POST.get('final')
 
   inicial = datetime.datetime.strptime(inicial, "%Y-%m-%d")
   final = datetime.datetime.strptime(final, "%Y-%m-%d")
@@ -1168,28 +1281,148 @@ def excel_vendidos_fecha(request):
 
   vendidos = VentaDetalle.objects.filter(registro_padre__fecha_factura__range = (inicial, final))
 
-  sheet.merge_range('A1:B1', u'Relación de Productos Vendidos Hampi Kallpa', title)
-  sheet.merge_range('A2:B2', u'Desde %s hasta %s' % (inicial.strftime('%d/%m/%Y'), final.strftime('%d/%m/%Y')), title)
+  hasta = 'E'
+  sheet.merge_range('A1:%s1' % hasta, u'Relación de Productos Vendidos Hampi Kallpa', title)
+  sheet.merge_range('A2:%s2' % hasta, u'Desde %s hasta %s' % (inicial.strftime('%d/%m/%Y'), final.strftime('%d/%m/%Y')), title)
 
   sheet.write('A3', u'Producto', bold)
   sheet.write('B3', u'Lote', bold)
+  sheet.write('C3', u'Cuando', bold)
+  sheet.write('D3', u'Cliente', bold)
+  sheet.write('E3', u'RUC', bold)
 
   row = 4
   for vendido in vendidos:
 
-    print vendido
 
     sheet.write('A%s' % row, vendido.lote.producto.producto)
     sheet.write('B%s' % row, vendido.lote.numero)
+    sheet.write('C%s' % row, vendido.registro_padre.fecha_factura, fecha)
+    sheet.write('D%s' % row, vendido.registro_padre.cliente.razon_social)
+    sheet.write('E%s' % row, vendido.registro_padre.cliente.numero_documento)
     
     row += 1
 
-  sheet.autofilter(('A3:B%s' % row))
+  sheet.autofilter(('A3:%s%s' % (hasta, row)))
   book.close()
 
   # construct response
   output.seek(0)
   response = HttpResponse(output.read(), content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
   response['Content-Disposition'] = "attachment; filename=productos-vendidos-fecha-%s.xlsx" % date.today()
+
+  return response
+
+@login_required
+def excel_proveedores_fecha(request):
+
+
+  output = StringIO.StringIO()
+
+  book = Workbook(output)  
+  sheet = book.add_worksheet(u'Proveedores')
+
+  inicial = request.POST.get('inicial')
+  final = request.POST.get('final')
+
+  inicial = datetime.datetime.strptime(inicial, "%Y-%m-%d")
+  final = datetime.datetime.strptime(final, "%Y-%m-%d")
+
+  bold = book.add_format({'bold': 1})
+  fecha = book.add_format({'num_format': 'dd/mm/yy'})
+  
+  title = book.add_format({
+    'bold': 1,
+    'align': 'center',
+    'font_color': 'white',
+    'fg_color': '#18bc9c',
+  })
+
+  rows = Entrada.objects.filter(fecha_factura__range = (inicial, final))
+
+  hasta = 'D'
+  sheet.merge_range('A1:%s1' % hasta, u'Relación de Proveedores que han vendido a Hampi Kallpa', title)
+  sheet.merge_range('A2:%s2' % hasta, u'Desde %s hasta %s' % (inicial.strftime('%d/%m/%Y'), final.strftime('%d/%m/%Y')), title)
+
+  sheet.write('A3', u'Proveedor', bold)
+  sheet.write('B3', u'RUC', bold)
+  sheet.write('C3', u'Fecha', bold)
+  sheet.write('D3', u'Documento', bold)
+
+  row = 4
+  for fila in rows:
+
+
+    sheet.write('A%s' % row, fila.proveedor.razon_social)
+    sheet.write('B%s' % row, fila.proveedor.ruc)
+    sheet.write('C%s' % row, fila.fecha_factura, fecha)
+    sheet.write('D%s' % row, fila.numero_factura)
+    
+    row += 1
+
+  sheet.autofilter(('A3:%s%s' % (hasta, row)))
+  book.close()
+
+  # construct response
+  output.seek(0)
+  response = HttpResponse(output.read(), content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+  response['Content-Disposition'] = "attachment; filename=proveedores-vendieron-fecha-%s.xlsx" % date.today()
+
+  return response
+
+@login_required
+def excel_clientes_fecha(request):
+
+
+  output = StringIO.StringIO()
+
+  book = Workbook(output)  
+  sheet = book.add_worksheet(u'Clientes')
+
+  inicial = request.POST.get('inicial')
+  final = request.POST.get('final')
+
+  inicial = datetime.datetime.strptime(inicial, "%Y-%m-%d")
+  final = datetime.datetime.strptime(final, "%Y-%m-%d")
+
+  bold = book.add_format({'bold': 1})
+  fecha = book.add_format({'num_format': 'dd/mm/yy'})
+  
+  title = book.add_format({
+    'bold': 1,
+    'align': 'center',
+    'font_color': 'white',
+    'fg_color': '#18bc9c',
+  })
+
+  rows = Venta.objects.filter(fecha_factura__range = (inicial, final))
+
+  hasta = 'D'
+  sheet.merge_range('A1:%s1' % hasta, u'Relación de Clientes atendidos por Hampi Kallpa', title)
+  sheet.merge_range('A2:%s2' % hasta, u'Desde %s hasta %s' % (inicial.strftime('%d/%m/%Y'), final.strftime('%d/%m/%Y')), title)
+
+  sheet.write('A3', u'Cliente', bold)
+  sheet.write('B3', u'RUC', bold)
+  sheet.write('C3', u'Fecha', bold)
+  sheet.write('D3', u'Documento', bold)
+
+  row = 4
+  for fila in rows:
+
+
+    sheet.write('A%s' % row, fila.cliente.razon_social)
+    sheet.write('B%s' % row, fila.cliente.numero_documento)
+    sheet.write('C%s' % row, fila.fecha_factura, fecha)
+    sheet.write('D%s' % row, fila.numero_factura)
+    
+    row += 1
+
+  sheet.autofilter(('A3:%s%s' % (hasta, row)))
+  book.close()
+
+  # construct response
+  output.seek(0)
+  response = HttpResponse(output.read(), content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+  response['Content-Disposition'] = "attachment; filename=clientes-atendidos-fecha-%s.xlsx" % date.today()
 
   return response

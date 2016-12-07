@@ -696,6 +696,21 @@ def cotizacion_print(request, id):
   result = generate_pdf('front/pdf/cotizacion.html', file_object = resp, context = context)
   return result
 
+from reportes.views import excel_vendidos_fecha, excel_proveedores_fecha, excel_clientes_fecha
+@login_required
+def varios(request):
+  if request.method == 'POST':
+    tipo = request.POST.get('tipo')
+    if tipo == 'productos':
+      return excel_vendidos_fecha(request)
+    elif tipo == 'proveedores':
+      return excel_proveedores_fecha(request)
+    elif tipo == 'clientes':
+      return excel_clientes_fecha(request)
+
+    return HttpResponse('test')
+  return render(request, 'front/informes-varios.html')
+
 from django.views.decorators.csrf import csrf_exempt
 @csrf_exempt
 @login_required
@@ -770,3 +785,5 @@ def venta_guia_print(request, id):
 
   response.write(pdf)
   return response
+
+
