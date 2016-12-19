@@ -487,13 +487,12 @@ def producto(request):
   if producto_form.is_valid():
     instance = producto_form.save()
     instance.activo = True
-    instance.precio_costo = instance.precio_costo * Decimal(1.18)
     instance.save()
 
     if request.POST.get('vencimiento') == '':
-      lote = Lote(producto = instance, numero = request.POST.get('numero'), nrs = request.POST.get('nrs'), vrs = request.POST.get('vrs'))
+      lote = Lote(producto = instance, numero = request.POST.get('numero'), nrs = request.POST.get('nrs'), vrs = request.POST.get('vrs'), precio_costo = request.POST.get('precio_costo'))
     else:
-      lote = Lote(producto = instance, numero = request.POST.get('numero'), vencimiento = request.POST.get('vencimiento'), nrs = request.POST.get('nrs'), vrs = request.POST.get('vrs'))
+      lote = Lote(producto = instance, numero = request.POST.get('numero'), vencimiento = request.POST.get('vencimiento'), nrs = request.POST.get('nrs'), vrs = request.POST.get('vrs'), precio_costo = request.POST.get('precio_costo'))
     lote.save()
     
     return HttpResponse('1')
@@ -503,9 +502,9 @@ def producto(request):
 def producto_lote(request):
   instance = Producto.objects.get(pk = request.POST.get('producto-id'))
   if request.POST.get('vencimiento') == '':
-    lote = Lote(producto = instance, numero = request.POST.get('numero'), nrs = request.POST.get('nrs'), vrs = request.POST.get('vrs'))
+    lote = Lote(producto = instance, numero = request.POST.get('numero'), nrs = request.POST.get('nrs'), vrs = request.POST.get('vrs'), precio_costo = request.POST.get('precio_costo'))
   else:
-    lote = Lote(producto = instance, numero = request.POST.get('numero'), vencimiento = request.POST.get('vencimiento'), nrs = request.POST.get('nrs'), vrs = request.POST.get('vrs'))
+    lote = Lote(producto = instance, numero = request.POST.get('numero'), vencimiento = request.POST.get('vencimiento'), nrs = request.POST.get('nrs'), vrs = request.POST.get('vrs'), precio_costo = request.POST.get('precio_costo'))
   lote.save()
   
   return HttpResponse('1')

@@ -44,8 +44,8 @@
       <td>{{ producto.unidades }}</td>
       <td>
         <a href="{% url 'kardex_excel' producto.lote.pk %}" class="btn btn-xs btn-success" title="Exportar Kardex de Lote"><i class="fa fa-file-excel-o"></i></a>
-        <a href="{% url 'kardex2_excel' producto.pk %}" class="btn btn-xs btn-info" title="Exportar Kardex de Producto"><i class="fa fa-file-excel-o"></i></a>
-        <a href="{% url 'historial' producto.pk %}" class="btn btn-xs btn-warning" title="Ver historia" target="_blank"><i class="fa fa-history"></i></a>
+        <a href="{% url 'kardex2_excel' producto.lote.producto.pk %}" class="btn btn-xs btn-info" title="Exportar Kardex de Producto"><i class="fa fa-file-excel-o"></i></a>
+        <a href="{% url 'historial' producto.lote.producto.pk %}" class="btn btn-xs btn-warning" title="Ver historia" target="_blank"><i class="fa fa-history"></i></a>
       </td>
     </tr>
     {% empty %}

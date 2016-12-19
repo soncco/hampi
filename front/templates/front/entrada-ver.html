@@ -79,6 +79,7 @@
           <th>Lote Nro</th>
           <th>Vencimiento</th>
           <th>Cantidad</th>
+          <th>Costo</th>
           <th>Unitario</th>
           <th>Total</th>
         </tr>
@@ -91,8 +92,9 @@
           <td>{{ detalle.lote.numero }}</td>
           <td>{{ detalle.lote.vencimiento }}</td>
           <td>{{ detalle.cantidad }}</td>
+          <td>{{ detalle.lote.precio_costo|floatformat:6 }}</td>
           <td>{{ detalle.precio_unitario|floatformat:6 }}</td>
-          <td>{{ detalle.cantidad|mul:detalle.precio_unitario|floatformat:6 }}</td>
+          <td>{{ detalle.cantidad|mul:detalle.lote.precio_costo|floatformat:6 }}</td>
         </tr>
         {% endfor %}
       </tbody>

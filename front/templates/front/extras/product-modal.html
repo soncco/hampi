@@ -7,53 +7,59 @@
         <h4 class="modal-title" id="myModalLabel">Agregar producto</h4>
       </div>
       <div class="modal-body">
-          <div class="page-header mini">
-            <h5>Producto</h5>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="page-header mini">
+                <h5>Producto</h5>
+              </div>
+              <div class="form-group">
+                <input type="text" class="form-control" id="codigo" name="codigo" placeholder="Código" maxlenght="255" data-toggle="tooltip" data-placement="bottom" title="Código">
+              </div>
+              <div class="form-group">
+                <input type="text" class="form-control" id="producto" name="producto" placeholder="Nombre del Producto *" maxlenght="255" required data-toggle="tooltip" data-placement="bottom" title="Nombre del Producto">
+              </div>
+              <div class="form-group">
+                <input type="text" class="form-control" id="comercial" name="comercial" placeholder="Nombre comercial" maxlenght="255" data-toggle="tooltip" data-placement="bottom" title="Nombre comercial">
+              </div>
+              <div class="form-group">
+                <input type="text" class="form-control" id="marca" name="marca" placeholder="Marca *" maxlenght="255" required data-toggle="tooltip" data-placement="bottom" title="Marca">
+              </div>
+              <div class="form-group">
+                <input type="text" class="form-control" id="unidad_medida" name="unidad_medida" placeholder="Unidad de medida *" maxlenght="255" required data-toggle="tooltip" data-placement="bottom" title="Unidad de medida">
+              </div>
+              <div class="form-group">
+                <input type="text" class="form-control" id="procedencia" name="procedencia" placeholder="Procedencia" maxlenght="255" data-toggle="tooltip" data-placement="bottom" title="Procedencia">
+              </div>
+              <div class="form-group">
+                <input type="text" class="form-control" id="precio_unidad" name="precio_unidad" placeholder="Precio unitario" data-toggle="tooltip" data-placement="bottom" title="Precio Unitario">
+                <p class="help-block">El precio unitario aproximado con el cual se venderá.</p>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="page-header mini">
+                <h5>Lote</h5>
+              </div>
+              <div class="form-group">
+                <input type="text" class="form-control" id="numero-p" name="numero" placeholder="Numero de lote" maxlenght="255" data-toggle="tooltip" data-placement="bottom" title="Número de lote">
+              </div>
+              <div class="form-group">
+                <input type="text" class="form-control datepicker" id="vencimiento-p" name="vencimiento" placeholder="Fecha de vencimiento" data-toggle="tooltip" data-placement="bottom" title="Fecha de vencimiento">
+              </div>
+              <div class="form-group">
+                <input type="text" class="form-control" id="precio_costo" name="precio_costo" placeholder="Precio de costo *" required data-toggle="tooltip" data-placement="bottom" title="Precio de costo">
+              </div>
+              <div class="page-header mini">
+                <h5>Registro Sanitario</h5>
+              </div>
+              <div class="form-group">
+                <input type="text" class="form-control" id="nrs-p" name="nrs" placeholder="Numero de R.S." maxlenght="255" data-toggle="tooltip" data-placement="bottom" title="Número de R.S.">
+              </div>
+              <div class="form-group">
+                <input type="text" class="form-control datepicker" id="vrs-p" name="vrs" placeholder="Fecha de vencimiento RS" data-toggle="tooltip" data-placement="bottom" title="Fecha de vencimiento RS">
+              </div>
+            </div>
           </div>
-          <div class="form-group">
-            <input type="text" class="form-control" id="codigo" name="codigo" placeholder="Código" maxlenght="255" data-toggle="tooltip" data-placement="bottom" title="Código">
-          </div>
-          <div class="form-group">
-            <input type="text" class="form-control" id="producto" name="producto" placeholder="Nombre del Producto *" maxlenght="255" required data-toggle="tooltip" data-placement="bottom" title="Nombre del Producto">
-          </div>
-          <div class="form-group">
-            <input type="text" class="form-control" id="comercial" name="comercial" placeholder="Nombre comercial" maxlenght="255" data-toggle="tooltip" data-placement="bottom" title="Nombre comercial">
-          </div>
-          <div class="form-group">
-            <input type="text" class="form-control" id="marca" name="marca" placeholder="Marca *" maxlenght="255" required data-toggle="tooltip" data-placement="bottom" title="Marca">
-          </div>
-          <div class="form-group">
-            <input type="text" class="form-control" id="unidad_medida" name="unidad_medida" placeholder="Unidad de medida *" maxlenght="255" required data-toggle="tooltip" data-placement="bottom" title="Unidad de medida">
-          </div>
-          <div class="form-group">
-            <input type="text" class="form-control" id="procedencia" name="procedencia" placeholder="Procedencia" maxlenght="255" data-toggle="tooltip" data-placement="bottom" title="Procedencia">
-          </div>
-          <div class="form-group">
-            <input type="text" class="form-control" id="precio_costo" name="precio_costo" placeholder="Precio de costo *" required data-toggle="tooltip" data-placement="bottom" title="Precio de costo">
-            <p class="help-block">Poner el precio tal como aparece en la factura, el sistema calculará el 18%.</p>
-          </div>
-          <div class="form-group">
-            <input type="text" class="form-control" id="precio_unidad" name="precio_unidad" placeholder="Precio unitario" data-toggle="tooltip" data-placement="bottom" title="Precio Unitario">
-            <p class="help-block">El precio unitario aproximado con el cual se venderá.</p>
-          </div>
-          <div class="page-header mini">
-            <h5>Lote</h5>
-          </div>
-          <div class="form-group">
-            <input type="text" class="form-control" id="numero-p" name="numero" placeholder="Numero de lote" maxlenght="255" data-toggle="tooltip" data-placement="bottom" title="Número de lote">
-          </div>
-          <div class="form-group">
-            <input type="text" class="form-control datepicker" id="vencimiento-p" name="vencimiento" placeholder="Fecha de vencimiento" data-toggle="tooltip" data-placement="bottom" title="Fecha de vencimiento">
-          </div>
-          <div class="page-header mini">
-            <h5>Registro Sanitario</h5>
-          </div>
-          <div class="form-group">
-            <input type="text" class="form-control" id="nrs-p" name="nrs" placeholder="Numero de R.S." maxlenght="255" data-toggle="tooltip" data-placement="bottom" title="Número de R.S.">
-          </div>
-          <div class="form-group">
-            <input type="text" class="form-control datepicker" id="vrs-p" name="vrs" placeholder="Fecha de vencimiento RS" data-toggle="tooltip" data-placement="bottom" title="Fecha de vencimiento RS">
-          </div>
+          
       </div>
       <div class="modal-footer">
         <button type="submit" class="btn btn-primary save-producto">Guardar</button>
@@ -88,6 +94,9 @@
           </div>
           <div class="form-group">
             <input type="text" class="form-control datepicker" id="vencimiento-lote" name="vencimiento" placeholder="Fecha de vencimiento" data-toggle="tooltip" data-placement="bottom" title="Fecha de vencimiento">
+          </div>
+          <div class="form-group">
+            <input type="text" class="form-control" id="precio_costo" name="precio_costo" placeholder="Precio de costo *" required data-toggle="tooltip" data-placement="bottom" title="Precio de costo">
           </div>
           <div class="page-header mini">
             <h5>Registro Sanitario</h5>

@@ -12,7 +12,6 @@ class Producto(models.Model):
   unidad_medida = models.CharField(max_length = 100)
   procedencia = models.CharField(max_length = 255, blank = True)
   precio_unidad = models.DecimalField(max_digits = 19, decimal_places = 6, default = Decimal('0.000000'))
-  precio_costo = models.DecimalField(max_digits = 19, decimal_places = 6, default = Decimal('0.000000'))
   activo = models.BooleanField(default = True)
 
   def __unicode__(self):
@@ -22,6 +21,7 @@ class Lote(models.Model):
   numero = models.CharField(max_length = 255, blank = True)
   vencimiento = models.DateField(blank = True, null = True)
   producto = models.ForeignKey(Producto)
+  precio_costo = models.DecimalField(max_digits = 19, decimal_places = 6, default = Decimal('0.000000'))
   nrs = models.CharField(max_length = 255, blank = True, null = True)
   vrs = models.CharField(max_length = 255, blank = True, null = True)
 

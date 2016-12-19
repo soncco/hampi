@@ -13,6 +13,7 @@
   <caption>Detalles de Compra</caption>
   <thead>
     <tr>
+      <th>Entrada</th>
       <th>Lote</th>
       <th>Proveedor</th>
       <th>Precio Compra</th>
@@ -25,12 +26,13 @@
       {% for lote in producto.lote_set.all %}
         {% for entrada in lote.entradadetalle_set.all %}
           <tr>
+            <td>{{ entrada.pk }}</td>
             <td>{{ lote.numero }}</td>
             <td>{{ entrada.entrada_padre.proveedor.razon_social }}</td>
-            <td>{{ entrada.precio_unitario|floatformat:"2" }}</td>
+            <td>{{ entrada.lote.precio_costo|floatformat:"6" }}</td>
             <td>{{ entrada.entrada_padre.fecha_factura|date:"d b Y" }}</td>
             <td><a href="{% url 'entrada_view' entrada.entrada_padre.pk %}" class="btn btn-sm btn-warning"><i class="fa fa-edit"></i></a></td>
-          </tr>      
+          </tr>
         {% endfor %}
       {% endfor %}
     {% endfor %}
@@ -41,6 +43,7 @@
   <caption>Detalles de Venta</caption>
   <thead>
     <tr>
+      <th>Venta</th>
       <th>Lote</th>
       <th>Cliente</th>
       <th>Precio Venta</th>
@@ -54,9 +57,10 @@
       {% for lote in producto.lote_set.all %}
         {% for venta in lote.ventadetalle_set.all %}
           <tr>
+            <td>{{ venta.pk }}</td>
             <td>{{ lote.numero }}</td>
             <td>{{ venta.registro_padre.cliente.razon_social }}</td>
-            <td>{{ venta.precio_unitario|floatformat:"2" }}</td>
+            <td>{{ venta.precio_unitario|floatformat:"3" }}</td>
             <td>{{ venta.registro_padre.fecha_factura|date:"d b Y" }}</td>
             <td>{{ venta.registro_padre.numero_factura }}</td>
             <td><a href="{% url 'venta_view' venta.registro_padre.pk %}" class="btn btn-sm btn-warning"><i class="fa fa-edit"></i></a></td>

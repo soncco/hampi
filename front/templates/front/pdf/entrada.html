@@ -63,8 +63,8 @@
             <td class="padding-cell">{{ detalle.lote.numero }}</td>
             <td class="padding-cell">{{ detalle.lote.vencimiento }}</td>
             <td class="text-right padding-cell">{{ detalle.cantidad }}</td>
-            <td class="text-right padding-cell">{{ detalle.precio_unitario|floatformat:6 }}</td>
-            <td class="text-right padding-cell">{{ detalle.cantidad|mul:detalle.precio_unitario|floatformat:6 }}</td>
+            <td class="text-right padding-cell">{{ detalle.lote.precio_costo|floatformat:6 }}</td>
+            <td class="text-right padding-cell">{{ detalle.cantidad|mul:detalle.lote.precio_costo|floatformat:6 }}</td>
           </tr>
           {% endfor %}
         </tbody>

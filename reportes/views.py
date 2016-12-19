@@ -1350,14 +1350,15 @@ def excel_proveedores_fecha(request):
 
   rows = Entrada.objects.filter(fecha_factura__range = (inicial, final))
 
-  hasta = 'D'
+  hasta = 'E'
   sheet.merge_range('A1:%s1' % hasta, u'Relación de Proveedores que han vendido a Hampi Kallpa', title)
   sheet.merge_range('A2:%s2' % hasta, u'Desde %s hasta %s' % (inicial.strftime('%d/%m/%Y'), final.strftime('%d/%m/%Y')), title)
 
   sheet.write('A3', u'Proveedor', bold)
   sheet.write('B3', u'RUC', bold)
   sheet.write('C3', u'Fecha', bold)
-  sheet.write('D3', u'Documento', bold)
+  sheet.write('D3', u'Factura', bold)
+  sheet.write('E3', u'Guía', bold)
 
   row = 4
   for fila in rows:
@@ -1367,6 +1368,7 @@ def excel_proveedores_fecha(request):
     sheet.write('B%s' % row, fila.proveedor.ruc)
     sheet.write('C%s' % row, fila.fecha_factura, fecha)
     sheet.write('D%s' % row, fila.numero_factura)
+    sheet.write('E%s' % row, fila.numero_guia)
     
     row += 1
 
@@ -1407,14 +1409,15 @@ def excel_clientes_fecha(request):
 
   rows = Venta.objects.filter(fecha_factura__range = (inicial, final))
 
-  hasta = 'D'
+  hasta = 'E'
   sheet.merge_range('A1:%s1' % hasta, u'Relación de Clientes atendidos por Hampi Kallpa', title)
   sheet.merge_range('A2:%s2' % hasta, u'Desde %s hasta %s' % (inicial.strftime('%d/%m/%Y'), final.strftime('%d/%m/%Y')), title)
 
   sheet.write('A3', u'Cliente', bold)
   sheet.write('B3', u'RUC', bold)
   sheet.write('C3', u'Fecha', bold)
-  sheet.write('D3', u'Documento', bold)
+  sheet.write('D3', u'Factura', bold)
+  sheet.write('E3', u'Guia', bold)
 
   row = 4
   for fila in rows:
@@ -1424,6 +1427,7 @@ def excel_clientes_fecha(request):
     sheet.write('B%s' % row, fila.cliente.numero_documento)
     sheet.write('C%s' % row, fila.fecha_factura, fecha)
     sheet.write('D%s' % row, fila.numero_factura)
+    sheet.write('E%s' % row, fila.numero_guia)
     
     row += 1
 
