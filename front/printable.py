@@ -240,7 +240,7 @@ class ImpresionGuia:
     pdfmetrics.registerFont(TTFont('A1979', 'A1979.ttf'))
 
     subir = 2 * mm
-    subirmas = 5 * mm
+    subirmas = 7 * mm
 
     styles = getSampleStyleSheet()
     style = ParagraphStyle('A1979')
@@ -291,11 +291,11 @@ class ImpresionGuia:
 
     header = Paragraph(venta.cliente.razon_social.upper(), style)
     w, h = header.wrap(doc.width - 110 * mm, doc.topMargin)
-    header.drawOn(canvas, doc.leftMargin + 16.8 * mm, doc.height + doc.topMargin - 69.6 * mm + subir + subirmas)
+    header.drawOn(canvas, doc.leftMargin + 16.8 * mm, doc.height + doc.topMargin - 69.6 * mm + subir + subirmas- 2*mm)
 
     header = Paragraph(venta.cliente.numero_documento, style)
     w, h = header.wrap(doc.width - 110 * mm, doc.topMargin)
-    header.drawOn(canvas, doc.leftMargin + 14.7 * mm, doc.height + doc.topMargin - 76.9 * mm + subir + subirmas)
+    header.drawOn(canvas, doc.leftMargin + 14.7 * mm, doc.height + doc.topMargin - 76.9 * mm + subir + subirmas- 2*mm)
 
 
     # p.drawString(left, top - 10, unidecode(venta.vehiculo.upper()))
@@ -313,11 +313,11 @@ class ImpresionGuia:
 
     footer = Paragraph(unidecode(venta.transportista.upper()), style)
     w, h = footer.wrap(doc.width, doc.bottomMargin)
-    footer.drawOn(canvas, doc.leftMargin + 116.79 * mm, 28.2 * mm + subir + subirmas)
+    footer.drawOn(canvas, doc.leftMargin + 116.79 * mm, 28.2 * mm + subir + subirmas + 4*mm)
 
     footer = Paragraph(venta.ruc_transportista, style)
     w, h = footer.wrap(doc.width, doc.bottomMargin)
-    footer.drawOn(canvas, doc.leftMargin + 116.79 * mm, 22.5 * mm + subir + subirmas)
+    footer.drawOn(canvas, doc.leftMargin + 116.79 * mm, 22.5 * mm + subir + subirmas + 4*mm)
 
 
     canvas.restoreState()
