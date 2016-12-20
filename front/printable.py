@@ -239,7 +239,7 @@ class ImpresionGuia:
 
     pdfmetrics.registerFont(TTFont('A1979', 'A1979.ttf'))
 
-    subir = 2 * mm
+    subir = 12 * mm
 
     styles = getSampleStyleSheet()
     style = ParagraphStyle('A1979')
