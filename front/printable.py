@@ -313,11 +313,11 @@ class ImpresionGuia:
 
     footer = Paragraph(unidecode(venta.transportista.upper()), style)
     w, h = footer.wrap(doc.width, doc.bottomMargin)
-    footer.drawOn(canvas, doc.leftMargin + 116.79 * mm, 28.2 * mm + subir + subirmas + 4*mm)
+    footer.drawOn(canvas, doc.leftMargin + 116.79 * mm, 28.2 * mm + subir + subirmas + 1*mm)
 
     footer = Paragraph(venta.ruc_transportista, style)
     w, h = footer.wrap(doc.width, doc.bottomMargin)
-    footer.drawOn(canvas, doc.leftMargin + 116.79 * mm, 22.5 * mm + subir + subirmas + 4*mm)
+    footer.drawOn(canvas, doc.leftMargin + 116.79 * mm, 22.5 * mm + subir + subirmas + 1*mm)
 
 
     canvas.restoreState()
