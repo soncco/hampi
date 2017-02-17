@@ -7,7 +7,7 @@ from django.core.urlresolvers import reverse
 from django.contrib import messages
 
 from django.contrib.auth import login, logout, authenticate
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 
 from django.db.models import Q
 
@@ -40,12 +40,13 @@ from almacen.utils import generar_salida_venta, entrada_stock, salida_stock, tot
 from core.models import Gasto, Cliente, Proveedor, TipoGasto, Lote, Producto
 from core.forms import ProductoForm
 
-from .utils import total_gastos, total_contados, total_amortizacion, total_liquidacion, diff_dates
+from .utils import total_gastos, total_contados, total_amortizacion, total_liquidacion, diff_dates, grupo_administracion
 
 from io import BytesIO
 
 # Ventas
 @login_required
+@user_passes_test(grupo_administracion)
 def venta(request):
   if request.method == 'POST':
     venta_form = VentaForm(request.POST)
@@ -127,6 +128,7 @@ def deudas(request):
   return render(request, 'front/deudas.html', context)
 
 @login_required
+@user_passes_test(grupo_administracion)
 def amortizacion(request, id):
   deuda = Deuda.objects.get(pk = id)
   if request.method == 'POST':
@@ -156,6 +158,8 @@ def entradas(request):
   context = {'entradas': entradas}
   return render(request, 'front/entradas.html', context)
 
+@login_required
+@user_passes_test(grupo_administracion)
 def entrada(request):
   if request.method == 'POST':
     entrada_form = EntradaForm(request.POST)
@@ -197,6 +201,8 @@ def salidas(request):
   context = {'salidas': salidas}
   return render(request, 'front/salidas.html', context)
 
+@login_required
+@user_passes_test(grupo_administracion)
 def salida(request):
   if request.method == 'POST':
     salida_form = SalidaForm(request.POST)
@@ -511,6 +517,7 @@ def producto_lote(request):
 
 @csrf_exempt
 @login_required
+@user_passes_test(grupo_administracion)
 def venta_editar(request):
   pk = request.POST.get('pk')
   name = request.POST.get('name')

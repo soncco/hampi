@@ -5,8 +5,10 @@
   <ul class="dropdown-menu">
     <li><a href="{% url 'ventas' %}">Relación de Ventas</a></li>
     <li><a href="{% url 'deudas' %}">Relación de Créditos</a></li>
+    {% ifusergroup Administradores %}
     <li class="divider"></li>
     <li><a href="{% url 'venta' %}">Registrar Venta</a></li>
+    {% endifusergroup %}
   </ul>
 </li>
 <li class="dropdown">
@@ -14,9 +16,11 @@
   <ul class="dropdown-menu">
     <li><a href="{% url 'entradas' %}">Relación de Entradas</a></li>
     <li><a href="{% url 'salidas' %}">Relación de Salidas</a></li>
+    {% ifusergroup Administradores %}
     <li class="divider"></li>
     <li><a href="{% url 'entrada' %}">Registrar Entrada</a></li>
     <li><a href="{% url 'salida' %}">Registrar Salida</a></li>
+    {% endifusergroup %}
   </ul>
 </li>
 <!--li class="dropdown">
@@ -27,14 +31,14 @@
     <li><a href="{% url 'cotizacion' %}">Registrar Cotización</a></li>
   </ul>
 </li-->
-<li class="dropdown">
+<!--li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown">Diario <b class="caret"></b></a>
   <ul class="dropdown-menu">
     <li><a href="{% url 'gastos' %}">Relación de Gastos</a></li>
     <li class="divider"></li>
     <li><a href="{% url 'gasto' %}">Registrar Gasto</a></li>
   </ul>
-</li>
+</li-->
 <li class="dropdown">
   <a href="#" class="dropdown-toggle" data-toggle="dropdown">Informes <b class="caret"></b></a>
   <ul class="dropdown-menu">

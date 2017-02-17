@@ -27,3 +27,6 @@ def total_liquidacion(gastos, contados, amortizaciones):
 
 def diff_dates(date1, date2):
   return abs(date2-date1).days
+
+def grupo_administracion(usuario):
+  return usuario.groups.filter(name = 'Administradores')
