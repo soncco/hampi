@@ -36,6 +36,7 @@ from ventas.utils import total_amortizaciones, saldo_deuda
 from almacen.forms import EntradaForm, EntradaDetalleFormSet, SalidaForm, SalidaDetalleFormSet
 from almacen.models import Almacen, Entrada, Salida, Stock
 from almacen.utils import generar_salida_venta, entrada_stock, salida_stock, total_monto_stock, total_monto_stock_real
+from almacen.utils import devolver_stock
 
 from core.models import Gasto, Cliente, Proveedor, TipoGasto, Lote, Producto
 from core.forms import ProductoForm
@@ -115,6 +116,15 @@ def venta_print(request, id):
     context['amortizaciones'] = amortizaciones
   result = generate_pdf('front/pdf/venta.html', file_object = resp, context = context)
   return result
+
+@login_required
+def venta_delete(request, id):
+  venta = Venta.objects.get(pk = id)
+  pk = venta.pk
+  devolver_stock(venta)
+  venta.delete()
+  messages.success(request, 'Se ha borrado la venta %s, también se ha restaurado el stock.' % pk)
+  return HttpResponseRedirect(reverse('ventas'))
 
 
 @login_required

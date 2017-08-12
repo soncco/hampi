@@ -32,6 +32,9 @@ class Entrada(models.Model):
   fecha_entrada = models.DateField(null = True, blank = True)
   hora_entrada = models.CharField(max_length = 20, blank = True, null = True)
 
+  def __unicode__(self):
+    return 'Entrada %s' % self.pk
+
 class EntradaDetalle(models.Model):
   entrada_padre = models.ForeignKey(Entrada)
   lote = models.ForeignKey('core.Lote')
@@ -49,6 +52,9 @@ class Salida(models.Model):
   notas = models.TextField(blank = True)
   quien = models.ForeignKey(User)
   venta = models.ForeignKey('ventas.Venta', blank = True, null = True)
+
+  def __unicode__(self):
+    return 'Salida %s' % self.pk
 
 class SalidaDetalle(models.Model):
   salida_padre = models.ForeignKey(Salida)

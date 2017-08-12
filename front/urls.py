@@ -15,6 +15,7 @@ urlpatterns = [
   url(r'^venta/guia/print/(?P<id>.*)$', views.venta_guia_print, name = 'venta_guia_print'),
   url(r'^venta/factura/print/(?P<id>.*)$', views.venta_factura_print, name = 'venta_factura_print'),
   url(r'^venta/editar/$', views.venta_editar, name = 'venta_editar'),
+  url(r'^venta/borrar/(?P<id>.*)$', views.venta_delete, name = 'venta_delete'),
 
   url(r'^amortizacion/(?P<id>.*)$', views.amortizacion, name = 'amortizacion'),
 

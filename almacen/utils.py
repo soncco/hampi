@@ -67,3 +67,12 @@ def total_monto_stock_real(en_almacen):
   for row in stock:
     total += row.unidades * row.lote.producto.precio_unidad
   return total
+
+
+def devolver_stock(venta):
+  if venta.salida_set.count != 0:
+    for salida in venta.salida_set.all():
+      for detalle in salida.salidadetalle_set.all():
+        agregar_stock(detalle, salida.almacen)
+
+      salida.delete()

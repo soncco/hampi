@@ -33,4 +33,8 @@ var intimpa = intimpa || {};
   $('.table-bordered')
     .addClass('small')
 
+  $('.borrar-venta').click(function(e) {
+    return window.confirm('¿Está seguro de eliminar esta venta?');
+  })
+
 })(jQuery)
