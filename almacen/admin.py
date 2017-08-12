@@ -15,9 +15,11 @@ class StockAdmin(admin.ModelAdmin):
 
 class EntradaDetalleInline(admin.TabularInline):
   model = EntradaDetalle
+  raw_id_fields = ('lote',)
 
 class SalidaDetalleInline(admin.TabularInline):
   model = SalidaDetalle
+  raw_id_fields = ('lote',)
 
 class EntradaAdmin(admin.ModelAdmin):
   list_display = ('id', 'fecha', 'numero_factura', 'numero_guia', 'quien', 'almacen',)

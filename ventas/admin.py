@@ -4,12 +4,14 @@ from models import Venta, VentaDetalle, Deuda, Amortizacion, Cotizacion, Cotizac
 
 class VentaDetalleInline(admin.TabularInline):
   model = VentaDetalle
+  raw_id_fields = ('lote',)
 
 class AmortizacionInline(admin.TabularInline):
   model = Amortizacion
 
 class CotizacionDetalleInline(admin.TabularInline):
   model = CotizacionDetalle
+  raw_id_fields = ('lote',)
 
 class VentaAdmin(admin.ModelAdmin):
   list_display = ('id', 'numero_factura', 'numero_guia', 'vendedor', 'cliente', 'total_venta',)
