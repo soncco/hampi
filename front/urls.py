@@ -11,6 +11,7 @@ urlpatterns = [
   url(r'^venta/$', views.venta, name = 'venta'),
   url(r'^venta/ver/(?P<id>.*)$', views.venta_view, name = 'venta_view'),
   url(r'^ventas/$', views.ventas, name = 'ventas'),
+  url(r'^ventas/json/$', views.ventas_json, name = 'ventas_json'),
   url(r'^venta/print/(?P<id>.*)$', views.venta_print, name = 'venta_print'),
   url(r'^venta/guia/print/(?P<id>.*)$', views.venta_guia_print, name = 'venta_guia_print'),
   url(r'^venta/factura/print/(?P<id>.*)$', views.venta_factura_print, name = 'venta_factura_print'),
@@ -24,12 +25,14 @@ urlpatterns = [
   url(r'^entrada/$', views.entrada, name = 'entrada'),
   url(r'^entrada/ver/(?P<id>.*)$', views.entrada_view, name = 'entrada_view'),
   url(r'^entradas/$', views.entradas, name = 'entradas'),
+  url(r'^entradas/json/$', views.entradas_json, name = 'entradas_json'),
   url(r'^entrada/print/(?P<id>.*)$', views.entrada_print, name = 'entrada_print'),
 
 
   url(r'^salida/$', views.salida, name = 'salida'),
   url(r'^salida/ver/(?P<id>.*)$', views.salida_view, name = 'salida_view'),
   url(r'^salidas/$', views.salidas, name = 'salidas'),
+  url(r'^salidas/json/$', views.salidas_json, name = 'salidas_json'),
   url(r'^salida/print/(?P<id>.*)$', views.salida_print, name = 'salida_print'),
 
   url(r'^gasto/$', views.gasto, name = 'gasto'),
@@ -40,6 +43,7 @@ urlpatterns = [
   url(r'^proveedores/$', views.proveedores, name = 'proveedores'),
 
   url(r'^inventario/$', views.inventario, name = 'inventario'),
+  url(r'^inventario/json/$', views.inventario_json, name = 'inventario_json'),
   url(r'^inventario/print/(?P<id>.*)$', views.inventario_print, name = 'inventario_print'),
 
   url(r'^liquidacion/$', views.liquidacion, name = 'liquidacion'),

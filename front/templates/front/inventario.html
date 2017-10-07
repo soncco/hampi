@@ -34,27 +34,18 @@
     </tr>
   </thead>
   <tbody>
-    {% for producto in stock %}
-    <tr>
-      <td>{{ producto.lote.producto.codigo }}</td>
-      <td>{{ producto.lote.producto }}</td>
-      <td>{{ producto.lote.numero }}</td>
-      <td>{{ producto.lote.vencimiento }}</td>
-      <td>{{ producto.en_almacen }}</td>
-      <td>{{ producto.unidades }}</td>
-      <td>
-        <a href="{% url 'kardex_excel' producto.lote.pk %}" class="btn btn-xs btn-success" title="Exportar Kardex de Lote"><i class="fa fa-file-excel-o"></i></a>
-        <a href="{% url 'kardex2_excel' producto.lote.producto.pk %}" class="btn btn-xs btn-info" title="Exportar Kardex de Producto"><i class="fa fa-file-excel-o"></i></a>
-        <a href="{% url 'historial' producto.lote.producto.pk %}" class="btn btn-xs btn-warning" title="Ver historia" target="_blank"><i class="fa fa-history"></i></a>
-      </td>
-    </tr>
-    {% empty %}
-    <tr>
-      <td colspan="7" class="text-center">No hay ningún producto en los almacenes.</td>
-    </tr>
-    {% endfor %}
+    
   </tbody>
   <tfoot>
+    <tr>
+      <th>1</th>
+      <th>1</th>
+      <th>1</th>
+      <th>1</th>
+      <th>1</th>
+      <th>1</th>
+      <th>1</th>
+    </tr>
     <tr>
       <th colspan="7" class="ts-pager form-horizontal">
         <button type="button" class="btn first"><i class="icon-step-backward glyphicon glyphicon-step-backward"></i></button>
@@ -86,7 +77,7 @@
 <script src="{% static "front/bower_components/jquery.tablesorter/js/jquery.tablesorter.widgets.min.js" %}"></script>
 <script src="{% static "front/bower_components/jquery.tablesorter/js/jquery.tablesorter.widgets-filter-formatter.min.js" %}"></script>
 <script src="{% static "front/bower_components/jquery.tablesorter/addons/pager/jquery.tablesorter.pager.min.js" %}"></script>
-<script src="{% static "front/js/table-sorter.js" %}"></script>
+<script src="{% static "front/js/inventario-lista.js" %}"></script>
 {% endblock %}
 
 

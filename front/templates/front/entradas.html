@@ -25,29 +25,20 @@
     </tr>
   </thead>
   <tbody>
-    {% for entrada in entradas %}
-    <tr>
-      <td>{{ entrada.pk }}</td>
-      <td>{{ entrada.fecha|date:"d b Y" }}</td>
-      <td>{{ entrada.numero_factura }}</td>
-      <td>{{ entrada.fecha_factura|date:"d b Y" }}</td>
-      <td>{{ entrada.numero_guia }}</td>
-      <td>{{ entrada.fecha_guia|date:"d b Y" }}</td>
-      <td>{{ entrada.quien.first_name }}</td>
-      <td>{{ entrada.almacen }}</td>
-      <td class="text-center">
-        <a class="btn btn-xs btn-warning" href="{% url 'entrada_view' entrada.id %}" title="Ver detalles"><i class="fa fa-folder-open"></i></a>
-        <a class="btn btn-xs btn-info" href="{% url 'entrada_print' entrada.id %}"><i class="fa fa-print"></i></a>
-        <a class="btn btn-xs btn-primary" href="{% url 'anexo_print' entrada.id %}"><i class="fa fa-file-word-o"></i></a>
-      </td>
-    </tr>
-    {% empty %}
-    <tr>
-      <td colspan="9" class="text-center">No hay entradas registradas</td>
-    </tr>
-    {% endfor %}
+    
   </tbody>
   <tfoot>
+    <tr>
+      <th>1</th>
+      <th>2</th>
+      <th>3</th>
+      <th>4</th>
+      <th>5</th>
+      <th>6</th>
+      <th>7</th>
+      <th>8</th>
+      <th>9</th>
+    </tr>
     <tr>
       <th colspan="9" class="ts-pager form-horizontal">
         <button type="button" class="btn first"><i class="icon-step-backward glyphicon glyphicon-step-backward"></i></button>
@@ -79,7 +70,7 @@
 <script src="{% static "front/bower_components/jquery.tablesorter/js/jquery.tablesorter.widgets.min.js" %}"></script>
 <script src="{% static "front/bower_components/jquery.tablesorter/js/jquery.tablesorter.widgets-filter-formatter.min.js" %}"></script>
 <script src="{% static "front/bower_components/jquery.tablesorter/addons/pager/jquery.tablesorter.pager.min.js" %}"></script>
-<script src="{% static "front/js/table-sorter.js" %}"></script>
+<script src="{% static "front/js/entrada-lista.js" %}"></script>
 <script src="{% static "front/js/main.js" %}"></script>
 {% endblock %}
 

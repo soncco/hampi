@@ -31,51 +31,28 @@
       <th>N° de Factura</th>
       <th class="filter-select filter-exact" data-placeholder="Vendedor">Vendedor</th>
       <th>Cliente</th>
-      <th>Total Venta S/.</th>
-      <th>Saldo S/.</th>
+      <th class="filter-false sorter_false">Total Venta S/.</th>
+      <th class="filter-false sorter_false">Saldo S/.</th>
       <th class="filter-select filter-exact" data-placeholder="Tipo">Tipo</th>
       <th class="sorter-false">Acciones</th>
     </tr>
   </thead>
   <tbody>
-    {% for venta in ventas %}
-    <tr>
-      <td>{{ venta.pk }}</td>
-      <td>{{ venta.almacen }}</td>
-      <td>{{ venta.fecha_factura|date:"d b Y" }}</td>
-      <td>{{ venta.numero_factura }}</td>
-      <td>{{ venta.vendedor.first_name }}</td>
-      <td>{{ venta.cliente.razon_social }}</td>
-      <td class="text-right">{{ venta.total_venta|floatformat:2 }}</td>
-      {% if venta.tipo_venta == 'P' %}
-        <td class="text-right">{{ venta.saldo|floatformat:2 }}</td>
-      {% else %}
-        <td>{{ venta.saldo }}</td>
-      {% endif %}
-      <td>{{ venta.get_tipo_venta_display }}</td>
-      <td class="text-center">
-        <a class="btn btn-xs btn-warning" href="{% url 'venta_view' venta.id %}" title="Ver detalles"><i class="fa fa-folder-open"></i></a>
-        <div class="btn-group">
-          <button type="button" class="btn btn-xs btn-info dropdown-toggle" data-toggle="dropdown">
-            <i class="fa fa-print"></i> <span class="caret"></span>
-          </button>
-          <ul class="dropdown-menu" role="menu">
-            <li><a href="{% url 'venta_guia_print' venta.id %}">Guía de remisión</a></li>
-            <li><a href="{% url 'venta_factura_print' venta.id %}">Factura</a></li>
-            <li class="divider"></li>
-            <li><a href="{% url 'venta_print' venta.id %}">Reporte de venta</a></li>
-          </ul>
-        </div>
-        <a href="{% url 'venta_delete' venta.id %}" class="btn btn-xs btn-danger borrar-venta" title="Eliminar"><i class="fa fa-times"></i></a>
-      </td>
-    </tr>
-    {% empty %}
-    <tr>
-      <td colspan="10" class="text-center">No hay ventas registradas</td>
-    </tr>
-    {% endfor %}
+    
   </tbody>
   <tfoot>
+    <tr>
+      <td>1</td>
+      <td>2</td>
+      <td>3</td>
+      <td>4</td>
+      <td>5</td>
+      <td>6</td>
+      <td>7</td>
+      <td>8</td>
+      <td>9</td>
+      <td>10</td>
+    </tr>
     <tr>
       <th colspan="10" class="ts-pager form-horizontal">
         <button type="button" class="btn first"><i class="icon-step-backward glyphicon glyphicon-step-backward"></i></button>
@@ -108,7 +85,7 @@
 <script src="{% static "front/bower_components/jquery.tablesorter/js/jquery.tablesorter.widgets.min.js" %}"></script>
 <script src="{% static "front/bower_components/jquery.tablesorter/js/jquery.tablesorter.widgets-filter-formatter.min.js" %}"></script>
 <script src="{% static "front/bower_components/jquery.tablesorter/addons/pager/jquery.tablesorter.pager.min.js" %}"></script>
-<script src="{% static "front/js/table-sorter.js" %}"></script>
+<script src="{% static "front/js/venta-lista.js" %}"></script>
 <script src="{% static "front/js/main.js" %}"></script>
 {% endblock %}
 

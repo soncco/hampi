@@ -28,6 +28,7 @@ from numword.numword_es import cardinal
 
 from decimal import *
 from datetime import date
+import datetime
 
 from ventas.forms import VentaForm, DetalleFormSet, CotizacionForm, CotizacionDetalleFormSet
 from ventas.models import Venta, VentaDetalle, Deuda, Amortizacion, Cotizacion, CotizacionDetalle
@@ -44,6 +45,13 @@ from core.forms import ProductoForm
 from .utils import total_gastos, total_contados, total_amortizacion, total_liquidacion, diff_dates, grupo_administracion
 
 from io import BytesIO
+
+from collections import OrderedDict
+import json
+
+def timestamp_a_fecha(timestamp, formato):
+  timestamp = int(timestamp)
+  return datetime.datetime.fromtimestamp(timestamp).strftime(formato)
 
 # Ventas
 @login_required
@@ -86,15 +94,140 @@ def venta(request):
   return render(request, 'front/venta-nuevo.html', context)
 
 @login_required
-def ventas(request):
+def ventas_json(request):
+  filters = []
+  cols = []
+  for k in request.GET:
+      if 'filter[' in k:
+          filters.append(k)
+      if 'column[' in k:
+          cols.append(k)
+
+  size = int(request.GET.get('size'))
+  page = int(request.GET.get('page'))
+
+  limit = page * size
+  offset = limit + size
+
+  data = {
+      'headers': [
+          'Número', 'Almacén', 'Fecha de Factura', u'N° de Factura', 'Vendedor', 'Cliente', 'Total Venta S/.', 'Saldo', 'Tipo', 'Acciones'
+      ],
+  }
+
   ventas = Venta.objects.all().order_by('-id')
+
+  if 'filter[0]' in filters:
+      ventas = ventas.filter(pk = request.GET.get('filter[0]'))
+
+  if 'filter[1]' in filters:
+      ventas = ventas.filter(almacen__nombre = request.GET.get('filter[1]'))
+
+  if 'filter[2]' in filters:
+      str_fecha = request.GET.get('filter[2]')
+      if str_fecha[:2] == '<=':
+          fecha = str_fecha[2:12]
+          ventas = ventas.filter(fecha_factura__lte = timestamp_a_fecha(fecha, '%Y-%m-%d'))
+      elif str_fecha[:2] == '>=':
+          fecha = str_fecha[2:12]
+          ventas = ventas.filter(fecha_factura__gte = timestamp_a_fecha(fecha, '%Y-%m-%d'))
+      else:
+          inicial = timestamp_a_fecha(str_fecha[:10], '%Y-%m-%d')
+          final = timestamp_a_fecha(str_fecha[-13:][:10], '%Y-%m-%d')
+          ventas = ventas.filter(fecha_factura__range = (inicial, final))
+  
+  if 'filter[3]' in filters:
+      ventas = ventas.filter(numero_factura__icontains = request.GET.get('filter[3]'))
+
+  if 'filter[4]' in filters:
+      ventas = ventas.filter(vendedor__first_name = request.GET.get('filter[4]'))
+
+  if 'filter[5]' in filters:
+      ventas = ventas.filter(cliente__razon_social__icontains = request.GET.get('filter[5]'))
+
+  if 'filter[8]' in filters:
+    tipo_reverse = dict((v, k) for k, v in Venta.TIPOS)
+    ventas = ventas.filter(tipo_venta = tipo_reverse[request.GET.get('filter[8]')])
+
+
+  if 'column[0]' in cols:
+      signo = '' if request.GET.get('column[0]') == '0' else '-'
+      ventas = ventas.order_by('%spk' % signo)
+
+  if 'column[1]' in cols:
+      signo = '' if request.GET.get('column[1]') == '0' else '-'
+      ventas = ventas.order_by('%salmacen' % signo)
+
+  if 'column[2]' in cols:
+      signo = '' if request.GET.get('column[2]') == '0' else '-'
+      ventas = ventas.order_by('%sfecha_factura' % signo)
+
+  if 'column[3]' in cols:
+      signo = '' if request.GET.get('column[3]') == '0' else '-'
+      ventas = ventas.order_by('%snumero_factura' % signo)
+
+  if 'column[4]' in cols:
+      signo = '' if request.GET.get('column[4]') == '0' else '-'
+      ventas = ventas.order_by('%svendedor' % signo)
+
+  if 'column[5]' in cols:
+      signo = '' if request.GET.get('column[5]') == '0' else '-'
+      ventas = ventas.order_by('%scliente__razon_social' % signo)
+
+  if 'column[8]' in cols:
+      signo = '' if request.GET.get('column[8]') == '0' else '-'
+      ventas = ventas.order_by('%stipo_venta' % signo)
+
+  total_rows = ventas.count()
+
+  ventas = ventas[limit:offset]
+
+  rows = []
   for venta in ventas:
-    try:
-      venta.saldo = saldo_deuda(venta.deuda)
-    except:
-      venta.saldo = 'Sin deuda'
-  context = {'ventas': ventas}
-  return render(request, 'front/ventas.html', context)
+      try:
+        venta.saldo = saldo_deuda(venta.deuda)
+      except:
+        venta.saldo = 'Sin deuda'
+
+      links = '''
+      <a class="btn btn-xs btn-warning" href="/venta/ver/%s" title="Ver detalles"><i class="fa fa-folder-open"></i></a>
+        <div class="btn-group">
+          <button type="button" class="btn btn-xs btn-info dropdown-toggle" data-toggle="dropdown">
+            <i class="fa fa-print"></i> <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu" role="menu">
+            <li><a href="/venta/guia/print/%s">Guía de remisión</a></li>
+            <li><a href="/venta/factura/print/%s">Factura</a></li>
+            <li class="divider"></li>
+            <li><a href="/venta/print/%s">Reporte de venta</a></li>
+          </ul>
+        </div>
+        <a href="/venta/borrar/%s" class="btn btn-xs btn-danger borrar-venta" title="Eliminar"><i class="fa fa-times"></i></a>
+      ''' % (venta.pk, venta.pk, venta.pk, venta.pk, venta.pk)
+
+
+      obj = OrderedDict({
+          '0': venta.pk,
+          '1': venta.almacen.nombre,
+          '2': venta.fecha_factura.strftime('%d/%m/%Y'),
+          '3': venta.numero_factura,
+          '4': venta.vendedor.first_name,
+          '5': venta.cliente.razon_social[:50] + '...',
+          '6': str('%.2f' % venta.total_venta),
+          '7': str(venta.saldo),
+          '8': venta.get_tipo_venta_display(),
+          '9': links,
+      })
+      rows.append(obj)
+
+  data['rows'] = rows
+  data['total_rows'] = total_rows
+
+  return HttpResponse(json.dumps(data), content_type = "application/json")
+
+@login_required
+def ventas(request):
+  return render(request, 'front/ventas.html')
 
 @login_required
 def venta_view(request, id):
@@ -163,10 +296,150 @@ def amortizacion(request, id):
 
 # Entradas
 @login_required
-def entradas(request):
+def entradas_json(request):
+  filters = []
+  cols = []
+  for k in request.GET:
+      if 'filter[' in k:
+          filters.append(k)
+      if 'column[' in k:
+          cols.append(k)
+
+  size = int(request.GET.get('size'))
+  page = int(request.GET.get('page'))
+
+  limit = page * size
+  offset = limit + size
+
+  data = {
+      'headers': [
+          'Número', 'Fecha de Entrada', u'Factura', 'Fecha de Factura', u'Guía', u'Fecha de Guía', u'Quién', u'Almacén', 'Acciones'
+      ],
+  }
+
   entradas = Entrada.objects.all().order_by('-id')
-  context = {'entradas': entradas}
-  return render(request, 'front/entradas.html', context)
+
+  if 'filter[0]' in filters:
+      entradas = entradas.filter(pk = request.GET.get('filter[0]'))
+
+  if 'filter[1]' in filters:
+      str_fecha = request.GET.get('filter[1]')
+      if str_fecha[:2] == '<=':
+          fecha = str_fecha[2:12]
+          entradas = entradas.filter(fecha__lte = timestamp_a_fecha(fecha, '%Y-%m-%d'))
+      elif str_fecha[:2] == '>=':
+          fecha = str_fecha[2:12]
+          entradas = entradas.filter(fecha__gte = timestamp_a_fecha(fecha, '%Y-%m-%d'))
+      else:
+          inicial = timestamp_a_fecha(str_fecha[:10], '%Y-%m-%d')
+          final = timestamp_a_fecha(str_fecha[-13:][:10], '%Y-%m-%d')
+          entradas = entradas.filter(fecha__range = (inicial, final))
+  
+  if 'filter[2]' in filters:
+      entradas = entradas.filter(numero_factura__icontains = request.GET.get('filter[2]'))
+
+  if 'filter[3]' in filters:
+      str_fecha = request.GET.get('filter[3]')
+      if str_fecha[:2] == '<=':
+          fecha = str_fecha[2:12]
+          entradas = entradas.filter(fecha_factura__lte = timestamp_a_fecha(fecha, '%Y-%m-%d'))
+      elif str_fecha[:2] == '>=':
+          fecha = str_fecha[2:12]
+          entradas = entradas.filter(fecha_factura__gte = timestamp_a_fecha(fecha, '%Y-%m-%d'))
+      else:
+          inicial = timestamp_a_fecha(str_fecha[:10], '%Y-%m-%d')
+          final = timestamp_a_fecha(str_fecha[-13:][:10], '%Y-%m-%d')
+          entradas = entradas.filter(fecha_factura__range = (inicial, final))
+
+  if 'filter[4]' in filters:
+      entradas = entradas.filter(numero_guia__icontains = request.GET.get('filter[4]'))
+
+  if 'filter[5]' in filters:
+      str_fecha = request.GET.get('filter[5]')
+      if str_fecha[:2] == '<=':
+          fecha = str_fecha[2:12]
+          entradas = entradas.filter(fecha_guia__lte = timestamp_a_fecha(fecha, '%Y-%m-%d'))
+      elif str_fecha[:2] == '>=':
+          fecha = str_fecha[2:12]
+          entradas = entradas.filter(fecha_guia__gte = timestamp_a_fecha(fecha, '%Y-%m-%d'))
+      else:
+          inicial = timestamp_a_fecha(str_fecha[:10], '%Y-%m-%d')
+          final = timestamp_a_fecha(str_fecha[-13:][:10], '%Y-%m-%d')
+          entradas = entradas.filter(fecha_guia__range = (inicial, final))
+
+  if 'filter[6]' in filters:
+      entradas = entradas.filter(quien__first_name = request.GET.get('filter[6]'))
+
+  if 'filter[7]' in filters:
+      entradas = entradas.filter(almacen__nombre = request.GET.get('filter[7]'))
+
+
+  if 'column[0]' in cols:
+      signo = '' if request.GET.get('column[0]') == '0' else '-'
+      entradas = entradas.order_by('%spk' % signo)
+
+  if 'column[1]' in cols:
+      signo = '' if request.GET.get('column[1]') == '0' else '-'
+      entradas = entradas.order_by('%sfecha' % signo)
+
+  if 'column[2]' in cols:
+      signo = '' if request.GET.get('column[2]') == '0' else '-'
+      entradas = entradas.order_by('%snumero_factura' % signo)
+
+  if 'column[3]' in cols:
+      signo = '' if request.GET.get('column[3]') == '0' else '-'
+      entradas = entradas.order_by('%sfecha_factura' % signo)
+
+  if 'column[4]' in cols:
+      signo = '' if request.GET.get('column[4]') == '0' else '-'
+      entradas = entradas.order_by('%snumero_guia' % signo)
+
+  if 'column[5]' in cols:
+      signo = '' if request.GET.get('column[5]') == '0' else '-'
+      entradas = entradas.order_by('%sfecha_guia' % signo)
+
+  if 'column[6]' in cols:
+      signo = '' if request.GET.get('column[6]') == '0' else '-'
+      entradas = entradas.order_by('%squien' % signo)
+
+  if 'column[7]' in cols:
+      signo = '' if request.GET.get('column[7]') == '0' else '-'
+      entradas = entradas.order_by('%salmacen' % signo)
+  total_rows = entradas.count()
+
+  entradas = entradas[limit:offset]
+
+  rows = []
+  for entrada in entradas:
+      links = '''
+      <a class="btn btn-xs btn-warning" href="/entrada/ver/%s" title="Ver detalles"><i class="fa fa-folder-open"></i></a>
+        <a class="btn btn-xs btn-info" href="/entrada/print/%s"><i class="fa fa-print"></i></a>
+        <a class="btn btn-xs btn-primary" href="/anexo/print/%s"><i class="fa fa-file-word-o"></i></a>
+      ''' % (entrada.pk, entrada.pk, entrada.pk)
+
+
+      obj = OrderedDict({
+          '0': entrada.pk,
+          '1': entrada.fecha.strftime('%d/%m/%Y'),
+          '2': entrada.numero_factura,
+          '3': entrada.fecha_factura.strftime('%d/%m/%Y'),
+          '4': entrada.numero_guia,
+          '5': entrada.fecha_guia.strftime('%d/%m/%Y'),
+          '6': entrada.quien.first_name,
+          '7': entrada.almacen.nombre,
+          '8': links,
+      })
+      rows.append(obj)
+
+  data['rows'] = rows
+  data['total_rows'] = total_rows
+
+  return HttpResponse(json.dumps(data), content_type = "application/json")
+
+
+@login_required
+def entradas(request):
+  return render(request, 'front/entradas.html')
 
 @login_required
 @user_passes_test(grupo_administracion)
@@ -206,10 +479,132 @@ def entrada_print(request, id):
 
 # Salidas
 @login_required
-def salidas(request):
+def salidas_json(request):
+  filters = []
+  cols = []
+  for k in request.GET:
+      if 'filter[' in k:
+          filters.append(k)
+      if 'column[' in k:
+          cols.append(k)
+
+  size = int(request.GET.get('size'))
+  page = int(request.GET.get('page'))
+
+  limit = page * size
+  offset = limit + size
+
+  data = {
+      'headers': [
+          u'Número', 'Fecha de Salida', u'Factura', 'Fecha de Factura', u'Quién', u'Almacén', 'Venta', 'Acciones'
+      ],
+  }
+
   salidas = Salida.objects.all().order_by('-id')
-  context = {'salidas': salidas}
-  return render(request, 'front/salidas.html', context)
+
+  if 'filter[0]' in filters:
+      salidas = salidas.filter(pk = request.GET.get('filter[0]'))
+
+  if 'filter[1]' in filters:
+      str_fecha = request.GET.get('filter[1]')
+      if str_fecha[:2] == '<=':
+          fecha = str_fecha[2:12]
+          salidas = salidas.filter(fecha__lte = timestamp_a_fecha(fecha, '%Y-%m-%d'))
+      elif str_fecha[:2] == '>=':
+          fecha = str_fecha[2:12]
+          salidas = salidas.filter(fecha__gte = timestamp_a_fecha(fecha, '%Y-%m-%d'))
+      else:
+          inicial = timestamp_a_fecha(str_fecha[:10], '%Y-%m-%d')
+          final = timestamp_a_fecha(str_fecha[-13:][:10], '%Y-%m-%d')
+          salidas = salidas.filter(fecha__range = (inicial, final))
+  
+  if 'filter[2]' in filters:
+      salidas = salidas.filter(numero_factura__icontains = request.GET.get('filter[2]'))
+
+  if 'filter[3]' in filters:
+      str_fecha = request.GET.get('filter[3]')
+      if str_fecha[:2] == '<=':
+          fecha = str_fecha[2:12]
+          salidas = salidas.filter(fecha_factura__lte = timestamp_a_fecha(fecha, '%Y-%m-%d'))
+      elif str_fecha[:2] == '>=':
+          fecha = str_fecha[2:12]
+          salidas = salidas.filter(fecha_factura__gte = timestamp_a_fecha(fecha, '%Y-%m-%d'))
+      else:
+          inicial = timestamp_a_fecha(str_fecha[:10], '%Y-%m-%d')
+          final = timestamp_a_fecha(str_fecha[-13:][:10], '%Y-%m-%d')
+          salidas = salidas.filter(fecha_factura__range = (inicial, final))
+
+  if 'filter[4]' in filters:
+      salidas = salidas.filter(quien__first_name = request.GET.get('filter[4]'))
+
+  if 'filter[5]' in filters:
+      salidas = salidas.filter(almacen__nombre = request.GET.get('filter[5]'))
+
+  if 'filter[6]' in filters:
+      salidas = salidas.filter(venta__pk = request.GET.get('filter[6]'))
+
+
+  if 'column[0]' in cols:
+      signo = '' if request.GET.get('column[0]') == '0' else '-'
+      salidas = salidas.order_by('%spk' % signo)
+
+  if 'column[1]' in cols:
+      signo = '' if request.GET.get('column[1]') == '0' else '-'
+      salidas = salidas.order_by('%sfecha' % signo)
+
+  if 'column[2]' in cols:
+      signo = '' if request.GET.get('column[2]') == '0' else '-'
+      salidas = salidas.order_by('%snumero_factura' % signo)
+
+  if 'column[3]' in cols:
+      signo = '' if request.GET.get('column[3]') == '0' else '-'
+      salidas = salidas.order_by('%sfecha_factura' % signo)
+
+  if 'column[4]' in cols:
+      signo = '' if request.GET.get('column[4]') == '0' else '-'
+      salidas = salidas.order_by('%squien' % signo)
+
+  if 'column[5]' in cols:
+      signo = '' if request.GET.get('column[5]') == '0' else '-'
+      salidas = salidas.order_by('%salmacen' % signo)
+
+  if 'column[6]' in cols:
+      signo = '' if request.GET.get('column[6]') == '0' else '-'
+      salidas = salidas.order_by('%sventa' % signo)
+
+
+  total_rows = salidas.count()
+
+  salidas = salidas[limit:offset]
+
+  rows = []
+  for salida in salidas:
+      links = '''
+      <a class="btn btn-sm btn-warning" href="/salida/ver/%s" title="Ver detalles"><i class="fa fa-folder-open"></i></a>
+        <a class="btn btn-sm btn-info" href="/salida/print/%s"><i class="fa fa-print"></i></a>
+      ''' % (salida.pk, salida.pk)
+
+
+      obj = OrderedDict({
+          '0': salida.pk,
+          '1': salida.fecha.strftime('%d/%m/%Y'),
+          '2': salida.numero_factura,
+          '3': salida.fecha_factura.strftime('%d/%m/%Y'),
+          '4': salida.quien.first_name,
+          '5': salida.almacen.nombre,
+          '6': 'No tiene venta' if not salida.venta else '<a href="%s">Venta: %s</a>' % (reverse('venta_view', args = [salida.venta.pk]), salida.venta.pk),
+          '7': links,
+      })
+      rows.append(obj)
+
+  data['rows'] = rows
+  data['total_rows'] = total_rows
+
+  return HttpResponse(json.dumps(data), content_type = "application/json")
+
+@login_required
+def salidas(request):
+  return render(request, 'front/salidas.html')
 
 @login_required
 @user_passes_test(grupo_administracion)
@@ -297,6 +692,113 @@ def proveedores(request):
   proveedores = Proveedor.objects.all()
   context = {'proveedores': proveedores}
   return render(request, 'front/proveedores.html', context)
+
+@login_required
+def inventario_json(request):
+  filters = []
+  cols = []
+  for k in request.GET:
+      if 'filter[' in k:
+          filters.append(k)
+      if 'column[' in k:
+          cols.append(k)
+
+  size = int(request.GET.get('size'))
+  page = int(request.GET.get('page'))
+
+  limit = page * size
+  offset = limit + size
+
+  data = {
+      'headers': [
+          u'Código', 'Producto', u'Lote', 'Vencimiento', u'Almacén', 'Unidades', 'Acciones'
+      ],
+  }
+
+  stock = Stock.objects.all()
+
+  if 'filter[0]' in filters:
+      stock = stock.filter(lote__producto__codigo__icontains = request.GET.get('filter[0]'))
+
+  if 'filter[1]' in filters:
+      stock = stock.filter(lote__producto__producto__icontains = request.GET.get('filter[1]'))
+
+  if 'filter[2]' in filters:
+      stock = stock.filter(lote__numero__icontains = request.GET.get('filter[2]'))
+
+  if 'filter[3]' in filters:
+      str_fecha = request.GET.get('filter[3]')
+      if str_fecha[:2] == '<=':
+          fecha = str_fecha[2:12]
+          stock = stock.filter(lote__vencimiento__lte = timestamp_a_fecha(fecha, '%Y-%m-%d'))
+      elif str_fecha[:2] == '>=':
+          fecha = str_fecha[2:12]
+          stock = stock.filter(lote__vencimiento__gte = timestamp_a_fecha(fecha, '%Y-%m-%d'))
+      else:
+          inicial = timestamp_a_fecha(str_fecha[:10], '%Y-%m-%d')
+          final = timestamp_a_fecha(str_fecha[-13:][:10], '%Y-%m-%d')
+          stock = stock.filter(lote__vencimiento__range = (inicial, final))
+
+  if 'filter[4]' in filters:
+      stock = stock.filter(en_almacen__nombre = request.GET.get('filter[4]'))
+
+  if 'filter[5]' in filters:
+      stock = stock.filter(unidades = request.GET.get('filter[5]'))
+
+
+  if 'column[0]' in cols:
+      signo = '' if request.GET.get('column[0]') == '0' else '-'
+      stock = stock.order_by('%slote__producto__codigo' % signo)
+
+  if 'column[1]' in cols:
+      signo = '' if request.GET.get('column[1]') == '0' else '-'
+      stock = stock.order_by('%slote__producto' % signo)
+
+  if 'column[2]' in cols:
+      signo = '' if request.GET.get('column[2]') == '0' else '-'
+      stock = stock.order_by('%slote__numero' % signo)
+
+  if 'column[3]' in cols:
+      signo = '' if request.GET.get('column[3]') == '0' else '-'
+      stock = stock.order_by('%slote__vencimiento' % signo)
+
+  if 'column[4]' in cols:
+      signo = '' if request.GET.get('column[4]') == '0' else '-'
+      stock = stock.order_by('%sen_almacen' % signo)
+
+  if 'column[5]' in cols:
+      signo = '' if request.GET.get('column[5]') == '0' else '-'
+      stock = stock.order_by('%sunidades' % signo)
+
+
+  total_rows = stock.count()
+
+  stock = stock[limit:offset]
+
+  rows = []
+  for st in stock:
+      links = '''
+      <a href="/kardex/%s" class="btn btn-xs btn-success" title="Exportar Kardex de Lote"><i class="fa fa-file-excel-o"></i></a>
+        <a href="/kardex2/%s" class="btn btn-xs btn-info" title="Exportar Kardex de Producto"><i class="fa fa-file-excel-o"></i></a>
+        <a href="/historial/%s" class="btn btn-xs btn-warning" title="Ver historia" target="_blank"><i class="fa fa-history"></i></a>
+      ''' % (st.lote.pk, st.lote.producto.pk, st.lote.producto.pk)
+
+
+      obj = OrderedDict({
+          '0': st.lote.producto.codigo,
+          '1': st.lote.producto.producto,
+          '2': st.lote.numero,
+          '3': 'No especificado' if st.lote.vencimiento is None else st.lote.vencimiento.strftime('%d/%m/%Y'),
+          '4': st.en_almacen.nombre,
+          '5': st.unidades,
+          '6': links,
+      })
+      rows.append(obj)
+
+  data['rows'] = rows
+  data['total_rows'] = total_rows
+
+  return HttpResponse(json.dumps(data), content_type = "application/json")
 
 @login_required
 def inventario(request):
