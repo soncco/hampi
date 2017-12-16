@@ -350,6 +350,9 @@ def excel_entradas(request):
   sheet.write('I3', u'Cantidad', bold)
   sheet.write('J3', u'Lote', bold)
   sheet.write('K3', u'Vencimiento', bold)
+  sheet.write('L3', u'Reg. San.', bold)
+  sheet.write('M3', u'FV Reg San', bold)
+  sheet.write('N3', u'Condiciones de almacenamiento', bold)
 
   row = 4
   for entrada in entradas:
@@ -368,10 +371,13 @@ def excel_entradas(request):
     sheet.write('I%s' % row, entrada.cantidad)
     sheet.write('J%s' % row, entrada.lote.numero)
     sheet.write('K%s' % row, entrada.lote.vencimiento, fecha)
+    sheet.write('L%s' % row, entrada.lote.nrs)
+    sheet.write('M%s' % row, entrada.lote.vrs, fecha)
+    sheet.write('N%s' % row, '')
 
     row += 1
 
-  sheet.autofilter(('A3:K%s' % row))
+  sheet.autofilter(('A3:N%s' % row))
   book.close()
 
   # construct response
@@ -778,208 +784,250 @@ def excel_cotizaciones(request):
 @login_required
 def anexo_print(request, id):
   entrada = Entrada.objects.get(pk = id)
-  document = Document()
 
-  section = document.sections[-1]
-  section.left_margin = Cm(2)
-  section.top_margin = Cm(2)
-  section.right_margin = Cm(2)
-  section.bottom_margin = Cm(2)
-  section.page_width = Mm(210)
-  section.page_height = Mm(297)
-  section.orientation = WD_ORIENT.PORTRAIT
+  output = StringIO.StringIO()
 
-  style = document.styles['Normal']
-  font = style.font
-  font.name = 'Calibri'
-  font.size = Pt(8)
+  book = Workbook(output)  
 
+  book = Workbook(output)  
+  sheet = book.add_worksheet(u'Anexo 1')
+  sheet.set_landscape()
+  sheet.set_paper(9)
+  sheet.center_horizontally()
 
-  p = document.add_paragraph()
-  p.add_run(u'Anexo N° -A').bold = True
-  p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+  bold = book.add_format({'bold': 1})
+  bold_border = book.add_format({'bold': 1,'top': 1,'left': 1,'right': 1,'bottom': 1})
+  fecha = book.add_format({'num_format': 'dd/mm/yy'})
+  fecha_border = book.add_format({'num_format': 'dd/mm/yy','top': 1,'left': 1,'right': 1,'bottom': 1})
+  money = book.add_format({'num_format': '0.00'})
 
-  p = document.add_paragraph()
-  p.add_run(u'DROGUERÍA HAMPI KALLPA E.I.R.L.').bold = True
-  p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-  
-  p = document.add_paragraph()
-  p.add_run(u'ACTA DE RECEPCIÓN Y CONFORMIDAD').bold = True
-  p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-  document.add_paragraph()
+  title = book.add_format({
+    'bold': 1,
+    'align': 'center',
+    'size': 18
+  })
 
-  p = document.add_paragraph()
-  p.add_run(u'Fecha: ').bold = True
+  subtitle = book.add_format({
+    'bold': 1,
+    'align': 'center',
+    'size': 11
+  })
+
+  subtitle2 = book.add_format({
+    'bold': 1,
+    'align': 'center',
+    'size': 9
+  })
+
+  border = book.add_format({
+    'top': 1,
+    'left': 1,
+    'right': 1,
+    'bottom': 1
+  })
+
+  border_wrap = book.add_format({
+    'top': 1,
+    'left': 1,
+    'right': 1,
+    'bottom': 1,
+    'text_wrap': 1
+  })
+
+  border_bold_wrap = book.add_format({
+    'top': 1,
+    'left': 1,
+    'right': 1,
+    'bottom': 1,
+    'text_wrap': 1,
+    'bold': 1
+  })
+
+  sheet.merge_range('A1:L1', u'DROGUERIA HAMPI KALLPA EIRL', title)
+  sheet.merge_range('A2:L2', u'N° 01', subtitle)
+  sheet.merge_range('A3:L3', u'DROGUERIA HAMPI KALLPA EIRL', subtitle2)
+  sheet.merge_range('A4:L4', u'REGISTRO DE RECEPCION Y CONFORMIDAD', subtitle2)
+
+  # 1
+  sheet.write('A6', u'Fecha:', bold)
   if entrada.fecha_entrada is not None:
-    p.add_run(entrada.fecha_entrada.strftime('%d %b %Y'))
-  p.add_run('                           ')
-  p.add_run(u'Hora: ').bold = True
+    sheet.merge_range('B6:H6', entrada.fecha.strftime('%Y-%m-%d'), fecha)
+
+  sheet.merge_range('I6:J6', u'Hora:', bold)
   if entrada.hora_entrada is not None:
-    p.add_run(entrada.hora_entrada)
+    sheet.merge_range('K6:L6', entrada.hora_entrada)
 
-  p = document.add_paragraph()
-  p.add_run(u'Q.F. Director Técnico:').bold = True
+  # 2
+  sheet.merge_range('A7:L7', u'Q.F. Director Técnico: Q.F. Joel Alvarez Ochoa')
 
-  p = document.add_paragraph()
-  p.add_run(u'Proveedor: ').bold = True
-  p.add_run(entrada.proveedor.razon_social)
+  # 3
+  sheet.write('A8', u'Proveedor', bold)
+  sheet.merge_range('B8:L8', entrada.proveedor.razon_social)
 
-  p = document.add_paragraph()
-  p.add_run(u'Factura Nro: ').bold = True
-  p.add_run(entrada.numero_factura)
-  p.add_run('                         ')
-  p.add_run(u'Fecha Factura: ').bold = True
-  p.add_run(entrada.fecha_factura.strftime('%d %b %Y'))
+  # 4
+  sheet.merge_range('A9:B9', u'Factura N°:', bold)
+  sheet.merge_range('C9:H9', entrada.numero_factura)
+  sheet.merge_range('I9:J9', u'Fecha Factura:', bold)
+  sheet.merge_range('K9:L9', entrada.fecha_factura.strftime('%Y-%m-%d'), fecha)
 
-  p = document.add_paragraph()
-  p.add_run(u'Guía de Remisión Nro: ').bold = True
-  p.add_run(entrada.numero_guia)
-  p.add_run('                         ')
-  p.add_run(u'Fecha G/R: ').bold = True
-  p.add_run(entrada.fecha_guia.strftime('%d %b %Y'))
-  document.add_paragraph()
+  # 5
+  sheet.merge_range('A10:B10', u'Guía de Remisión N°:', bold)
+  sheet.merge_range('C10:H10', entrada.numero_guia)
+  sheet.merge_range('I10:J10', u'Fecha Guía de Remisión:', bold)
+  sheet.merge_range('K10:L10', entrada.fecha_guia.strftime('%Y-%m-%d'), fecha)
 
-  table = document.add_table(rows=1, cols=8)
-  table.style = 'TableGrid'
-  hdr_cells = table.rows[0].cells
-  hdr_cells[0].text = u'CANT'
-  hdr_cells[1].text = u'F.F.'
-  hdr_cells[2].text = u'DESCRIPCIÓN'
-  hdr_cells[3].text = u'FABRICANTE'
-  hdr_cells[4].text = u'F/V'
-  hdr_cells[5].text = u'LOTE'
-  hdr_cells[6].text = u'N de R.S'
-  hdr_cells[7].text = u'Vencimiento R.S.'
-  hdr_cells[2].width = Cm(8)
+  ########
+  # Tabla
+  ########
+
+  sheet.write('A12', u'Cant. Solicitada', bold_border)
+  sheet.merge_range('B12:D12', u'Producto', bold_border)
+  sheet.write('E12', u'Presentación', bold_border)
+  sheet.write('F12', u'F/V', bold_border)
+  sheet.write('G12', u'Lote', bold_border)
+  sheet.write('H12', u'Fabricante', bold_border)
+  sheet.write('I12', u'Cant. Recibida', bold_border)
+  sheet.write('J12', u'N° Reg. San.', bold_border)
+  sheet.write('K12', u'F.V. Reg. San.', bold_border)
+  sheet.write('L12', u'Condiciones de almacenamiento', bold_border)                     
+
+  row = 13
   for detalle in entrada.entradadetalle_set.all():
-      comercial = detalle.lote.producto.comercial.upper()
-      if comercial == '':
-        the_prod = '%s' % (detalle.lote.producto.producto)
-      else:
-        the_prod = '%s / %s' % (detalle.lote.producto.producto, comercial)
-      row_cells = table.add_row().cells
-      row_cells[0].text = str(detalle.cantidad)
-      row_cells[1].text = detalle.lote.producto.unidad_medida
-      row_cells[2].text = the_prod
-      row_cells[3].text = detalle.lote.producto.marca
-      try:
-        row_cells[4].text = detalle.lote.vencimiento.strftime('%d/%m/%Y')
-      except:
-        row_cells[4].text = ''
-      row_cells[5].text = detalle.lote.numero
-      row_cells[6].text = detalle.lote.nrs if detalle.lote.nrs is not None else ''
-      row_cells[7].text = detalle.lote.vrs if detalle.lote.vrs is not None else ''
-      row_cells[2].width = Cm(12)
+
+    comercial = detalle.lote.producto.comercial.upper()
+    if comercial == '':
+      the_prod = '%s' % (detalle.lote.producto.producto)
+    else:
+      the_prod = '%s / %s' % (detalle.lote.producto.producto, comercial)
+
+    sheet.write('A%s' % row, detalle.cantidad, border)
+    sheet.merge_range('B%s:D%s' % (row, row), the_prod, border_wrap)
+    sheet.write('E%s' % row, '', border)
+    try:
+      sheet.write('F%s' % row, detalle.lote.vencimiento.strftime('%Y-%m-%d'), fecha_border)
+    except:
+      sheet.write('F%s' % row, '', border)
+    sheet.write('G%s' % row, detalle.lote.numero, border)
+    sheet.write('H%s' % row, detalle.lote.producto.marca, border)
+    sheet.write('I%s' % row, detalle.cantidad, border)
+    sheet.write('J%s' % row, detalle.lote.nrs, border)
+    sheet.write('K%s' % row, detalle.lote.vrs, fecha_border)
+    sheet.write('L%s' % row, '', border)
+    row += 1
+
+  sheet.autofilter(('A12:L%s' % row))
+
+  row = row + 2
+
+  sheet.write('A%s' % row, 'Entrega:', bold)
+  sheet.write('B%s' % row, 'Proveedor o transportista')
+  sheet.write('I%s' % row, 'Recibe:', bold)
+  sheet.merge_range('J%s:L%s' % (row, row), u'Q.F. Director Técnico')
 
 
-  document.add_paragraph()
-  document.add_paragraph()
-  p = document.add_paragraph('____________________________')
-  p = document.add_paragraph(u'Q.F. Director Técnico')
+
+  # Libro 2
+
+  sheet = book.add_worksheet(u'Anexo 2')
+  sheet.set_landscape()
+  sheet.set_paper(9)
+  sheet.center_horizontally()
+
+  sheet.merge_range('A1:R1', u'DROGUERIA HAMPI KALLPA EIRL', title)
+  sheet.merge_range('A2:R2', u'ANEXO N° 02', subtitle)
+  sheet.merge_range('A3:R3', u'ACTA DE EVALUACIÓN ORGANOLÉPTICA PARA EL INGRESO DE DISPOSITIVOS MÉDICOS AL ALMACÉN DE LA', subtitle2)
+  sheet.merge_range('A4:R4', u'DROGUERIA HAMPI KALLPA EIRL', subtitle2)
 
 
-  # Anexo 2.
-  section = document.add_section()
-  section.left_margin = Cm(2)
-  section.top_margin = Cm(2)
-  section.right_margin = Cm(2)
-  section.bottom_margin = Cm(2)
-  section.page_width = Mm(210)
-  section.page_height = Mm(297)
-  section.orientation = WD_ORIENT.PORTRAIT
+  # 1
+  sheet.write('A6', 'Fecha:')
+  sheet.write('A7', 'Factura:')
+  sheet.merge_range('B7:E7', entrada.numero_factura)
+  sheet.merge_range('F7:G7', u'Guía de Remisión:')
+  sheet.merge_range('H7:J7', entrada.numero_guia)
+  sheet.write('K7', u'Proveedor:')
+  sheet.merge_range('L7:R7', entrada.proveedor.razon_social)
 
-  p = document.add_paragraph()
-  p.add_run(u'Anexo N° -B').bold = True
-  p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+  #####
+  # Tabla
+  #####
+  sheet.merge_range('A10:A12', u'N°', border_bold_wrap)
+  sheet.merge_range('B10:F11', u'Producto', border_bold_wrap)
+  sheet.merge_range('G10:H11', u'Documentos Si(S) – No(N)', border_bold_wrap)
+  sheet.merge_range('I10:J11', u'Embalaje adecuado', border_bold_wrap)
+  sheet.merge_range('K10:L11', u'Envase inmediato adecuado', border_bold_wrap)
+  sheet.merge_range('M10:R10', u'Envase médico', border_bold_wrap)
+  sheet.merge_range('M11:N11', u'Rotulado adecuado', border_bold_wrap)
+  sheet.merge_range('O11:P11', u'Aspecto Normal', border_bold_wrap)
+  sheet.merge_range('Q11:R11', u'Cuerpos extraños', border_bold_wrap)
 
-  p = document.add_paragraph()
-  p.add_run(u'ACTA DE RECEPCIÓN Y EVALUACIÓN ORGANOLÉPTICA PARA EL INGRESO DE PRODUCTOS FARMACÉUTICOS Y AFINES AL ALMACEN DE LA DROGUERIA "HAMPI KALLPA E.I.R.L."').bold = True
-  p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+  sheet.merge_range('B12:D12', u'Descripción', border_bold_wrap)
+  sheet.write('E12', u'Lote', border_bold_wrap)
+  sheet.write('F12', u'FV', border_bold_wrap)
+  sheet.write('G12', u'RS', border_bold_wrap)
+  sheet.write('H12', u'Protocólo Análisis', border_bold_wrap)
+  sheet.write('I12', u'Si', border_bold_wrap)
+  sheet.write('J12', u'No', border_bold_wrap)
+  sheet.write('K12', u'Si', border_bold_wrap)
+  sheet.write('L12', u'No', border_bold_wrap)
+  sheet.write('M12', u'Si', border_bold_wrap)
+  sheet.write('N12', u'No', border_bold_wrap)
+  sheet.write('O12', u'Si', border_bold_wrap)
+  sheet.write('P12', u'No', border_bold_wrap)
+  sheet.write('Q12', u'Si', border_bold_wrap)
+  sheet.write('R12', u'No', border_bold_wrap)
 
-  p = document.add_paragraph()
-  p.add_run(u'Fecha: ').bold = True
-  if entrada.fecha_entrada is not None:
-    p.add_run(entrada.fecha_entrada.strftime('%d %b %Y'))
-
-  p = document.add_paragraph()
-  p.add_run(u'Factura Nro: ').bold = True
-  p.add_run(entrada.numero_factura)
-  p.add_run(u'                   ')
-  p.add_run(u'Guía de Remisión Nro: ').bold = True
-  p.add_run(entrada.numero_guia)
-  p.add_run(u'                   ')
-  p.add_run(u'Proveedor: ').bold = True
-  p.add_run(entrada.proveedor.razon_social)
-  document.add_paragraph()
-
-  table = document.add_table(rows=2, cols=13)
-  table.style = 'TableGrid'
-  
-  hdr_cells = table.rows[0].cells
-  hdr_cells[0].text = u''
-  hdr_cells[1].text = u'Producto'
-  hdr_cells[4].text = u'Documentos'
-  hdr_cells[6].text = u'Embalaje Adecuado'
-  hdr_cells[8].text = u'Envase inmediato adecuado'
-  hdr_cells[10].text = u'Contenido'
-
-  #hdr_cells[1].merge(hdr_cells[2])
-  hdr_cells[1].merge(hdr_cells[3])
-  hdr_cells[4].merge(hdr_cells[5])
-  hdr_cells[6].merge(hdr_cells[7])
-  hdr_cells[8].merge(hdr_cells[9])
-  hdr_cells[10].merge(hdr_cells[12])
-
-
-  hdr_cells = table.rows[1].cells
-  hdr_cells[0].text = u'N°'
-  hdr_cells[1].text = u'Descripción'
-  hdr_cells[2].text = u'Lote'
-  hdr_cells[3].text = u'FV'
-  hdr_cells[4].text = u'RS'
-  hdr_cells[5].text = u'Protocolo Análisis'
-  hdr_cells[6].text = u'Si'
-  hdr_cells[7].text = u'No'
-  hdr_cells[8].text = u'Si'
-  hdr_cells[9].text = u'No'
-  hdr_cells[10].text = u'Color'
-  hdr_cells[11].text = u'Aspecto'
-  hdr_cells[12].text = u'No cuerpos extraños'
-  hdr_cells[1].width = Cm(7)
-
-  counter = 1
+  row = 13
+  k = 1
   for detalle in entrada.entradadetalle_set.all():
-      comercial = detalle.lote.producto.comercial.upper()
-      if comercial == '':
-        the_prod = '%s' % (detalle.lote.producto.producto)
-      else:
-        the_prod = '%s / %s' % (detalle.lote.producto.producto, comercial)
-      row_cells = table.add_row().cells
-      row_cells[0].text = str(counter)
-      row_cells[1].text = the_prod
-      row_cells[2].text = detalle.lote.numero
-      try:
-        row_cells[3].text = detalle.lote.vencimiento.strftime('%d/%m/%Y')
-      except:
-        row_cells[3].text = ''
-      counter += 1
 
-  document.add_paragraph()
-  document.add_paragraph()
-  p = document.add_paragraph('____________________________')
-  p = document.add_paragraph(u'Q.F. Director Técnico')
-  
-  from cStringIO import StringIO
-  f = StringIO()
-  document.save(f)
-  length = f.tell()
-  f.seek(0)
-  response = HttpResponse(
-      f.getvalue(),
-      content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-  )
-  response['Content-Disposition'] = 'attachment; filename=anexo%s.docx' % entrada.pk
-  response['Content-Length'] = length
+    comercial = detalle.lote.producto.comercial.upper()
+    if comercial == '':
+      the_prod = '%s' % (detalle.lote.producto.producto)
+    else:
+      the_prod = '%s / %s' % (detalle.lote.producto.producto, comercial)
+
+    sheet.write('A%s' % row, k, border)
+
+    sheet.merge_range('B%s:D%s' % (row, row), the_prod, border_wrap)
+    sheet.write('E%s' % row, detalle.lote.numero, border)
+    try:
+      sheet.write('F%s' % row, detalle.lote.vencimiento.strftime('%Y-%m-%d'), fecha_border)
+    except:
+      sheet.write('F%s' % row, '', border)
+    sheet.write('G%s' % row, detalle.lote.nrs, border)
+    sheet.write('H%s' % row, '', border)
+    sheet.write('I%s' % row, '', border)
+    sheet.write('J%s' % row, '', border)
+    sheet.write('K%s' % row, '', border)
+    sheet.write('L%s' % row, '', border)
+    sheet.write('M%s' % row, '', border)
+    sheet.write('N%s' % row, '', border)
+    sheet.write('O%s' % row, '', border)
+    sheet.write('P%s' % row, '', border)
+    sheet.write('Q%s' % row, '', border)
+    sheet.write('R%s' % row, '', border)
+    
+    row += 1
+    k += 1
+
+  sheet.autofilter(('A12:R%s' % row))
+
+  row = row + 2
+
+  sheet.write('A%s' % row, u'Observación:')
+
+  row = row + 5
+
+  sheet.merge_range('H%s:K%s' % (row,row), u'Director Técnico', bold)
+
+  book.close()
+
+  # construct response
+  output.seek(0)
+  response = HttpResponse(output.read(), content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+  response['Content-Disposition'] = "attachment; filename=anexo-%s.xlsx" % entrada.pk
+
   return response
 
 @login_required
