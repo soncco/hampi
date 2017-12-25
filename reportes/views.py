@@ -831,7 +831,6 @@ def anexo_print(request, id):
     'left': 1,
     'right': 1,
     'bottom': 1,
-    'text_wrap': 1
   })
 
   border_bold_wrap = book.add_format({
@@ -839,7 +838,6 @@ def anexo_print(request, id):
     'left': 1,
     'right': 1,
     'bottom': 1,
-    'text_wrap': 1,
     'bold': 1
   })
 
