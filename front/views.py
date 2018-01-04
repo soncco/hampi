@@ -414,7 +414,7 @@ def entradas_json(request):
       links = '''
       <a class="btn btn-xs btn-warning" href="/entrada/ver/%s" title="Ver detalles"><i class="fa fa-folder-open"></i></a>
         <a class="btn btn-xs btn-info" href="/entrada/print/%s"><i class="fa fa-print"></i></a>
-        <a class="btn btn-xs btn-primary" href="/anexo/print/%s"><i class="fa fa-file-word-o"></i></a>
+        <a class="btn btn-xs btn-primary" href="/anexo/pdf/print/%s"><i class="fa fa-file-word-o"></i></a>
       ''' % (entrada.pk, entrada.pk, entrada.pk)
 
 

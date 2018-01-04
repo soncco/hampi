@@ -1486,3 +1486,19 @@ def excel_clientes_fecha(request):
   response['Content-Disposition'] = "attachment; filename=clientes-atendidos-fecha-%s.xlsx" % date.today()
 
   return response
+
+from front.printable import ImpresionAnexo
+from io import BytesIO
+@login_required
+def anexo_pdf_print(request, id):
+  entrada = Entrada.objects.get(id = id)
+
+  response = HttpResponse(content_type='application/pdf')
+
+  buffer = BytesIO()
+
+  report = ImpresionAnexo(buffer, 'A4')
+  pdf = report.imprimir(entrada)
+
+  response.write(pdf)
+  return response

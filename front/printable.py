@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from reportlab.lib.pagesizes import letter, A4, landscape
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Image, Spacer, PageBreak, NextPageTemplate, Spacer
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
@@ -224,6 +226,241 @@ class ImpresionFactura:
     return pdf
 
 
+class ImpresionAnexo:
+  def __init__(self, buffer, pagesize):
+    self.buffer = buffer
+    if pagesize == 'A4':
+      self.pagesize = landscape(A4)
+    elif pagesize == 'Letter':
+      self.pagesize = landscape(letter)
+      self.width, self.height = self.pagesize
+
+  @staticmethod
+  def _header_footer(canvas, doc, entrada):
+    canvas.saveState()
+
+    canvas.restoreState()
+
+  def imprimir(self, entrada):
+
+    def normal_custom(size):
+      return ParagraphStyle(
+          name = 'normal_custom_%s' % str(size),
+          fontName = 'Helvetica',
+          fontSize = size,
+      )
+
+    def negrita_custom(size):
+      return ParagraphStyle(
+          name = 'negrita_custom_%s' % str(size),
+          fontName = 'Helvetica-Bold',
+          fontSize = size,
+      )
+    def negrita_custom(size, center = None):
+      if center is None:
+        return ParagraphStyle(
+            name = 'negrita_custom_%s' % str(size),
+            fontName = 'Helvetica-Bold',
+            fontSize = size,
+        )
+      else:
+        return ParagraphStyle(
+            name = 'negrita_custom_%s' % str(size),
+            fontName = 'Helvetica-Bold',
+            fontSize = size,
+            alignment = TA_CENTER
+        )
+
+    def tabla_1():
+      return TableStyle(
+        [
+          ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
+          ('BOX', (0,0), (-1,-1), 0.25, colors.black),
+          ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+          #('SPAN', (0,), (5,total + 2)),
+        ]
+    )
+
+    def tabla_2():
+      return TableStyle(
+        [
+          ('INNERGRID', (0,0), (-1,-1), 0.25, colors.black),
+          ('BOX', (0,0), (-1,-1), 0.25, colors.black),
+          ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
+          ('SPAN', (0,0), (0,2)),
+          ('SPAN', (1,0), (3,1)),
+          ('SPAN', (4,0), (5,1)),
+          ('SPAN', (6,0), (7,1)),
+          ('SPAN', (8,0), (9,1)),
+          ('SPAN', (10,0), (15,0)),
+          ('SPAN', (10,1), (11,1)),
+          ('SPAN', (12,1), (13,1)),
+          ('SPAN', (14,1), (15,1)),
+        ]
+    )
+
+    buffer = self.buffer
+    doc = SimpleDocTemplate(buffer, pagesize = self.pagesize, topMargin = 10 * mm, leftMargin = 10 * mm, rightMargin = 10 * mm, bottomMargin = 10 * mm , showBoundary = 0)
+
+
+    elements = []
+
+    p = Paragraph(u'DROGUERÍA HAMPI KALLPA EIRL', negrita_custom(15, 1))
+    elements.append(p)
+    elements.append(Spacer(1, 3 * mm))
+
+    p = Paragraph(u'N° 01', negrita_custom(12, 1))
+    elements.append(p)
+    elements.append(Spacer(1, 1 * mm))
+
+    p = Paragraph(u'DROGUERIA HAMPI KALLPA EIRL', negrita_custom(10, 1))
+    elements.append(p)
+    elements.append(Spacer(1, 1 * mm))
+
+    p = Paragraph(u'REGISTRO DE RECEPCION Y CONFORMIDAD', negrita_custom(10, 1))
+    elements.append(p)
+    elements.append(Spacer(1, 4 * mm))
+
+    p = Paragraph(u'<strong>Fecha</strong>: %s - <strong>Hora</strong>: %s' % (entrada.fecha.strftime('%d/%m/%Y'), entrada.hora_entrada), normal_custom(8))
+    elements.append(p)
+    elements.append(Spacer(1, 1 * mm))
+
+    p = Paragraph(u'<strong>Q.F.</strong>: Director Técnico: QF Joel Alvarez Ochoa', normal_custom(8))
+    elements.append(p)
+    elements.append(Spacer(1, 1 * mm))
+
+    p = Paragraph(u'<strong>Proveedor</strong>: %s' % (entrada.proveedor.razon_social), normal_custom(8))
+    elements.append(p)
+    elements.append(Spacer(1, 1 * mm))
+
+    p = Paragraph(u'<strong>Factura Nro</strong>: %s - <strong>Fecha de Factura</strong>: %s' % (entrada.numero_factura, entrada.fecha_factura.strftime('%d/%m/%Y')), normal_custom(8))
+    elements.append(p)
+    elements.append(Spacer(1, 1 * mm))
+
+    p = Paragraph(u'<strong>Guía de Remisión Nro</strong>: %s - <strong>Fecha Guía de Remisión</strong>: %s' % (entrada.numero_guia, entrada.fecha_guia.strftime('%d/%m/%Y')), normal_custom(8))
+    elements.append(p)
+    elements.append(Spacer(1, 1 * mm))
+
+    detalles_data = [
+     [Paragraph(u'Cant. Sol.', negrita_custom(8,1)), Paragraph(u'Producto.', negrita_custom(8,1)), Paragraph(u'Presentación', negrita_custom(8,1)), Paragraph(u'F/V', negrita_custom(8,1)), Paragraph(u'Lote', negrita_custom(8,1)), Paragraph(u'Fabricante', negrita_custom(8,1)), Paragraph(u'Cant. Rec.', negrita_custom(8,1)), Paragraph(u'N° Reg. San.', negrita_custom(8,1)), Paragraph(u'F.V. Reg. San.', negrita_custom(8,1)), Paragraph(u'Condiciones de almacenamiento', negrita_custom(8,1))]
+    ]
+
+    for detalle in entrada.entradadetalle_set.all():
+      comercial = detalle.lote.producto.comercial.upper()
+      if comercial == '':
+        the_prod = '%s' % (detalle.lote.producto.producto)
+      else:
+        the_prod = '%s / %s' % (detalle.lote.producto.producto, comercial)
+
+      cantidad = Paragraph(str(detalle.cantidad), normal_custom(8))
+      producto = Paragraph(the_prod, normal_custom(8))
+      presentacion = ''
+      try:
+        vencimiento = Paragraph(detalle.lote.vencimiento.strftime('%d/%m/%Y'), normal_custom(8))
+      except:
+        vencimiento = ''
+      lote = Paragraph(detalle.lote.numero, normal_custom(8))
+      fabricante = Paragraph(detalle.lote.producto.marca, normal_custom(8))
+      nrs = Paragraph(detalle.lote.nrs, normal_custom(8))
+      vrs = Paragraph(detalle.lote.vrs, normal_custom(8))
+      condiciones = ''
+
+
+      detalles_data.append(
+        [cantidad, producto, presentacion, vencimiento, lote, fabricante, cantidad, nrs, vrs, condiciones]
+      )
+
+
+
+    detalles_tabla = Table(detalles_data, colWidths = [10 * mm, 80 * mm, 40 * mm, 18 * mm, 18 * mm, None, 10 * mm, None], style=tabla_1())
+
+    elements.append(detalles_tabla)
+    elements.append(Spacer(1, 5 * mm))
+
+
+    p = Paragraph(u'<strong>Entrega</strong>: %s - <strong>Recibe</strong>: %s' % (u'Proveedor o Transportista', u'Q.F. Director Técnico'), normal_custom(8))
+    elements.append(p)
+
+    elements.append(PageBreak())
+
+    # Anexo 2.
+
+    p = Paragraph(u'DROGUERÍA HAMPI KALLPA EIRL', negrita_custom(15, 1))
+    elements.append(p)
+    elements.append(Spacer(1, 3 * mm))
+
+    p = Paragraph(u'ANEXO N° 02', negrita_custom(12, 1))
+    elements.append(p)
+    elements.append(Spacer(1, 1 * mm))
+
+    p = Paragraph(u'ACTA DE EVALUACIÓN ORGANOLÉPTICA PARA EL INGRESO DE DISPOSITIVOS MÉDICOS AL ALMACÉN DE LA', negrita_custom(10, 1))
+    elements.append(p)
+    elements.append(Spacer(1, 1 * mm))
+
+    p = Paragraph(u'DROGUERIA HAMPI KALLPA EIRL', negrita_custom(10, 1))
+    elements.append(p)
+    elements.append(Spacer(1, 1 * mm))
+
+    p = Paragraph(u'<strong>Fecha</strong>: %s' % (entrada.fecha.strftime('%d/%m/%Y')), normal_custom(8))
+    elements.append(p)
+    elements.append(Spacer(1, 1 * mm))
+
+    p = Paragraph(u'<strong>Factura Nro</strong>: %s - <strong>Guía de Remisión</strong>: %s - <strong>Proveedor</strong>: %s' % (entrada.numero_factura, entrada.numero_guia, entrada.proveedor.razon_social), normal_custom(8))
+    elements.append(p)
+    elements.append(Spacer(1, 1 * mm))
+
+    detalles_data = [
+      [Paragraph(u'N°', negrita_custom(8,1)), Paragraph(u'Producto', negrita_custom(8,1)), '', '', Paragraph(u'Documentos Si(S)- No(N)', negrita_custom(8,1)), '', Paragraph(u'Embalaje adecuado', negrita_custom(8,1)), '', Paragraph(u'Envase inmediato adecuado', negrita_custom(8,1)), '', Paragraph(u'Envase Inmediato', negrita_custom(8,1)), '', ''],
+      ['', '', '', '', '', '', '', '', '', '', Paragraph(u'Rotulado adecuado', negrita_custom(8,1)), '', Paragraph(u'Aspecto normal', negrita_custom(8,1)), '', Paragraph(u'Cuerpos extraños', negrita_custom(8,1)), ''],
+      ['', Paragraph(u'Descripción', negrita_custom(8,1)), Paragraph(u'Lote', negrita_custom(8,1)), Paragraph(u'FV', negrita_custom(8,1)), Paragraph(u'RS', negrita_custom(8,1)), Paragraph(u'Protocólo Análisis', negrita_custom(8,1)), Paragraph(u'Si', negrita_custom(8,1)), Paragraph(u'No', negrita_custom(8,1)), Paragraph(u'Si', negrita_custom(8,1)), Paragraph(u'No', negrita_custom(8,1)), Paragraph(u'Si', negrita_custom(8,1)), Paragraph(u'No', negrita_custom(8,1)), Paragraph(u'Si', negrita_custom(8,1)), Paragraph(u'No', negrita_custom(8,1)), Paragraph(u'Si', negrita_custom(8,1)), Paragraph(u'No', negrita_custom(8,1))]
+    ]
+
+    k = 1
+    for detalle in entrada.entradadetalle_set.all():
+      comercial = detalle.lote.producto.comercial.upper()
+      if comercial == '':
+        the_prod = '%s' % (detalle.lote.producto.producto)
+      else:
+        the_prod = '%s / %s' % (detalle.lote.producto.producto, comercial)
+
+
+      numero = Paragraph(str(k), normal_custom(8))
+      producto = Paragraph(the_prod, normal_custom(8))
+      lote = Paragraph(detalle.lote.numero, normal_custom(8))
+      try:
+        vencimiento = Paragraph(detalle.lote.vencimiento.strftime('%d/%m/%Y'), normal_custom(8))
+      except:
+        vencimiento = ''
+      nrs = Paragraph(detalle.lote.nrs, normal_custom(8))
+      k += 1
+
+      detalles_data.append(
+        [numero, producto, lote, vencimiento, nrs]
+      )
+      
+
+    detalles_tabla = Table(detalles_data, colWidths = [6 * mm, 55 * mm, 15 * mm, 18 * mm, 18 * mm, 15 * mm], style= tabla_2())
+
+    elements.append(detalles_tabla)
+    elements.append(Spacer(1, 5 * mm))
+
+    p = Paragraph(u'Observación:', negrita_custom(8))
+    elements.append(p)
+    elements.append(Spacer(1, 20 * mm))
+
+
+    p = Paragraph(u'Director Técnico', negrita_custom(9,1))
+    elements.append(p)
+
+
+    doc.build(elements, onFirstPage = partial(self._header_footer, entrada = entrada),
+      onLaterPages = partial(self._header_footer, entrada = entrada))
+
+    pdf = buffer.getvalue()
+    buffer.close()
+    return pdf
+
+
 class ImpresionGuia:
   def __init__(self, buffer, pagesize):
     self.buffer = buffer
@@ -389,3 +626,5 @@ class ImpresionGuia:
     pdf = buffer.getvalue()
     buffer.close()
     return pdf
+
+
